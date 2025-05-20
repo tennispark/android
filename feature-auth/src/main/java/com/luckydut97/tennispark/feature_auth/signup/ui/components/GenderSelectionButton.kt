@@ -1,4 +1,4 @@
-package com.luckydut97.tennispark.core.ui.components
+package com.luckydut97.tennispark.feature_auth.signup.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,7 +19,7 @@ import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
 @Composable
-fun JoinPathButton(
+fun GenderSelectionButton(
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit,
@@ -40,7 +40,7 @@ fun JoinPathButton(
     ) {
         Text(
             text = text,
-            fontSize = 14.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = if (isSelected) Color.White else AppColors.TextPrimary,
             fontFamily = Pretendard

@@ -14,7 +14,6 @@ sealed class AuthRoute(val route: String) {
     object Splash : AuthRoute("splash")
     object PhoneVerification : AuthRoute("phone_verification")
     object Signup : AuthRoute("signup")
-    object Main : AuthRoute("main")
 }
 
 /**
@@ -23,7 +22,7 @@ sealed class AuthRoute(val route: String) {
 @Composable
 fun AuthNavigation(
     navController: NavHostController = rememberNavController(),
-    onNavigateToMain: () -> Unit = {},
+    onNavigateToMain: () -> Unit,
     startDestination: String = AuthRoute.Splash.route
 ) {
     NavHost(

@@ -69,4 +69,5 @@ dependencies {
 
     implementation(project(":core"))
     implementation(project(":feature-auth"))
+    implementation(project(":feature-home"))
 }

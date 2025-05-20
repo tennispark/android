@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,15 +19,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.luckydut97.tennispark.core.ui.components.JoinPathButton
+import com.luckydut97.tennispark.feature_auth.signup.ui.components.JoinPathButton
 import com.luckydut97.tennispark.core.ui.components.button.ActionButton
 import com.luckydut97.tennispark.core.ui.components.selection.CheckBox
-import com.luckydut97.tennispark.core.ui.components.button.GenderSelectionButton
+import com.luckydut97.tennispark.feature_auth.signup.ui.components.GenderSelectionButton
 import com.luckydut97.tennispark.core.ui.components.input.InputField
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.AppColors

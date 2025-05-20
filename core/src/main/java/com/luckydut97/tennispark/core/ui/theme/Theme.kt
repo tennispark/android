@@ -1,6 +1,5 @@
-package com.luckydut97.tennispark.ui.theme
+package com.luckydut97.tennispark.core.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

@@ -1,4 +1,4 @@
-package com.luckydut97.tennispark.ui.theme
+package com.luckydut97.tennispark.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

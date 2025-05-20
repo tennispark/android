@@ -1,15 +1,11 @@
-﻿package com.luckydut97.tennispark.core.ui.components
-
-package com.luckydut97.tennispark.feature_home.ui.components
+package com.luckydut97.feature_home.main.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,31 +25,52 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.luckydut97.tennispark.feature.home.R
 import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
-import com.luckydut97.tennispark.feature_home.R
 
 @Composable
-fun ActivityApplicationCard(
-    onCardClick: () -> Unit,
-    modifier: Modifier = Modifier
+fun WeeklyApplicationSection(
+    onApplicationClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 17.dp)
+            .padding(top = 20.dp)
+    ) {
+        // 주간 신청서 제목
+        Text(
+            text = "주간 신청서",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = Pretendard,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+
+        // 이번주 활동 신청 카드
+        WeeklyApplicationCard(onClick = onApplicationClick)
+    }
+}
+
+@Composable
+fun WeeklyApplicationCard(
+    onClick: () -> Unit
 ) {
     Card(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .clickable { onCardClick() },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 1.dp
-        )
+            .height(161.dp),
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .fillMaxSize()
+                .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
@@ -67,17 +83,16 @@ fun ActivityApplicationCard(
                 ) {
                     Text(
                         text = "이번주 활동 신청",
-                        fontFamily = Pretendard,
                         fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = Pretendard,
                         color = Color.Black
                     )
 
-                    Icon(
+                    Image(
                         painter = painterResource(id = R.drawable.ic_arrow_right),
-                        contentDescription = "더보기",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(6.dp)
+                        contentDescription = "Arrow Right",
+                        modifier = Modifier.size(width = 6.dp, height = 12.dp)
                     )
                 }
 
@@ -91,26 +106,25 @@ fun ActivityApplicationCard(
                         }
                         append("\n신청 가능합니다.")
                     },
-                    fontFamily = Pretendard,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    fontFamily = Pretendard,
+                    lineHeight = 26.sp
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
                     text = "게스트는 월요일부터 가능합니다.",
-                    fontFamily = Pretendard,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
+                    fontFamily = Pretendard,
                     color = Color(0xFF8B9096)
                 )
             }
 
             Image(
                 painter = painterResource(id = R.drawable.ic_main_logo),
-                contentDescription = "테니스파크 로고",
+                contentDescription = "Tennis Logo",
                 modifier = Modifier.size(83.dp)
             )
         }
