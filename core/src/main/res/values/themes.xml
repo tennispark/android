@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme with Pretendard font -->
+    <style name="Base.Theme.TennisPark" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">@font/pretendard</item>
+        <item name="android:textAppearance">@style/TextAppearance.TennisPark.Regular</item>
+    </style>
+</resources>

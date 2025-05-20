@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Auth module theme that inherits from the base theme in core module -->
+    <style name="Theme.TennisPark.Auth" parent="Base.Theme.TennisPark">
+        <!-- Add any auth-specific theme customizations here -->
+    </style>
+</resources>
