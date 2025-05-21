@@ -1,4 +1,4 @@
-package com.luckydut97.tennispark.navigation
+package com.luckydut97.tennispark
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

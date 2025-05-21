@@ -84,7 +84,7 @@ fun WeeklyApplicationCard(
                     Text(
                         text = "이번주 활동 신청",
                         fontSize = 15.sp,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.SemiBold,
                         fontFamily = Pretendard,
                         color = Color.Black
                     )

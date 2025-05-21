@@ -15,7 +15,7 @@ fun AdBanner() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(62.81.dp)
+            .height(134.dp)
             .background(Color(0xFFD4D4D4))
     )
 }

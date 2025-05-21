@@ -1,14 +1,19 @@
 package com.luckydut97.feature_home.main.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -19,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.feature.home.R
@@ -52,38 +58,25 @@ fun EventSection(
                 iconRes = R.drawable.ic_member,
                 title = "멤버십 등록하기",
                 subtitle = "5월 정기 멤버십 등록",
+                pageIndicator = "${currentPage + 1}/$totalPages",
                 onClick = onMembershipClick
             )
             1 -> EventCard(
                 iconRes = R.drawable.ic_tennis,
                 title = "아카데미 등록하기",
                 subtitle = "5월 아카데미 등록",
+                pageIndicator = "${currentPage + 1}/$totalPages",
                 onClick = onAcademyClick
-            )
-        }
-
-        // 페이지 표시기
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Text(
-                text = "${currentPage + 1}/$totalPages",
-                fontSize = 12.sp,
-                fontFamily = Pretendard,
-                color = Color(0xFF8B9096)
             )
         }
     }
 }
-
 @Composable
 fun EventCard(
     iconRes: Int,
     title: String,
     subtitle: String,
+    pageIndicator: String,  // "1/2" 또는 "2/2" 형태로 전달
     onClick: () -> Unit
 ) {
     Card(
@@ -93,46 +86,97 @@ fun EventCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         onClick = onClick
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(start = 17.dp, top = 16.dp, end = 17.dp, bottom = 11.dp)  // 아래 여백만 8dp로 설정
         ) {
-            // 아이콘
-            Image(
-                painter = painterResource(id = iconRes),
-                contentDescription = null,
-                modifier = Modifier.size(55.dp)
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(
-                modifier = Modifier.weight(1f)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
             ) {
-                Text(
-                    text = title,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = Pretendard,
-                    color = Color.Black
+                // 아이콘
+                Image(
+                    painter = painterResource(id = iconRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(55.dp)
                 )
 
-                Text(
-                    text = subtitle,
-                    fontSize = 15.sp,
-                    fontFamily = Pretendard,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF8B9096)
-                )
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // 제목과 부제목을 포함하는 컬럼
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    // 제목과 화살표 한 행에 배치
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // 제목
+                        Text(
+                            text = title,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = Pretendard,
+                            color = Color.Black,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        // 화살표
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_arrow_right),
+                            contentDescription = "Arrow Right",
+                            modifier = Modifier.size(width = 6.dp, height = 12.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    // 부제목
+                    Text(
+                        text = subtitle,
+                        fontSize = 15.sp,
+                        fontFamily = Pretendard,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF8B9096)
+                    )
+                }
             }
 
-            Image(
-                painter = painterResource(id = R.drawable.ic_arrow_right),
-                contentDescription = "Arrow Right",
-                modifier = Modifier.size(width = 6.dp, height = 12.dp)
-            )
+            // 페이지 인디케이터 행
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 0.dp)
+            ) {
+                // 페이지 인디케이터 - 정확한 크기로 지정
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .size(width = 35.dp, height = 22.dp)
+                        .background(
+                            color = Color(0xFFBBBBBB),
+                            shape = RoundedCornerShape(50)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = pageIndicator,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        fontFamily = Pretendard,
+                        // 텍스트가 확실히
+                        modifier = Modifier
+                            .wrapContentHeight(Alignment.CenterVertically)
+                            .offset(y = (-0.5).dp), // 미세 조정을 위한 offset 추가
+                        textAlign = TextAlign.Center,
+                        // 텍스트 lineHeight 설정으로 수직 중앙 정렬 개선
+                        lineHeight = 10.sp
+                    )
+                }
+            }
         }
     }
 }

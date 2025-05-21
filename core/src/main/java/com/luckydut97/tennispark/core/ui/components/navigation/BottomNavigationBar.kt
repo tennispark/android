@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -39,6 +40,7 @@ fun BottomNavigationBar(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .height(72.dp)  // 전체 높이
             .background(Color.White)
     ) {
         Divider(
@@ -49,8 +51,9 @@ fun BottomNavigationBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+                .height(72.dp)  // Row 높이
+                .padding(horizontal = 17.dp),  // 좌우 여백
+            horizontalArrangement = Arrangement.SpaceBetween,  // 균등 배치
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 홈 버튼
@@ -92,20 +95,25 @@ fun BottomNavItem(
 
     Column(
         modifier = modifier
-            .clickable(onClick = onClick)
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .width(123.33.dp)  // 가로 크기 123.33dp
+            .height(44.5.dp)  // 높이 44dp
+            .clickable(onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = item.label,
             tint = Color.Unspecified,  // 아이콘 원본 색상 유지
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(20.dp)  // 아이콘 크기
         )
+
+        // 아이콘과 텍스트 사이 여백 7dp
+        androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(7.dp))
 
         Text(
             text = item.label,
-            fontSize = 12.sp,
+            fontSize = 13.sp,
             fontFamily = Pretendard,
             fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
             color = if (isSelected) AppColors.PrimaryVariant else Color(0xFF8B9096)
