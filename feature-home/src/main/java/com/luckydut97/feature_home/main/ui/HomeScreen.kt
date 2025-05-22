@@ -22,6 +22,11 @@ import com.luckydut97.feature_home.main.viewmodel.HomeViewModel
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationItem
 
+// feature-home-activity 모듈 import
+import com.luckydut97.feature_home_activity.viewmodel.WeeklyActivityViewModel
+import com.luckydut97.feature_home_activity.ui.components.WeeklyActivityBottomSheet
+import com.luckydut97.feature_home_activity.data.repository.MockWeeklyActivityRepository
+
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
@@ -30,6 +35,12 @@ fun HomeScreen(
     val currentEventPage by viewModel.currentEventPage.collectAsState()
     val totalEventPages by viewModel.totalEventPages.collectAsState()
     val scrollState = rememberScrollState()
+
+    // WeeklyActivity ViewModel 생성
+    val activityViewModel: WeeklyActivityViewModel = viewModel {
+        WeeklyActivityViewModel(MockWeeklyActivityRepository())
+    }
+    val showBottomSheet by activityViewModel.showBottomSheet.collectAsState()
 
     Scaffold(
         bottomBar = {
@@ -55,9 +66,11 @@ fun HomeScreen(
             // 광고 배너
             AdBanner()
 
-            // 주간 신청서 섹션
+            // 주간 신청서 섹션 - 바텀시트 연동
             WeeklyApplicationSection(
-                onApplicationClick = { /* 이번주 활동 신청 클릭 이벤트 */ }
+                onApplicationClick = {
+                    activityViewModel.showWeeklyApplicationSheet()
+                }
             )
 
             // 메인 액션 버튼들
@@ -74,5 +87,14 @@ fun HomeScreen(
                 onAcademyClick = { /* 아카데미 등록 클릭 이벤트 */ }
             )
         }
+
+        // 주간 활동 신청 바텀시트
+        WeeklyActivityBottomSheet(
+            viewModel = activityViewModel,
+            isVisible = showBottomSheet,
+            onDismiss = {
+                activityViewModel.hideWeeklyApplicationSheet()
+            }
+        )
     }
 }

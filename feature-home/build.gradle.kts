@@ -43,6 +43,8 @@ android {
 
 dependencies {
     implementation(project(":core"))
+    // feature-home-activity 모듈 추가
+    implementation(project(":feature-home-activity"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -53,6 +55,9 @@ dependencies {
     implementation(libs.androidx.material3)
     // Navigation Compose 의존성 추가
     implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    // ViewModel for Compose (바텀시트용)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
