@@ -1,18 +1,23 @@
 package com.luckydut97.tennispark
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.luckydut97.feature_home.main.ui.HomeScreen
 import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
-import com.luckydut97.tennispark.feature_auth.navigation.AuthRoute
+import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationItem
 
 /**
@@ -41,33 +46,31 @@ fun AppNavigation(
             )
         }
 
-        // 메인 화면 (홈, 상품 구매, 내 정보 등)
+        // 메인 화면 (바텀 네비게이션이 있는 화면들)
         composable("main") {
-            MainNavigation(navController)
+            MainScreenWithBottomNav()
         }
     }
 }
 
 /**
- * 메인 화면 내부의 네비게이션을 처리하는 컴포넌트
+ * 바텀 네비게이션이 포함된 메인 화면
  */
 @Composable
-fun MainNavigation(
-    navController: NavHostController = rememberNavController()
-) {
-    val mainNavController = rememberNavController()
+fun MainScreenWithBottomNav() {
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route ?: BottomNavigationItem.HOME.route
 
-    NavHost(
-        navController = mainNavController,
-        startDestination = BottomNavigationItem.HOME.route
-    ) {
-        // 홈 화면
-        composable(BottomNavigationItem.HOME.route) {
-            HomeScreen(
-                onNavigateToRoute = { route ->
-                    mainNavController.navigate(route) {
-                        // 바텀 내비게이션 항목 간 이동 시 백 스택을 복잡하게 쌓지 않도록 설정
-                        popUpTo(mainNavController.graph.findStartDestination().id) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            BottomNavigationBar(
+                currentRoute = currentRoute,
+                onItemClick = { route ->
+                    navController.navigate(route) {
+                        // 바텀 네비게이션 클릭 시 백스택 관리
+                        popUpTo(navController.graph.startDestinationId) {
                             saveState = true
                         }
                         launchSingleTop = true
@@ -76,15 +79,60 @@ fun MainNavigation(
                 }
             )
         }
+    ) { paddingValues ->
+        NavHost(
+            navController = navController,
+            startDestination = BottomNavigationItem.HOME.route,
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            // 홈 화면
+            composable(BottomNavigationItem.HOME.route) {
+                HomeScreen()
+            }
 
-        // 상품 구매 화면 (추후 구현 예정)
-        composable(BottomNavigationItem.SHOP.route) {
-            // ShopScreen()
-        }
+            // 상품 구매 화면
+            composable(BottomNavigationItem.SHOP.route) {
+                ShopScreen()
+            }
 
-        // 내 정보 화면 (추후 구현 예정)
-        composable(BottomNavigationItem.PROFILE.route) {
-            // ProfileScreen()
+            // 내 정보 화면
+            composable(BottomNavigationItem.PROFILE.route) {
+                ProfileScreen()
+            }
         }
+    }
+}
+
+/**
+ * 상품 구매 화면 (임시)
+ */
+@Composable
+fun ShopScreen() {
+    androidx.compose.foundation.layout.Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = androidx.compose.ui.Alignment.Center
+    ) {
+        androidx.compose.material3.Text(
+            text = "상품 구매 화면",
+            fontSize = 20.sp,
+            fontFamily = com.luckydut97.tennispark.core.ui.theme.Pretendard
+        )
+    }
+}
+
+/**
+ * 내 정보 화면 (임시)
+ */
+@Composable
+fun ProfileScreen() {
+    androidx.compose.foundation.layout.Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = androidx.compose.ui.Alignment.Center
+    ) {
+        androidx.compose.material3.Text(
+            text = "내 정보 화면",
+            fontSize = 20.sp,
+            fontFamily = com.luckydut97.tennispark.core.ui.theme.Pretendard
+        )
     }
 }
