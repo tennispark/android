@@ -26,8 +26,8 @@ class SignupViewModel : ViewModel() {
     private val _birthYear = MutableStateFlow("")
     val birthYear = _birthYear.asStateFlow()
 
-    // 가입 경로 (0=인스타, 1=네이버 검색, 2=친구 추천)
-    private val _joinPath = MutableStateFlow(0)
+    // 가입 경로 (0=인스타, 1=네이버 검색, 2=친구 추천, -1=미선택)
+    private val _joinPath = MutableStateFlow(-1) // 초기값을 -1로 변경
     val joinPath = _joinPath.asStateFlow()
 
     // 추천인

@@ -40,7 +40,7 @@ fun BottomNavigationBar(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(72.dp)  // 전체 높이
+            .height(72.dp)
             .background(Color.White)
     ) {
         Divider(
@@ -51,7 +51,7 @@ fun BottomNavigationBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(72.dp)  // Row 높이
+                .height(72.dp)
                 .padding(horizontal = 17.dp),  // 좌우 여백
             horizontalArrangement = Arrangement.SpaceBetween,  // 균등 배치
             verticalAlignment = Alignment.CenterVertically
@@ -95,8 +95,8 @@ fun BottomNavItem(
 
     Column(
         modifier = modifier
-            .width(123.33.dp)  // 가로 크기 123.33dp
-            .height(44.5.dp)  // 높이 44dp
+            .width(123.33.dp)
+            .height(44.5.dp)
             .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -108,7 +108,7 @@ fun BottomNavItem(
             modifier = Modifier.size(20.dp)  // 아이콘 크기
         )
 
-        // 아이콘과 텍스트 사이 여백 7dp
+        // 아이콘과 텍스트 사이 여백
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(7.dp))
 
         Text(

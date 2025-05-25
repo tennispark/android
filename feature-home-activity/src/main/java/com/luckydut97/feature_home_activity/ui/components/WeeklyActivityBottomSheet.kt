@@ -62,7 +62,7 @@ fun WeeklyActivityBottomSheet(
                     .fillMaxWidth()
                     .height(591.dp)
             ) {
-                // 메인 컨텐츠 박스 (fillMaxWidth × 555dp)
+                // 메인 컨텐츠 박스
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -70,17 +70,17 @@ fun WeeklyActivityBottomSheet(
                         .padding(horizontal = 24.dp)
                 ) {
                     Column {
-                        // Header Column (63dp 높이)
+                        // Header Column
                         Column(
-                            modifier = Modifier.height(63.dp)
+                            modifier = Modifier.height(73.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            // 제목과 닫기 버튼 Row (39dp 높이)
-                            Row(
+                            // 제목과 닫기 버튼 Row
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(39.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = "활동 신청",
@@ -88,16 +88,17 @@ fun WeeklyActivityBottomSheet(
                                     fontFamily = Pretendard,
                                     fontWeight = FontWeight.SemiBold,
                                     color = Color.Black,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.weight(1f)
+                                    textAlign = TextAlign.Center
                                 )
 
                                 IconButton(
                                     onClick = onDismiss,
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier
+                                        .align(Alignment.CenterEnd)
+                                        .size(24.dp)
                                 ) {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.ic_close), // 닫기 아이콘 필요
+                                        painter = painterResource(id = R.drawable.ic_close),
                                         contentDescription = "닫기",
                                         modifier = Modifier.size(15.dp),
                                         tint = Color.Black
@@ -113,13 +114,14 @@ fun WeeklyActivityBottomSheet(
                                 fontSize = 16.sp,
                                 fontFamily = Pretendard,
                                 fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Center,
                                 color = Color(0xFF8B9096)
                             )
                         }
 
                         Spacer(modifier = Modifier.height(18.dp))
 
-                        // 활동 목록 Column (367×422dp)
+                        // 활동 목록 Column
                         Column(
                             modifier = Modifier
                                 .width(367.dp)

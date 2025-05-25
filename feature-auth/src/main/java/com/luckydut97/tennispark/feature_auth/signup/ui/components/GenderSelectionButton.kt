@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.theme.AppColors
@@ -32,7 +33,7 @@ fun GenderSelectionButton(
             .background(if (isSelected) AppColors.Primary else Color.White)
             .border(
                 width = 1.dp,
-                color = if (isSelected) AppColors.Primary else AppColors.Divider,
+                color = if (isSelected) AppColors.Primary else Color(0xFFC4C4C4),
                 shape = RoundedCornerShape(4.dp)
             )
             .clickable(onClick = onClick),
@@ -42,8 +43,9 @@ fun GenderSelectionButton(
             text = text,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = if (isSelected) Color.White else AppColors.TextPrimary,
-            fontFamily = Pretendard
+            color = if (isSelected) Color.White else Color(0xFFC4C4C4),
+            fontFamily = Pretendard,
+            textAlign = TextAlign.Center
         )
     }
 }

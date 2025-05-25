@@ -1,4 +1,5 @@
 package com.luckydut97.tennispark.feature_auth.signup.ui.components
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,7 +32,7 @@ fun JoinPathButton(
             .background(if (isSelected) AppColors.Primary else Color.White)
             .border(
                 width = 1.dp,
-                color = if (isSelected) AppColors.Primary else AppColors.Divider,
+                color = if (isSelected) AppColors.Primary else Color(0xFFC4C4C4),
                 shape = RoundedCornerShape(4.dp)
             )
             .clickable(onClick = onClick),
@@ -40,8 +41,8 @@ fun JoinPathButton(
         Text(
             text = text,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = if (isSelected) Color.White else AppColors.TextPrimary,
+            fontWeight = FontWeight.SemiBold,
+            color = if (isSelected) Color.White else Color(0xFFC4C4C4),
             fontFamily = Pretendard
         )
     }

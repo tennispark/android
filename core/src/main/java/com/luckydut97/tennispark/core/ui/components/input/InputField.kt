@@ -71,7 +71,7 @@ fun InputField(
             enabled = enabled,
             textStyle = TextStyle(
                 fontSize = 16.sp,
-                color = AppColors.TextPrimary,
+                color = if (enabled) AppColors.TextPrimary else AppColors.TextSecondary,
                 fontFamily = Pretendard
             ),
             keyboardOptions = KeyboardOptions(
@@ -86,7 +86,10 @@ fun InputField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(47.dp)
-                        .background(Color.White, RoundedCornerShape(4.dp))
+                        .background(
+                            color = if (enabled) Color.White else AppColors.InputBackground,
+                            shape = RoundedCornerShape(4.dp)
+                        )
                         .border(1.dp, AppColors.Divider, RoundedCornerShape(4.dp))
                         .padding(horizontal = 12.dp),
                     contentAlignment = Alignment.CenterStart
@@ -95,7 +98,7 @@ fun InputField(
                         Text(
                             text = placeholder,
                             fontSize = 16.sp,
-                            color = AppColors.TextHint,
+                            color = if (enabled) AppColors.TextHint else AppColors.TextSecondary,
                             fontFamily = Pretendard
                         )
                     }

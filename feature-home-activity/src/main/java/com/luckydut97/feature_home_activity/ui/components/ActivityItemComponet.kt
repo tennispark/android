@@ -124,7 +124,7 @@ fun ActivityItemComponent(
                     )
                 }
 
-                // 게임코드
+                // 게임코트
                 Text(
                     text = activity.gameCode,
                     fontSize = 15.sp,
@@ -189,7 +189,7 @@ fun ActivityItemComponent(
                     modifier = Modifier
                         .width(59.dp)
                         .height(29.dp)
-                        .clip(RoundedCornerShape(4.dp))
+                        .clip(RoundedCornerShape(16.dp))
                         .background(participantBoxColor),
                     contentAlignment = Alignment.Center
                 ) {

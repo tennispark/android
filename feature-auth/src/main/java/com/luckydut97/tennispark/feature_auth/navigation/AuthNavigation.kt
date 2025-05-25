@@ -5,64 +5,74 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.luckydut97.tennispark.feature_auth.signup.ui.SignupScreen
-import com.luckydut97.tennispark.feature_auth.sms.ui.PhoneVerificationScreen
 import com.luckydut97.tennispark.feature_auth.splash.ui.SplashScreen
+import com.luckydut97.tennispark.feature_auth.sms.ui.PhoneVerificationScreen
+import com.luckydut97.tennispark.feature_auth.signup.ui.SignupScreen
+import com.luckydut97.tennispark.feature_auth.membership.ui.MembershipRegistrationScreen
 
-// 인증 관련 화면 경로 정의
-sealed class AuthRoute(val route: String) {
-    object Splash : AuthRoute("splash")
-    object PhoneVerification : AuthRoute("phone_verification")
-    object Signup : AuthRoute("signup")
+// 인증 관련 라우트 정의
+object AuthRoute {
+    const val SPLASH = "splash"
+    const val PHONE_VERIFICATION = "phone_verification"
+    const val SIGNUP = "signup"
+    const val MEMBERSHIP_REGISTRATION = "membership_registration"
 }
 
-/**
- * 인증 관련 화면 간의 네비게이션을 처리하는 컴포넌트
- */
 @Composable
 fun AuthNavigation(
     navController: NavHostController = rememberNavController(),
-    onNavigateToMain: () -> Unit,
-    startDestination: String = AuthRoute.Splash.route
+    onNavigateToMain: () -> Unit
 ) {
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = AuthRoute.SPLASH
     ) {
-        composable(AuthRoute.Splash.route) {
+        // 스플래시 화면
+        composable(AuthRoute.SPLASH) {
             SplashScreen(
                 onNavigateToLogin = {
-                    // 스플래시 화면에서 바로 본인인증 화면으로 이동
-                    navController.navigate(AuthRoute.PhoneVerification.route) {
-                        popUpTo(AuthRoute.Splash.route) { inclusive = true }
+                    navController.navigate(AuthRoute.PHONE_VERIFICATION) {
+                        popUpTo(AuthRoute.SPLASH) { inclusive = true }
                     }
                 }
             )
         }
 
-        composable(AuthRoute.PhoneVerification.route) {
+        // 휴대폰 본인인증 화면
+        composable(AuthRoute.PHONE_VERIFICATION) {
             PhoneVerificationScreen(
                 onBackClick = {
-                    // 뒤로가기 처리 (원래는 스플래시로 돌아가지만, 현재 구현에서는 백 스택 단순화를 위해 닫음)
-                    navController.popBackStack()
+                    // 뒤로 가기 시 앱 종료 또는 다른 처리
                 },
                 onNavigateToSignup = {
-                    // 본인인증 완료 후 회원가입 화면으로 이동
-                    navController.navigate(AuthRoute.Signup.route) {
-                        popUpTo(AuthRoute.PhoneVerification.route) { inclusive = true }
-                    }
+                    navController.navigate(AuthRoute.SIGNUP)
                 }
             )
         }
 
-        composable(AuthRoute.Signup.route) {
+        // 회원가입 화면
+        composable(AuthRoute.SIGNUP) {
             SignupScreen(
                 onBackClick = {
-                    // 뒤로가기 처리
                     navController.popBackStack()
                 },
                 onSignupComplete = {
-                    // 회원가입 완료 후 메인 화면으로 이동
+                    // 회원가입 완료 시 멤버십 등록 화면으로 이동
+                    navController.navigate(AuthRoute.MEMBERSHIP_REGISTRATION) {
+                        popUpTo(AuthRoute.SIGNUP) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // 멤버십 등록 화면
+        composable(AuthRoute.MEMBERSHIP_REGISTRATION) {
+            MembershipRegistrationScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onMembershipComplete = {
+                    // 멤버십 등록 완료 시 메인 화면으로 이동
                     onNavigateToMain()
                 }
             )

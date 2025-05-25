@@ -226,6 +226,7 @@ fun SignupScreen(
                     onValueChange = { viewModel.updateReferrer(it) },
                     label = "추천인",
                     placeholder = "ex) 추천인 이름 + 연락처 끝 4자리",
+                    enabled = joinPath == 2, // 친구 추천(2)을 선택했을 때만 활성화
                     width = 400
                 )
 

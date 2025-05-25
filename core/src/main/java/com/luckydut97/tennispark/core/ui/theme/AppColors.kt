@@ -14,6 +14,8 @@ object AppColors {
     val TextSecondary = Color(0xFF666666)
     val TextHint = Color(0xFFAAAAAA)
     val Required = Color(0xFFFF0000)
+    val UnselectedBorder = Color(0xFFC4C4C4)
+    val UnselectedText = Color(0xFFC4C4C4)
 
     // 배경 및 기타
     val White = Color(0xFFFFFFFF)
