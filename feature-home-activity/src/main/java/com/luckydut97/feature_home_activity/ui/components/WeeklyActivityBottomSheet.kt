@@ -3,7 +3,6 @@ package com.luckydut97.feature_home_activity.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,10 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.luckydut97.feature_home_activity.domain.model.WeeklyActivity
 import com.luckydut97.feature_home_activity.viewmodel.WeeklyActivityViewModel
-import androidx.compose.material3.Icon
-import androidx.compose.ui.res.painterResource
 import com.luckydut97.feature_home_activity.R
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
@@ -49,6 +45,9 @@ fun WeeklyActivityBottomSheet(
     val activities by viewModel.activities.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val showDetailDialog by viewModel.showDetailDialog.collectAsState()
+    val selectedActivity by viewModel.selectedActivity.collectAsState()
+    val showCompleteDialog by viewModel.showCompleteDialog.collectAsState()
 
     if (isVisible) {
         ModalBottomSheet(
@@ -174,7 +173,8 @@ fun WeeklyActivityBottomSheet(
                                     ActivityItemComponent(
                                         activity = activity,
                                         onActivityClick = { selectedActivity ->
-                                            viewModel.applyForActivity(selectedActivity.id)
+                                            // 변경: 바로 신청하지 않고 상세 다이얼로그 표시
+                                            viewModel.selectActivityAndShowDetail(selectedActivity)
                                         }
                                     )
                                 }
@@ -194,5 +194,29 @@ fun WeeklyActivityBottomSheet(
                 Spacer(modifier = Modifier.height(36.dp))
             }
         }
+    }
+
+    // 상세 BottomSheet 표시
+    if (showDetailDialog && selectedActivity != null) {
+        ActivityDetailBottomSheet(
+            activity = selectedActivity!!,
+            isVisible = showDetailDialog,
+            onConfirm = { activityId ->
+                viewModel.applyForActivity(activityId)
+            },
+            onDismiss = {
+                viewModel.hideDetailDialog()
+            }
+        )
+    }
+
+    // 완료 BottomSheet 표시
+    if (showCompleteDialog) {
+        ActivityCompleteBottomSheet(
+            isVisible = showCompleteDialog,
+            onConfirm = {
+                viewModel.hideCompleteDialog()
+            }
+        )
     }
 }

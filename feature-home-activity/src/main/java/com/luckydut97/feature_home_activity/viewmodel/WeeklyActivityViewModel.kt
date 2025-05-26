@@ -1,6 +1,3 @@
-/*
-상태 관리
- */
 package com.luckydut97.feature_home_activity.viewmodel
 
 import androidx.lifecycle.ViewModel
@@ -35,6 +32,18 @@ class WeeklyActivityViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    // 선택된 활동 상태
+    private val _selectedActivity = MutableStateFlow<WeeklyActivity?>(null)
+    val selectedActivity: StateFlow<WeeklyActivity?> = _selectedActivity.asStateFlow()
+
+    // 상세 다이얼로그 표시 상태
+    private val _showDetailDialog = MutableStateFlow(false)
+    val showDetailDialog: StateFlow<Boolean> = _showDetailDialog.asStateFlow()
+
+    // 완료 다이얼로그 표시 상태
+    private val _showCompleteDialog = MutableStateFlow(false)
+    val showCompleteDialog: StateFlow<Boolean> = _showCompleteDialog.asStateFlow()
+
     init {
         loadWeeklyActivities()
     }
@@ -52,6 +61,39 @@ class WeeklyActivityViewModel(
      */
     fun hideWeeklyApplicationSheet() {
         _showBottomSheet.value = false
+    }
+
+    /**
+     * 활동 선택 및 상세 다이얼로그 표시
+     */
+    fun selectActivityAndShowDetail(activity: WeeklyActivity) {
+        _selectedActivity.value = activity
+        _showDetailDialog.value = true
+    }
+
+    /**
+     * 상세 다이얼로그 숨김
+     */
+    fun hideDetailDialog() {
+        _showDetailDialog.value = false
+        _selectedActivity.value = null
+    }
+
+    /**
+     * 완료 다이얼로그 표시
+     */
+    fun showCompleteDialog() {
+        _showCompleteDialog.value = true
+    }
+
+    /**
+     * 완료 다이얼로그 숨김
+     */
+    fun hideCompleteDialog() {
+        _showCompleteDialog.value = false
+        // 모든 다이얼로그 닫기
+        hideDetailDialog()
+        hideWeeklyApplicationSheet()
     }
 
     /**
@@ -75,17 +117,19 @@ class WeeklyActivityViewModel(
     }
 
     /**
-     * 활동 신청
+     * 활동 신청 (API 호출 준비)
      */
     fun applyForActivity(activityId: String) {
         viewModelScope.launch {
             try {
+                // TODO: 서버 API 준비되면 실제 구현
                 val result = repository.applyForActivity(activityId)
+
                 if (result.isSuccess) {
-                    // 신청 성공 시 목록 새로고침
-                    loadWeeklyActivities()
-                    // Bottom Sheet 닫기
-                    hideWeeklyApplicationSheet()
+                    // 신청 성공 시
+                    hideDetailDialog() // 상세 다이얼로그 닫기
+                    showCompleteDialog() // 완료 다이얼로그 표시
+                    loadWeeklyActivities() // 목록 새로고침
                 } else {
                     _error.value = "신청에 실패했습니다."
                 }
