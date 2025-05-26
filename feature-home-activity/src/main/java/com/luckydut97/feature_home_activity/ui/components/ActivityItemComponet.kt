@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.luckydut97.feature_home_activity.R
 import com.luckydut97.feature_home_activity.domain.model.ActivityStatus
 import com.luckydut97.feature_home_activity.domain.model.WeeklyActivity
 // import com.luckydut97.tennispark.core.R
@@ -65,7 +66,7 @@ fun ActivityItemComponent(
     Box(
         modifier = modifier
             .width(367.dp)
-            .height(96.5.dp)
+            .height(101.5.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .border(
@@ -81,14 +82,14 @@ fun ActivityItemComponent(
         Row(
             modifier = Modifier
                 .width(331.dp)
-                .height(60.5.dp),
+                .height(65.5.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // 객체1: 활동 정보 (272×60.5dp)
+            // 객체1: 활동 정보
             Column(
                 modifier = Modifier
                     .width(272.dp)
-                    .height(60.5.dp),
+                    .height(65.5.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 // 날짜/시간 정보
@@ -137,11 +138,12 @@ fun ActivityItemComponent(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 위치 아이콘 (임시로 Text 사용, 실제 아이콘으로 교체 필요)
-                    Text(
-                        text = "📍",
-                        fontSize = 10.sp,
-                        modifier = Modifier.size(10.dp)
+                    // 위치 아이콘
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_location),
+                        contentDescription = "위치",
+                        modifier = Modifier.size(10.dp),
+                        tint = Color(0xFF8B9096)
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
@@ -151,7 +153,7 @@ fun ActivityItemComponent(
                         fontSize = 12.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.SemiBold,
-                        color = textColor
+                        color = Color(0xFF8B9096)
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -171,12 +173,12 @@ fun ActivityItemComponent(
                         fontSize = 12.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.Normal,
-                        color = textColor
+                        color = Color(0xFF8B9096)
                     )
                 }
             }
 
-            // 객체2: 인원/상태 정보 (59×51dp)
+            // 객체2: 인원/상태 정보
             Column(
                 modifier = Modifier
                     .width(59.dp)
@@ -184,7 +186,7 @@ fun ActivityItemComponent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // 인원 표시 박스 (59×29dp)
+                // 인원 표시 박스
                 Box(
                     modifier = Modifier
                         .width(59.dp)

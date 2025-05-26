@@ -67,66 +67,74 @@ fun WeeklyApplicationCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         onClick = onClick
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
+            // 첫 번째 Row: 제목 + 화살표
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "이번주 활동 신청",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = Pretendard,
-                        color = Color.Black
-                    )
-
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_arrow_right),
-                        contentDescription = "Arrow Right",
-                        modifier = Modifier.size(width = 6.dp, height = 12.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
                 Text(
-                    text = buildAnnotatedString {
-                        append("매주 ")
-                        withStyle(style = SpanStyle(color = AppColors.Primary, fontWeight = FontWeight.Bold)) {
-                            append("금요일 08:30분")
-                        }
-                        append("\n신청 가능합니다.")
-                    },
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    text = "이번주 활동 신청",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
                     fontFamily = Pretendard,
-                    lineHeight = 26.sp
+                    color = Color.Black
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = "게스트는 월요일부터 가능합니다.",
-                    fontSize = 14.sp,
-                    fontFamily = Pretendard,
-                    color = Color(0xFF8B9096)
+                Image(
+                    painter = painterResource(id = R.drawable.ic_arrow_right),
+                    contentDescription = "Arrow Right",
+                    modifier = Modifier.size(width = 6.dp, height = 12.dp)
                 )
             }
 
-            Image(
-                painter = painterResource(id = R.drawable.ic_main_logo),
-                contentDescription = "Tennis Logo",
-                modifier = Modifier.size(83.dp)
-            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 두 번째 Row: 텍스트 Column + 이미지
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // 텍스트들을 담는 Column
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append("매주 ")
+                            withStyle(style = SpanStyle(color = AppColors.Primary, fontWeight = FontWeight.Bold)) {
+                                append("금요일 08:30분")
+                            }
+                            append("\n신청 가능합니다.")
+                        },
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = Pretendard,
+                        lineHeight = 26.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "게스트는 월요일부터 가능합니다.",
+                        fontSize = 14.sp,
+                        fontFamily = Pretendard,
+                        color = Color(0xFF8B9096)
+                    )
+                }
+
+                // 로고 이미지
+                Image(
+                    painter = painterResource(id = R.drawable.ic_main_logo),
+                    contentDescription = "Tennis Logo",
+                    modifier = Modifier.size(83.dp)
+                )
+            }
         }
     }
 }

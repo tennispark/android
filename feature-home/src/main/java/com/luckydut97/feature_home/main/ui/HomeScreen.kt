@@ -18,10 +18,15 @@ import com.luckydut97.feature_home.main.ui.components.MainActionButtons
 import com.luckydut97.feature_home.main.ui.components.WeeklyApplicationSection
 import com.luckydut97.feature_home.main.viewmodel.HomeViewModel
 
-// feature-home-activity 모듈 import
+// feature-home-activity 모듈 import (기존)
 import com.luckydut97.feature_home_activity.viewmodel.WeeklyActivityViewModel
 import com.luckydut97.feature_home_activity.ui.components.WeeklyActivityBottomSheet
 import com.luckydut97.feature_home_activity.data.repository.MockWeeklyActivityRepository
+
+// feature-home-activity 모듈 import (신규 - 활동인증)
+import com.luckydut97.feature_home_activity.viewmodel.AppliedActivityViewModel
+import com.luckydut97.feature_home_activity.ui.components.AppliedActivityBottomSheet
+import com.luckydut97.feature_home_activity.data.repository.MockAppliedActivityRepository
 
 @Composable
 fun HomeScreen(
@@ -31,11 +36,17 @@ fun HomeScreen(
     val totalEventPages by viewModel.totalEventPages.collectAsState()
     val scrollState = rememberScrollState()
 
-    // WeeklyActivity ViewModel 생성
-    val activityViewModel: WeeklyActivityViewModel = viewModel {
+    // WeeklyActivity ViewModel 생성 (기존)
+    val weeklyActivityViewModel: WeeklyActivityViewModel = viewModel {
         WeeklyActivityViewModel(MockWeeklyActivityRepository())
     }
-    val showBottomSheet by activityViewModel.showBottomSheet.collectAsState()
+    val showWeeklyActivityBottomSheet by weeklyActivityViewModel.showBottomSheet.collectAsState()
+
+    // AppliedActivity ViewModel 생성 (신규)
+    val appliedActivityViewModel: AppliedActivityViewModel = viewModel {
+        AppliedActivityViewModel(MockAppliedActivityRepository())
+    }
+    val showAppliedActivityBottomSheet by appliedActivityViewModel.showBottomSheet.collectAsState()
 
     Column(
         modifier = Modifier
@@ -52,17 +63,20 @@ fun HomeScreen(
         // 광고 배너
         AdBanner()
 
-        // 주간 신청서 섹션 - 바텀시트 연동
+        // 주간 신청서 섹션 - 바텀시트 연동 (기존)
         WeeklyApplicationSection(
             onApplicationClick = {
-                activityViewModel.showWeeklyApplicationSheet()
+                weeklyActivityViewModel.showWeeklyApplicationSheet()
             }
         )
 
-        // 메인 액션 버튼들
+        // 메인 액션 버튼들 - 활동인증 버튼 연동 (업데이트)
         MainActionButtons(
             onAttendanceClick = { /* 출석체크 클릭 이벤트 */ },
-            onActivityVerificationClick = { /* 활동인증 클릭 이벤트 */ }
+            onActivityVerificationClick = {
+                // 활동인증 바텀시트 표시
+                appliedActivityViewModel.showAppliedActivitiesSheet()
+            }
         )
 
         // 이벤트 섹션
@@ -74,12 +88,21 @@ fun HomeScreen(
         )
     }
 
-    // 주간 활동 신청 바텀시트
+    // 주간 활동 신청 바텀시트 (기존)
     WeeklyActivityBottomSheet(
-        viewModel = activityViewModel,
-        isVisible = showBottomSheet,
+        viewModel = weeklyActivityViewModel,
+        isVisible = showWeeklyActivityBottomSheet,
         onDismiss = {
-            activityViewModel.hideWeeklyApplicationSheet()
+            weeklyActivityViewModel.hideWeeklyApplicationSheet()
+        }
+    )
+
+    // 활동인증 바텀시트 (신규)
+    AppliedActivityBottomSheet(
+        viewModel = appliedActivityViewModel,
+        isVisible = showAppliedActivityBottomSheet,
+        onDismiss = {
+            appliedActivityViewModel.hideAppliedActivitiesSheet()
         }
     )
 }
