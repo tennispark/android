@@ -32,6 +32,7 @@ import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.tennispark.feature_auth.signup.viewmodel.SignupViewModel
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun SignupScreen(
@@ -55,6 +56,7 @@ fun SignupScreen(
     }
 
     Scaffold(
+        containerColor = Color.White,
         topBar = {
             TopBar(
                 title = "회원가입",
@@ -78,8 +80,8 @@ fun SignupScreen(
                 // 개인정보 입력
                 Text(
                     text = "개인정보 입력",
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
                     fontFamily = Pretendard
                 )
 
@@ -294,7 +296,7 @@ fun SignupScreen(
                     text = "* 테니스파크의 다양하고 유용한 정보를 확인하실 수 있습니다.",
                     fontSize = 12.sp,
                     fontFamily = Pretendard,
-                    color = AppColors.TextSecondary
+                    color = AppColors.TextTertiary
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))

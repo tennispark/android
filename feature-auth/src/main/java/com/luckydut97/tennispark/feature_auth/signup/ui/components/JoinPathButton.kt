@@ -28,12 +28,12 @@ fun JoinPathButton(
     Box(
         modifier = modifier
             .height(47.dp)
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(if (isSelected) AppColors.Primary else Color.White)
             .border(
                 width = 1.dp,
                 color = if (isSelected) AppColors.Primary else Color(0xFFC4C4C4),
-                shape = RoundedCornerShape(4.dp)
+                shape = RoundedCornerShape(8.dp)
             )
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center

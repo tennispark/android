@@ -28,9 +28,15 @@ import com.luckydut97.feature_home_activity.viewmodel.AppliedActivityViewModel
 import com.luckydut97.feature_home_activity.ui.components.AppliedActivityBottomSheet
 import com.luckydut97.feature_home_activity.data.repository.MockAppliedActivityRepository
 
+// feature-home-activity 모듈 import (신규 - 아카데미 신청)
+import com.luckydut97.feature_home_activity.viewmodel.AcademyApplicationViewModel
+import com.luckydut97.feature_home_activity.ui.components.AcademyApplicationBottomSheet
+import com.luckydut97.feature_home_activity.data.repository.MockAcademyRepository
+
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(),
+    onMembershipClick: () -> Unit = {}
 ) {
     val currentEventPage by viewModel.currentEventPage.collectAsState()
     val totalEventPages by viewModel.totalEventPages.collectAsState()
@@ -47,6 +53,12 @@ fun HomeScreen(
         AppliedActivityViewModel(MockAppliedActivityRepository())
     }
     val showAppliedActivityBottomSheet by appliedActivityViewModel.showBottomSheet.collectAsState()
+
+    // Academy ViewModel 생성 (신규 - 아카데미 신청)
+    val academyApplicationViewModel: AcademyApplicationViewModel = viewModel {
+        AcademyApplicationViewModel(MockAcademyRepository())
+    }
+    val showAcademyApplicationBottomSheet by academyApplicationViewModel.showBottomSheet.collectAsState()
 
     Column(
         modifier = Modifier
@@ -81,10 +93,12 @@ fun HomeScreen(
 
         // 이벤트 섹션
         EventSection(
-            currentPage = currentEventPage,
             totalPages = totalEventPages,
-            onMembershipClick = { /* 멤버십 등록 클릭 이벤트 */ },
-            onAcademyClick = { /* 아카데미 등록 클릭 이벤트 */ }
+            onMembershipClick = onMembershipClick,
+            onAcademyClick = {
+                // TODO: 아카데미 신청 바텀시트 표시
+                academyApplicationViewModel.showAcademyApplicationSheet()
+            }
         )
     }
 
@@ -103,6 +117,15 @@ fun HomeScreen(
         isVisible = showAppliedActivityBottomSheet,
         onDismiss = {
             appliedActivityViewModel.hideAppliedActivitiesSheet()
+        }
+    )
+
+    // 아카데미 신청 바텀시트 (신규 - TODO: ViewModel 구현 후 활성화)
+    AcademyApplicationBottomSheet(
+        viewModel = academyApplicationViewModel,
+        isVisible = showAcademyApplicationBottomSheet,
+        onDismiss = {
+            academyApplicationViewModel.hideAcademyApplicationSheet()
         }
     )
 }

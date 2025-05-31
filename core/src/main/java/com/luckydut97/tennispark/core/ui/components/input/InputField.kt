@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.theme.AppColors
@@ -87,7 +88,7 @@ fun InputField(
                         .fillMaxWidth()
                         .height(47.dp)
                         .background(
-                            color = if (enabled) Color.White else AppColors.InputBackground,
+                            color = if (enabled) Color.White else AppColors.InputDisabledBackground,
                             shape = RoundedCornerShape(4.dp)
                         )
                         .border(1.dp, AppColors.Divider, RoundedCornerShape(4.dp))
@@ -98,7 +99,7 @@ fun InputField(
                         Text(
                             text = placeholder,
                             fontSize = 16.sp,
-                            color = if (enabled) AppColors.TextHint else AppColors.TextSecondary,
+                            color = if (enabled) AppColors.TextHint else AppColors.TextDisabledPlaceholder,
                             fontFamily = Pretendard
                         )
                     }
@@ -143,6 +144,67 @@ fun VerificationCodeField(
                 contentAlignment = Alignment.CenterStart
             ) {
                 innerTextField()
+            }
+        }
+    )
+}
+
+@Composable
+fun VerificationCodeFieldWithTimer(
+    value: String,
+    onValueChange: (String) -> Unit,
+    remainingTime: Int,
+    isTimerActive: Boolean,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    width: Int = 207,
+    scaleFactor: Float = 1f
+) {
+    BasicTextField(
+        value = value,
+        onValueChange = { if (it.length <= 6) onValueChange(it) },
+        enabled = enabled,
+        textStyle = TextStyle(
+            fontSize = (16 * scaleFactor).sp,
+            color = AppColors.TextPrimary,
+            fontFamily = Pretendard
+        ),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        modifier = Modifier.width(width.dp),
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height((47 * scaleFactor).dp)
+                    .background(Color.White, RoundedCornerShape((4 * scaleFactor).dp))
+                    .border(1.dp, AppColors.Divider, RoundedCornerShape((4 * scaleFactor).dp))
+                    .padding(horizontal = (12 * scaleFactor).dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        innerTextField()
+                    }
+                    
+                    if (isTimerActive) {
+                        Spacer(modifier = Modifier.width((17 * scaleFactor).dp))
+                        val minutes = remainingTime / 60
+                        val seconds = remainingTime % 60
+                        Text(
+                            text = String.format("%02d:%02d", minutes, seconds),
+                            color = Color(0xFF145F44),
+                            fontSize = (16 * scaleFactor).sp,
+                            fontWeight = FontWeight.Medium,
+                            textDecoration = TextDecoration.Underline
+                        )
+                    }
+                }
             }
         }
     )

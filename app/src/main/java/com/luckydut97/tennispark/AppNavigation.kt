@@ -17,6 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.luckydut97.feature_home.main.ui.HomeScreen
 import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
+import com.luckydut97.tennispark.feature_auth.membership.ui.MembershipRegistrationScreen
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationItem
 
@@ -39,7 +40,7 @@ fun AppNavigation(
     ) {
         // 🔥 테스트용 화면 추가
         composable("dev_test") {
-            MainScreenWithBottomNav()
+            MainScreenWithBottomNav(navController)
         }
 
         // 인증 관련 화면들 (로그인, 회원가입 등)
@@ -56,7 +57,22 @@ fun AppNavigation(
 
         // 메인 화면 (바텀 네비게이션이 있는 화면들)
         composable("main") {
-            MainScreenWithBottomNav()
+            MainScreenWithBottomNav(navController)
+        }
+
+        // 멤버십 등록 화면
+        composable("membership") {
+            MembershipRegistrationScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onMembershipComplete = {
+                    // 멤버십 등록 완료 시 메인 화면으로 돌아가기
+                    navController.navigate("main") {
+                        popUpTo("membership") { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
@@ -65,7 +81,9 @@ fun AppNavigation(
  * 바텀 네비게이션이 포함된 메인 화면
  */
 @Composable
-fun MainScreenWithBottomNav() {
+fun MainScreenWithBottomNav(
+    mainNavController: NavHostController? = null
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: BottomNavigationItem.HOME.route
@@ -95,7 +113,11 @@ fun MainScreenWithBottomNav() {
         ) {
             // 홈 화면
             composable(BottomNavigationItem.HOME.route) {
-                HomeScreen()
+                HomeScreen(
+                    onMembershipClick = {
+                        mainNavController?.navigate("membership")
+                    }
+                )
             }
 
             // 상품 구매 화면

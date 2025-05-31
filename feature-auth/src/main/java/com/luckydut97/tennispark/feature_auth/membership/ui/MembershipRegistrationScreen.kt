@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.tennispark.core.ui.components.button.ActionButton
 import com.luckydut97.tennispark.core.ui.components.input.InputField
@@ -59,6 +60,7 @@ fun MembershipRegistrationScreen(
     }
 
     Scaffold(
+        containerColor = Color.White,
         topBar = {
             TopBar(
                 title = "멤버십 등록",
@@ -106,7 +108,7 @@ fun MembershipRegistrationScreen(
                     modifier = Modifier.weight(1f)
                 )
                 JoinPathButton(
-                    text = "기존 정회원",
+                    text = "기존 회원",
                     isSelected = membershipType == 1,
                     onClick = { viewModel.updateMembershipType(1) },
                     modifier = Modifier.weight(1f)
@@ -289,34 +291,34 @@ fun MembershipRegistrationScreen(
                 fontFamily = Pretendard
             )
             Text(
-                text = "추천인('멤버십' 회원만 접수) : 쿠폰 5장 추가",
+                text = "추천인(멤버십 회원만 접수) : 쿠폰 5장 추가",
                 fontSize = 11.sp,
-                color = AppColors.TextSecondary,
+                color = Color(0xFF000000),
                 fontFamily = Pretendard
             )
             Text(
                 text = "추천으로 멤버십 가입 시 : 쿠폰 1장 추가",
                 fontSize = 11.sp,
-                color = AppColors.TextSecondary,
+                color = Color(0xFF000000),
                 fontFamily = Pretendard
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             // 멤버십 활동규정 동의
-            Text(
-                text = "멤버십 활동규정에 동의",
-                fontSize = 14.sp,
-                fontFamily = Pretendard,
-                color = AppColors.TextPrimary
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                Text(
+                    text = "멤버십 활동규정에 동의",
+                    fontSize = 14.sp,
+                    fontFamily = Pretendard,
+                    color = AppColors.TextPrimary
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
                 CheckBox(
                     text = "예",
                     isChecked = agreeToRules,
@@ -394,7 +396,7 @@ private fun PriceInfoSection() {
             text = "게임 / 게임 도전코트 & 랠리코트",
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF145F44),
+            color = Color.Black,
             fontFamily = Pretendard
         )
 
@@ -417,13 +419,13 @@ private fun PriceInfoSection() {
                     Text(
                         text = "7주",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "175,000원 (17.5장)",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                 }
@@ -435,13 +437,13 @@ private fun PriceInfoSection() {
                     Text(
                         text = "9주",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "245,000원 (24.5장)",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                 }
@@ -453,13 +455,13 @@ private fun PriceInfoSection() {
                     Text(
                         text = "13주",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "350,000원 (35장)",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                 }
@@ -473,7 +475,7 @@ private fun PriceInfoSection() {
             text = "게임스터디 코트 & 초보 코트",
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF145F44),
+            color = Color.Black,
             fontFamily = Pretendard
         )
 
@@ -496,13 +498,13 @@ private fun PriceInfoSection() {
                     Text(
                         text = "7주",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "195,000원 (19.5장)",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                 }
@@ -514,13 +516,13 @@ private fun PriceInfoSection() {
                     Text(
                         text = "9주",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "275,000원 (27.5장)",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                 }
@@ -532,13 +534,13 @@ private fun PriceInfoSection() {
                     Text(
                         text = "13주",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "390,000원 (39장)",
                         fontSize = 12.sp,
-                        color = AppColors.TextSecondary,
+                        color = Color.Black,
                         fontFamily = Pretendard
                     )
                 }

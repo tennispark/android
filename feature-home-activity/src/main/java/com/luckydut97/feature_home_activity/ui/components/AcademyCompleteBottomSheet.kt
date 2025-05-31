@@ -23,12 +23,12 @@ import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
 /**
- * 활동 완료 Bottom Sheet
+ * 아카데미 신청 완료 Bottom Sheet
  * 크기: fillMaxWidth × 253dp
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ActivityCompleteBottomSheet(
+fun AcademyCompleteBottomSheet(
     isVisible: Boolean,
     onConfirm: () -> Unit
 ) {
@@ -65,7 +65,7 @@ fun ActivityCompleteBottomSheet(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "활동 신청이 완료되었습니다.",
+                        text = "아카데미 신청이 완료되었습니다.",
                         fontSize = 16.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.Normal,
@@ -76,18 +76,7 @@ fun ActivityCompleteBottomSheet(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "신청자의 실력에 따라 신청한 코트가",
-                        fontSize = 16.sp,
-                        fontFamily = Pretendard,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Black,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = "변경 될 수 있습니다.",
+                        text = "입금계좌 정보를 안내드리겠습니다.",
                         fontSize = 16.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.Normal,

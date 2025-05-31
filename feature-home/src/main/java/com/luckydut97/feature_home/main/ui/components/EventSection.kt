@@ -14,11 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,14 +32,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.feature.home.R
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import kotlinx.coroutines.delay
 
 @Composable
 fun EventSection(
-    currentPage: Int,
     totalPages: Int,
     onMembershipClick: () -> Unit,
     onAcademyClick: () -> Unit
 ) {
+    val pagerState = rememberPagerState(pageCount = { totalPages })
+
+    LaunchedEffect(key1 = Unit) {
+        while (true) {
+            delay(5000)
+            if (pagerState.currentPage < totalPages - 1) {
+                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+            } else {
+                pagerState.animateScrollToPage(0)
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,25 +68,30 @@ fun EventSection(
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
-        // 이벤트 카드 (페이지 기반으로 표시)
-        when (currentPage) {
-            0 -> EventCard(
-                iconRes = R.drawable.ic_member,
-                title = "멤버십 등록하기",
-                subtitle = "5월 정기 멤버십 등록",
-                pageIndicator = "${currentPage + 1}/$totalPages",
-                onClick = onMembershipClick
-            )
-            1 -> EventCard(
-                iconRes = R.drawable.ic_tennis,
-                title = "아카데미 등록하기",
-                subtitle = "5월 아카데미 등록",
-                pageIndicator = "${currentPage + 1}/$totalPages",
-                onClick = onAcademyClick
-            )
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth()
+        ) { page ->
+            when (page) {
+                0 -> EventCard(
+                    iconRes = R.drawable.ic_member,
+                    title = "멤버십 등록하기",
+                    subtitle = "5월 정기 멤버십 등록",
+                    pageIndicator = "${page + 1}/$totalPages",
+                    onClick = onMembershipClick
+                )
+                1 -> EventCard(
+                    iconRes = R.drawable.ic_tennis,
+                    title = "아카데미 등록하기",
+                    subtitle = "5월 아카데미 등록",
+                    pageIndicator = "${page + 1}/$totalPages",
+                    onClick = onAcademyClick
+                )
+            }
         }
     }
 }
+
 @Composable
 fun EventCard(
     iconRes: Int,
@@ -86,6 +107,7 @@ fun EventCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         onClick = onClick
     ) {
+        Spacer(modifier = Modifier.height(8.dp))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -148,16 +170,17 @@ fun EventCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(17.dp)
                     .padding(top = 0.dp)
             ) {
                 // 페이지 인디케이터 - 정확한 크기로 지정
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .size(width = 35.dp, height = 22.dp)
+                        .size(width = 35.dp, height = 20.dp)
                         .background(
                             color = Color(0xFFBBBBBB),
-                            shape = RoundedCornerShape(50)
+                            shape = RoundedCornerShape(70)
                         ),
                     contentAlignment = Alignment.Center
                 ) {

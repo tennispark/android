@@ -27,8 +27,8 @@ fun HomeTopAppBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(44.dp)
-            .background(Color.White)
+            .height(60.dp) //44에서 임의로 바꿈.
+            .background(Color(0xFFF4F6F8))
             .padding(horizontal = 17.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
