@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.luckydut97.feature_home.main.ui.HomeScreen
+import com.luckydut97.feature_home_shop.ui.ShopScreen
 import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
 import com.luckydut97.tennispark.feature_auth.membership.ui.MembershipRegistrationScreen
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
@@ -130,23 +131,6 @@ fun MainScreenWithBottomNav(
                 ProfileScreen()
             }
         }
-    }
-}
-
-/**
- * 상품 구매 화면 (임시)
- */
-@Composable
-fun ShopScreen() {
-    androidx.compose.foundation.layout.Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = androidx.compose.ui.Alignment.Center
-    ) {
-        androidx.compose.material3.Text(
-            text = "상품 구매 화면",
-            fontSize = 20.sp,
-            fontFamily = com.luckydut97.tennispark.core.ui.theme.Pretendard
-        )
     }
 }
 

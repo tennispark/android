@@ -4,6 +4,7 @@
     <bytecodeTargetLevel target="21">
       <module name="TennisPark.app" target="21" />
       <module name="tennispark.feature-home-activity.test" target="11" />
+      <module name="tennispark.feature-home-shop.test" target="11" />
       <module name="tennispark.feature-home.test" target="11" />
     </bytecodeTargetLevel>
   </component>
