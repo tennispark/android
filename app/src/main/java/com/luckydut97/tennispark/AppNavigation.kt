@@ -17,10 +17,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.luckydut97.feature_home.main.ui.HomeScreen
 import com.luckydut97.feature_home_shop.ui.ShopScreen
+import com.luckydut97.feature_home_shop.ui.ShopDetailScreen
+import com.luckydut97.feature_myinfo.ui.MyInfoScreen
 import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
 import com.luckydut97.tennispark.feature_auth.membership.ui.MembershipRegistrationScreen
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationItem
+import com.luckydut97.tennispark.core.shop.data.model.ShopItem
 
 /**
  * 앱 전체의 메인 네비게이션을 처리하는 컴포넌트
@@ -31,9 +34,9 @@ fun AppNavigation(
     isLoggedIn: Boolean = false
 ) {
     // 🔥 메인 화면으로 바로 가기 (홈화면 + 바텀 네비게이션)
-    var startDestination by remember { mutableStateOf("main") }
+    //var startDestination by remember { mutableStateOf("main") }
     // 🔥 원래 코드: 테스트 완료 후 이걸 사용
-    //var startDestination by remember { mutableStateOf(if (isLoggedIn) "main" else "auth") }
+    var startDestination by remember { mutableStateOf(if (isLoggedIn) "main" else "auth") }
 
     NavHost(
         navController = navController,
@@ -59,6 +62,23 @@ fun AppNavigation(
         // 메인 화면 (바텀 네비게이션이 있는 화면들)
         composable("main") {
             MainScreenWithBottomNav(navController)
+        }
+
+        // 상품 상세 화면 (바텀 네비게이션 없음)
+        composable("shop_detail/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId")
+            val mockItem = ShopItem(
+                id = productId ?: "",
+                brandName = "Wilson",
+                productName = "오버그립",
+                price = 4500
+            )
+            ShopDetailScreen(
+                item = mockItem,
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         // 멤버십 등록 화면
@@ -123,30 +143,17 @@ fun MainScreenWithBottomNav(
 
             // 상품 구매 화면
             composable(BottomNavigationItem.SHOP.route) {
-                ShopScreen()
+                ShopScreen(
+                    onItemClick = { item ->
+                        mainNavController?.navigate("shop_detail/${item.id}")
+                    }
+                )
             }
 
             // 내 정보 화면
             composable(BottomNavigationItem.PROFILE.route) {
-                ProfileScreen()
+                MyInfoScreen()
             }
         }
-    }
-}
-
-/**
- * 내 정보 화면 (임시)
- */
-@Composable
-fun ProfileScreen() {
-    androidx.compose.foundation.layout.Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = androidx.compose.ui.Alignment.Center
-    ) {
-        androidx.compose.material3.Text(
-            text = "내 정보 화면",
-            fontSize = 20.sp,
-            fontFamily = com.luckydut97.tennispark.core.ui.theme.Pretendard
-        )
     }
 }

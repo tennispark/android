@@ -6,6 +6,7 @@
       <module name="tennispark.feature-home-activity.test" target="11" />
       <module name="tennispark.feature-home-shop.test" target="11" />
       <module name="tennispark.feature-home.test" target="11" />
+      <module name="tennispark.feature-myinfo.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

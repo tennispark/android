@@ -1,6 +1,7 @@
 package com.luckydut97.tennispark.core.ui.components.shop
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,12 +33,14 @@ import com.luckydut97.tennispark.core.ui.theme.Pretendard
 @Composable
 fun ShopItemComponent(
     item: ShopItem,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onItemClick: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(100.dp),
+            .height(100.dp)
+            .clickable { onItemClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 왼쪽 이미지 박스

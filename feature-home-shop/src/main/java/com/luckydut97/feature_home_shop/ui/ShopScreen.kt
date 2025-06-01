@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.feature_home_shop.viewmodel.ShopViewModel
 import com.luckydut97.tennispark.core.R
+import com.luckydut97.tennispark.core.shop.data.model.ShopItem
 import com.luckydut97.tennispark.core.shop.data.repository.MockShopRepository
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.components.shop.ShopAdBanner
@@ -43,6 +44,7 @@ import com.luckydut97.tennispark.core.ui.theme.Pretendard
 @Composable
 fun ShopScreen(
     onBackClick: () -> Unit = {},
+    onItemClick: (ShopItem) -> Unit = {},
     viewModel: ShopViewModel = viewModel { ShopViewModel(MockShopRepository()) } // Hilt 등 DI 적용 전 임시
 ) {
     val shopItems by viewModel.shopItems.collectAsState()
@@ -123,7 +125,10 @@ fun ShopScreen(
                 }
 
                 items(shopItems) { item ->
-                    ShopItemComponent(item = item)
+                    ShopItemComponent(
+                        item = item,
+                        onItemClick = { onItemClick(item) }
+                    )
                 }
 
                 // 마지막 아이템 아래에 추가 여백 (스크롤 영역 확보)
