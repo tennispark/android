@@ -5,9 +5,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.tennispark.feature_auth.splash.ui.SplashScreen
 import com.luckydut97.tennispark.feature_auth.verification.ui.PhoneVerificationScreen
 import com.luckydut97.tennispark.feature_auth.signup.ui.SignupScreen
+import com.luckydut97.tennispark.feature_auth.verification.viewmodel.PhoneVerificationViewModel
+import com.luckydut97.tennispark.feature_auth.signup.viewmodel.SignupViewModel
 
 // 인증 관련 라우트 정의
 object AuthRoute {
@@ -21,6 +24,11 @@ fun AuthNavigation(
     navController: NavHostController = rememberNavController(),
     onNavigateToMain: () -> Unit
 ) {
+    // ViewModel을 상위 생성하여 데이터 공유
+    val phoneVerificationViewModel: PhoneVerificationViewModel = viewModel()
+    val signupViewModel: SignupViewModel = viewModel()
+
+
     NavHost(
         navController = navController,
         startDestination = AuthRoute.SPLASH
@@ -36,13 +44,16 @@ fun AuthNavigation(
             )
         }
 
-        // 휴대폰 본인인증 화면
+        // 휴대폰 본증 화면
         composable(AuthRoute.PHONE_VERIFICATION) {
             PhoneVerificationScreen(
+                viewModel = phoneVerificationViewModel,
                 onBackClick = {
                     // 뒤로 가기 시 앱 종료 또는 다른 처리
                 },
                 onNavigateToSignup = {
+                    // 전화번호를 SignupViewModel에 전달
+                    signupViewModel.setPhoneNumber(phoneVerificationViewModel.phoneNumber.value)
                     navController.navigate(AuthRoute.SIGNUP)
                 }
             )
@@ -51,6 +62,7 @@ fun AuthNavigation(
         // 회원가입 화면
         composable(AuthRoute.SIGNUP) {
             SignupScreen(
+                viewModel = signupViewModel,
                 onBackClick = {
                     navController.popBackStack()
                 },

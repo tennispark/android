@@ -1,11 +1,24 @@
 package com.luckydut97.tennispark.feature_auth.signup.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import com.luckydut97.tennispark.core.data.network.MembershipRepository
+import com.luckydut97.tennispark.core.data.model.MemberRegistrationRequest
 
 class SignupViewModel : ViewModel() {
+
+    private val tag = "🔍 디버깅: SignupViewModel"
+    private val membershipRepository = MembershipRepository()
+
+    // 휴대폰 번호 (인증 화면에서 전달받을 예정)
+    private val _phoneNumber = MutableStateFlow("")
+    val phoneNumber = _phoneNumber.asStateFlow()
+
     // 회원가입 완료 여부
     private val _isSignupComplete = MutableStateFlow(false)
     val isSignupComplete: StateFlow<Boolean> = _isSignupComplete.asStateFlow()
@@ -46,6 +59,18 @@ class SignupViewModel : ViewModel() {
     private val _agreeToKakaoChannel = MutableStateFlow(false)
     val agreeToKakaoChannel = _agreeToKakaoChannel.asStateFlow()
 
+    // 로딩 상태
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
+    // 에러 메시지
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage = _errorMessage.asStateFlow()
+
+    fun setPhoneNumber(phoneNumber: String) {
+        _phoneNumber.value = phoneNumber
+    }
+
     fun updateName(name: String) {
         _name.value = name
     }
@@ -83,15 +108,78 @@ class SignupViewModel : ViewModel() {
     }
 
     fun signup() {
-        // 서버 회원가입 로직은 나중에 구현
-        // 임시 구현: 이름, 성별, 경력, 생년이 모두 입력되었고 약관에 동의했으면 회원가입 완료
+        Log.d(tag, "=== 회원가입 시작 ===")
+        Log.d(tag, "📱 phoneNumber: ${_phoneNumber.value}")
+        Log.d(tag, "👤 name: ${_name.value}")
+        Log.d(tag, "🚻 gender: ${if (_isMale.value) "MAN" else "WOMAN"}")
+        Log.d(tag, "🎾 experience: ${_experience.value}")
+        Log.d(tag, "📅 birthYear: ${_birthYear.value}")
+        Log.d(tag, "📍 joinPath: ${_joinPath.value}")
+        Log.d(tag, "🤝 referrer: ${_referrer.value}")
+        Log.d(tag, "📸 instagramId: ${_instagramId.value}")
+
         val isValid = _name.value.isNotEmpty() &&
                 _experience.value.isNotEmpty() &&
                 _birthYear.value.isNotEmpty() &&
+                _instagramId.value.isNotEmpty() &&
+                _joinPath.value != -1 &&
                 _agreeToTerms.value
 
         if (isValid) {
-            _isSignupComplete.value = true
+            viewModelScope.launch {
+                try {
+                    _isLoading.value = true
+                    _errorMessage.value = null
+
+                    val registrationSource = when (_joinPath.value) {
+                        0 -> "INSTAGRAM"
+                        1 -> "NAVER_SEARCH"
+                        2 -> "FRIEND_RECOMMENDATION"
+                        else -> "INSTAGRAM"
+                    }
+
+                    val request = MemberRegistrationRequest(
+                        phoneNumber = _phoneNumber.value,
+                        name = _name.value,
+                        gender = if (_isMale.value) "MAN" else "WOMAN",
+                        tennisCareer = _experience.value,
+                        year = _birthYear.value.toIntOrNull() ?: 2000,
+                        registrationSource = registrationSource,
+                        recommender = if (_joinPath.value == 2 && _referrer.value.isNotEmpty()) _referrer.value else null,
+                        instagramId = _instagramId.value
+                    )
+
+                    Log.d(tag, "🚀 회원가입 API 호출 시작...")
+                    val response = membershipRepository.registerMember(request)
+
+                    if (response.success) {
+                        Log.d(tag, "✅ 회원가입 성공!")
+                        val registrationResponse = response.response
+
+                        if (registrationResponse != null) {
+                            Log.d(tag, "🔑 AccessToken 수신: ${registrationResponse.accessToken}")
+                            Log.d(tag, "🔄 RefreshToken 수신: ${registrationResponse.refreshToken}")
+
+                            // TODO: 토큰 저장 로직 추가
+                            // TokenManager.saveTokens(accessToken, refreshToken)
+                        }
+
+                        _isSignupComplete.value = true
+                    } else {
+                        Log.e(tag, "❌ 회원가입 실패: ${response.error}")
+                        _errorMessage.value = response.error ?: "회원가입에 실패했습니다."
+                    }
+                } catch (e: Exception) {
+                    Log.e(tag, "🔥 회원가입 예외 발생: ${e.message}", e)
+                    _errorMessage.value = "네트워크 오류가 발생했습니다: ${e.message}"
+                } finally {
+                    _isLoading.value = false
+                    Log.d(tag, "=== 회원가입 완료 ===")
+                }
+            }
+        } else {
+            Log.w(tag, "⚠️ 필수 항목이 누락되었습니다.")
+            _errorMessage.value = "필수 항목을 모두 입력해주세요."
         }
     }
 }
