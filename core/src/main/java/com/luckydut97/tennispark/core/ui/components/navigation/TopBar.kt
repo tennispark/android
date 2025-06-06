@@ -51,6 +51,7 @@ fun TopBar(
         Text(
             text = title,
             fontSize = 19.sp,
+            
             fontWeight = FontWeight.SemiBold,
             fontFamily = Pretendard,
             textAlign = TextAlign.Center,

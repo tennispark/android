@@ -81,6 +81,7 @@ fun SignupScreen(
                 Text(
                     text = "개인정보 입력",
                     fontSize = 16.sp,
+                    color = Color.Black,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = Pretendard
                 )

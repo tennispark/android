@@ -38,7 +38,7 @@ import com.luckydut97.tennispark.core.ui.components.button.SmallActionButton
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.components.input.VerificationCodeFieldWithTimer
 import com.luckydut97.tennispark.core.ui.theme.AppColors
-import com.luckydut97.tennispark.feature_auth.sms.viewmodel.PhoneVerificationViewModel
+import com.luckydut97.tennispark.feature_auth.verification.viewmodel.PhoneVerificationViewModel
 
 @Composable
 fun PhoneVerificationScreen(
@@ -54,6 +54,7 @@ fun PhoneVerificationScreen(
     val isTimerActive by viewModel.isTimerActive.collectAsState()
     val isNextButtonEnabled by viewModel.isNextButtonEnabled.collectAsState()
     val navigateToSignup by viewModel.navigateToSignup.collectAsState()
+    val resendCooldownTime by viewModel.resendCooldownTime.collectAsState()
 
     // 반응형 디자인을 위한 스케일 팩터 계산
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -96,6 +97,7 @@ fun PhoneVerificationScreen(
                     text = "문자로 전송된\n인증번호를 입력해 주세요.",
                     fontSize = (26 * scaleFactor).sp,
                     fontWeight = FontWeight.Bold,
+                    color = Color.Black,
                     lineHeight = (34 * scaleFactor).sp,
                     modifier = Modifier.height((68 * scaleFactor).dp)
                 )
@@ -152,11 +154,12 @@ fun PhoneVerificationScreen(
 
                             // 재전송 버튼
                             SmallActionButton(
-                                text = "재전송",
+                                text = if (resendCooldownTime > 0) "${resendCooldownTime}초" else "재전송",
                                 onClick = { viewModel.resendCode() },
                                 backgroundColor = Color.White,
                                 contentColor = Color.Black,
                                 borderColor = Color.Gray,
+                                enabled = resendCooldownTime <= 0,
                                 modifier = Modifier.width((78 * scaleFactor).dp)
                             )
 

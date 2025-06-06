@@ -23,7 +23,7 @@ import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
 import com.luckydut97.tennispark.feature_auth.membership.ui.MembershipRegistrationScreen
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationItem
-import com.luckydut97.tennispark.core.shop.data.model.ShopItem
+import com.luckydut97.tennispark.core.data.model.ShopItem
 
 /**
  * 앱 전체의 메인 네비게이션을 처리하는 컴포넌트

@@ -2,8 +2,8 @@ package com.luckydut97.feature_home_shop.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.luckydut97.tennispark.core.shop.data.model.ShopItem
-import com.luckydut97.tennispark.core.shop.data.repository.MockShopRepository
+import com.luckydut97.tennispark.core.data.model.ShopItem
+import com.luckydut97.feature_home_shop.data.repository.MockShopRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

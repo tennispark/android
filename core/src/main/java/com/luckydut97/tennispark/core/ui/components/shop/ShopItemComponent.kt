@@ -23,7 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.R
-import com.luckydut97.tennispark.core.shop.data.model.ShopItem
+
+import com.luckydut97.tennispark.core.data.model.ShopItem
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
 /**

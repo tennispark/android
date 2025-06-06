@@ -1,16 +1,32 @@
 package com.luckydut97.tennispark.feature_auth.membership.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import com.luckydut97.tennispark.core.data.network.MembershipRepository
+import com.luckydut97.tennispark.core.data.model.MemberRegistrationRequest
 
 class MembershipRegistrationViewModel : ViewModel() {
+
+    private val tag = "🔍 디버깅: MembershipViewModel"
+    private val membershipRepository = MembershipRepository()
 
     // 멤버십 등록 완료 여부
     private val _isMembershipComplete = MutableStateFlow(false)
     val isMembershipComplete: StateFlow<Boolean> = _isMembershipComplete.asStateFlow()
+
+    // 로딩 상태
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    // 에러 메시지
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
     // 멤버십 유형 (0: 최초 가입, 1: 기존 회원)
     private val _membershipType = MutableStateFlow(-1)
@@ -83,11 +99,56 @@ class MembershipRegistrationViewModel : ViewModel() {
     }
 
     fun submitMembershipRegistration() {
-        // 실제 서버 연동 로직 구현 예정
-        _isMembershipComplete.value = true
+        Log.d(tag, "=== 멤버십 등록 버튼 클릭 ===")
+        Log.d(tag, "멤버십 타입: ${_membershipType.value}")
+        Log.d(tag, "가입 이유: ${_joinReason.value}")
+        Log.d(tag, "선택된 코트: ${_selectedCourt.value}")
+        Log.d(tag, "선택된 기간: ${_selectedPeriod.value}")
+        Log.d(tag, "추천인: ${_referrer.value}")
+        Log.d(tag, "규정 동의: ${_agreeToRules.value}")
+        Log.d(tag, "미디어 동의: ${_agreeToMediaUsage.value}")
+
+        viewModelScope.launch {
+            try {
+                Log.d(tag, "API 호출 준비 중...")
+                _isLoading.value = true
+                _errorMessage.value = null
+
+                // TODO: 실제 사용자 정보를 가져와야 함 (이름, 전화번호, 성별, 테니스 경력 등)
+                val request = MemberRegistrationRequest(
+                    phoneNumber = "01012345678", // TODO: 실제 전화번호
+                    name = "홍길동", // TODO: 실제 이름
+                    gender = "MAN", // TODO: 실제 성별
+                    tennisCareer = _joinReason.value, // 가입 이유를 테니스 경력으로 사용
+                    year = 2025,
+                    registrationSource = "INSTAGRAM",
+                    recommender = _referrer.value,
+                    instagramId = ""
+                )
+
+                Log.d(tag, "Repository 호출 시작...")
+                val response = membershipRepository.registerMember(request)
+                Log.d(tag, "Repository 호출 완료")
+
+                if (response.success) {
+                    Log.d(tag, "멤버십 등록 성공!")
+                    _isMembershipComplete.value = true
+                } else {
+                    Log.e(tag, "디버깅: 멤버십 등록 실패: ${response.error}")
+                    _errorMessage.value = response.error ?: "멤버십 등록에 실패했습니다."
+                }
+            } catch (e: Exception) {
+                Log.e(tag, "디버깅: API 호출 예외 발생: ${e.message}", e)
+                _errorMessage.value = "네트워크 오류가 발생했습니다: ${e.message}"
+            } finally {
+                _isLoading.value = false
+                Log.d(tag, "=== 멤버십 등록 처리 완료 ===")
+            }
+        }
     }
 
     fun resetMembershipState() {
         _isMembershipComplete.value = false
+        _errorMessage.value = null
     }
 }

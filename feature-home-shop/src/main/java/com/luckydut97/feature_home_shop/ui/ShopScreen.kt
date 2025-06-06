@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.feature_home_shop.viewmodel.ShopViewModel
 import com.luckydut97.tennispark.core.R
-import com.luckydut97.tennispark.core.shop.data.model.ShopItem
-import com.luckydut97.tennispark.core.shop.data.repository.MockShopRepository
+import com.luckydut97.tennispark.core.data.model.ShopItem
+import com.luckydut97.feature_home_shop.data.repository.MockShopRepository
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.components.shop.ShopAdBanner
 import com.luckydut97.tennispark.core.ui.components.shop.ShopItemComponent
@@ -121,7 +121,7 @@ fun ShopScreen(
             ) {
                 // 첫 번째 아이템 위에 추가 여백 (디자인상 필요 없어 보이면 0.dp)
                 item {
-                    Spacer(modifier = Modifier.height(0.dp)) 
+                    Spacer(modifier = Modifier.height(0.dp))
                 }
 
                 items(shopItems) { item ->

@@ -14,11 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import kotlinx.coroutines.delay
 
 data class PointHistory(
     val date: String,
@@ -67,6 +72,22 @@ fun MyInfoScreen(
         PointHistory("4.24", "경기 승리 보상", 1000)
     )
 
+    // 광고 배너 관련
+    val adBannerPages = 3
+    val pagerState = rememberPagerState(pageCount = { adBannerPages })
+    
+    // 5초마다 자동 스크롤
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(5000)
+            if (pagerState.currentPage < adBannerPages - 1) {
+                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+            } else {
+                pagerState.animateScrollToPage(0)
+            }
+        }
+    }
+    
     Scaffold(
         containerColor = Color.White,
         topBar = {
@@ -229,7 +250,7 @@ fun MyInfoScreen(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                // 광고 배너 (임시)
+                // 광고 배너 (스와이프 가능, 자동 스크롤)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -239,33 +260,45 @@ fun MyInfoScreen(
                             shape = RoundedCornerShape(8.dp)
                         )
                 ) {
-                    // 광고 배너 내용 (나중에 구현)
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "광고 배너",
-                            fontSize = 14.sp,
-                            fontFamily = Pretendard,
-                            color = Color.Gray
-                        )
+                    // 자동 스크롤 및 스와이프 기능 추가
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(67.dp)
+                    ) { page ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    color = Color(0xFFF5F5F5),
+                                    shape = RoundedCornerShape(8.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "광고 배너 ${page + 1}",
+                                fontSize = 14.sp,
+                                fontFamily = Pretendard,
+                                color = Color.Gray
+                            )
+                        }
                     }
                     
-                    // 인디케이터 (임시)
+                    // 인디케이터
                     Row(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        repeat(3) { index ->
+                        repeat(adBannerPages) { index ->
                             Box(
                                 modifier = Modifier
                                     .size(6.dp)
                                     .background(
-                                        color = if (index == 0) Color.Black else Color.Gray,
-                                        shape = androidx.compose.foundation.shape.CircleShape
+                                        color = if (pagerState.currentPage == index) Color.Black else Color.Gray,
+                                        shape = CircleShape
                                     )
                             )
                         }

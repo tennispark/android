@@ -1,4 +1,4 @@
-package com.luckydut97.tennispark.core.shop.data.model
+package com.luckydut97.tennispark.core.data.model
 
 /**
  * 상품 데이터 모델

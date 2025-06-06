@@ -106,11 +106,15 @@ fun WeeklyApplicationCard(
                 ) {
                     Text(
                         text = buildAnnotatedString {
-                            append("매주 ")
+                            withStyle(style = SpanStyle(color = Color.Black)) {
+                                append("매주 ")
+                            }
                             withStyle(style = SpanStyle(color = AppColors.Primary, fontWeight = FontWeight.Bold)) {
                                 append("금요일 08:30분")
                             }
-                            append("\n신청 가능합니다.")
+                            withStyle(style = SpanStyle(color = Color.Black)) {
+                                append("\n신청 가능합니다.")
+                            }
                         },
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,

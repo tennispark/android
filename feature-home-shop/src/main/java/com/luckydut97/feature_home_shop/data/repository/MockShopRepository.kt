@@ -1,6 +1,6 @@
-package com.luckydut97.tennispark.core.shop.data.repository
+package com.luckydut97.feature_home_shop.data.repository
 
-import com.luckydut97.tennispark.core.shop.data.model.ShopItem
+import com.luckydut97.tennispark.core.data.model.ShopItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -16,7 +16,7 @@ class MockShopRepository {
     fun getShopItems(): Flow<List<ShopItem>> = flow {
         // 네트워크 지연 시뮬레이션
         delay(1000)
-        
+
         emit(mockShopItems)
     }
 
