@@ -40,8 +40,7 @@ fun InputField(
     enabled: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Done,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    width: Int = 259
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     Column(modifier = modifier) {
         if (label.isNotEmpty()) {
@@ -80,8 +79,7 @@ fun InputField(
                 imeAction = imeAction
             ),
             visualTransformation = visualTransformation,
-            modifier = Modifier
-                .width(width.dp),
+            modifier = Modifier.fillMaxWidth(),
             decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier
@@ -115,8 +113,7 @@ fun VerificationCodeField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    width: Int = 120
+    enabled: Boolean = true
 ) {
     BasicTextField(
         value = value,
@@ -131,8 +128,7 @@ fun VerificationCodeField(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
-        modifier = Modifier
-            .width(width.dp),
+        modifier = modifier,
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier
@@ -156,16 +152,14 @@ fun VerificationCodeFieldWithTimer(
     remainingTime: Int,
     isTimerActive: Boolean,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    width: Int = 207,
-    scaleFactor: Float = 1f
+    enabled: Boolean = true
 ) {
     BasicTextField(
         value = value,
         onValueChange = { if (it.length <= 6) onValueChange(it) },
         enabled = enabled,
         textStyle = TextStyle(
-            fontSize = (16 * scaleFactor).sp,
+            fontSize = 16.sp,
             color = AppColors.TextPrimary,
             fontFamily = Pretendard
         ),
@@ -173,15 +167,15 @@ fun VerificationCodeFieldWithTimer(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
-        modifier = Modifier.width(width.dp),
+        modifier = modifier,
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height((47 * scaleFactor).dp)
-                    .background(Color.White, RoundedCornerShape((4 * scaleFactor).dp))
-                    .border(1.dp, AppColors.Divider, RoundedCornerShape((4 * scaleFactor).dp))
-                    .padding(horizontal = (12 * scaleFactor).dp),
+                    .height(47.dp)
+                    .background(Color.White, RoundedCornerShape(4.dp))
+                    .border(1.dp, AppColors.Divider, RoundedCornerShape(4.dp))
+                    .padding(horizontal = 12.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
                 Row(
@@ -193,13 +187,13 @@ fun VerificationCodeFieldWithTimer(
                     }
                     
                     if (isTimerActive) {
-                        Spacer(modifier = Modifier.width((17 * scaleFactor).dp))
+                        Spacer(modifier = Modifier.width(17.dp))
                         val minutes = remainingTime / 60
                         val seconds = remainingTime % 60
                         Text(
                             text = String.format("%02d:%02d", minutes, seconds),
                             color = Color(0xFF145F44),
-                            fontSize = (16 * scaleFactor).sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             textDecoration = TextDecoration.Underline
                         )

@@ -95,7 +95,7 @@ fun SignupScreen(
                     label = "이름",
                     isRequired = true,
                     placeholder = "이름을 입력해주세요.",
-                    width = 400
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -151,7 +151,7 @@ fun SignupScreen(
                     label = "구력",
                     isRequired = true,
                     placeholder = "ex) 1년 2개월",
-                    width = 400
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -164,7 +164,7 @@ fun SignupScreen(
                     isRequired = true,
                     placeholder = "ex) 1990",
                     keyboardType = KeyboardType.Number,
-                    width = 400
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -230,7 +230,7 @@ fun SignupScreen(
                     label = "추천인",
                     placeholder = "ex) 추천인 이름 + 연락처 끝 4자리",
                     enabled = joinPath == 2, // 친구 추천(2)을 선택했을 때만 활성화
-                    width = 400
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -242,7 +242,7 @@ fun SignupScreen(
                     label = "인스타그램 ID",
                     isRequired = true,
                     placeholder = "ID를 입력해주세요.",
-                    width = 400
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))

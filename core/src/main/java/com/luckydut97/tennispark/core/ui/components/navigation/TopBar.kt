@@ -30,7 +30,7 @@ fun TopBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(60.dp) //임의 변경
+            .height(50.dp) //임의 변경
             .background(Color.White)
     ) {
         // 뒤로가기 버튼

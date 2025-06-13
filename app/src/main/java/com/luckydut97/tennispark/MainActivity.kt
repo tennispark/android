@@ -9,11 +9,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 import com.luckydut97.tennispark.core.ui.theme.TennisParkTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 시스템 UI 설정 - 상태바를 표시하도록 설정
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             TennisParkTheme {
                 Surface(

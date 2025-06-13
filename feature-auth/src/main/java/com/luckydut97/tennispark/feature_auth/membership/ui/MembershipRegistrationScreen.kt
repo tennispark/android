@@ -133,7 +133,7 @@ fun MembershipRegistrationScreen(
                 label = "멤버십 가입 이유",
                 isRequired = true,
                 placeholder = "내용을 입력해주세요 (최대 100자)",
-                width = 400
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -277,7 +277,7 @@ fun MembershipRegistrationScreen(
                 onValueChange = { viewModel.updateReferrer(it) },
                 label = "추천인",
                 placeholder = "ex) 추천인 이름 + 연락처 끝 4자리",
-                width = 400
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(12.dp))
