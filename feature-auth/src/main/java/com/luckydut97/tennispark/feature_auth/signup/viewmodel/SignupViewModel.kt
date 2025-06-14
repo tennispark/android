@@ -3,6 +3,7 @@ package com.luckydut97.tennispark.feature_auth.signup.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,6 +68,9 @@ class SignupViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
 
+    // 개발 모드 플래그 - true로 설정하면 실제 API 호출 없이 동작
+    private val IS_DEV_MODE = true
+
     fun setPhoneNumber(phoneNumber: String) {
         _phoneNumber.value = phoneNumber
     }
@@ -126,6 +130,19 @@ class SignupViewModel : ViewModel() {
                 _agreeToTerms.value
 
         if (isValid) {
+            if (IS_DEV_MODE) {
+                Log.d(tag, "🔧 개발 모드 활성화 - API 호출 생략")
+                viewModelScope.launch {
+                    _isLoading.value = true
+                    delay(500) // UI 피드백을 위한 짧은 지연
+
+                    Log.d(tag, "✅ 개발 모드 회원가입 성공!")
+                    _isSignupComplete.value = true
+                    _isLoading.value = false
+                }
+                return
+            }
+
             viewModelScope.launch {
                 try {
                     _isLoading.value = true

@@ -15,6 +15,9 @@ class PhoneVerificationViewModel : ViewModel() {
     private val tag = "🔍 디버깅: PhoneVerificationVM"
     private val phoneVerificationRepository = PhoneVerificationRepository()
 
+    // 개발 모드 플래그 - true로 설정하면 실제 API 호출 없이 동작
+    private val IS_DEV_MODE = true
+
     // 휴대폰 번호
     private val _phoneNumber = MutableStateFlow("")
     val phoneNumber = _phoneNumber.asStateFlow()
@@ -78,6 +81,24 @@ class PhoneVerificationViewModel : ViewModel() {
         if (_phoneNumber.value.isNotEmpty()) {
             Log.d(tag, "=== 인증번호 요청 버튼 클릭 ===")
             Log.d(tag, "입력된 전화번호: ${_phoneNumber.value}")
+
+            if (IS_DEV_MODE) {
+                Log.d(tag, "🔧 개발 모드 활성화 - API 호출 생략")
+                viewModelScope.launch {
+                    _isLoading.value = true
+                    delay(500) // UI 피드백을 위한 짧은 지연
+
+                    _isVerificationRequested.value = true
+                    _isTimerActive.value = true
+                    _remainingTime.value = 180 // 3분 리셋
+                    startTimer()
+
+                    _isLoading.value = false
+                    Log.d(tag, "✅ 개발 모드 인증번호 요청 완료")
+                }
+                return
+            }
+
             Log.d(
                 tag,
                 "호출할 Base URL: ${com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository.BASE_URL}"
@@ -126,6 +147,22 @@ class PhoneVerificationViewModel : ViewModel() {
             Log.d(tag, "=== 인증번호 확인 시작 ===")
             Log.d(tag, "입력된 전화번호: ${_phoneNumber.value}")
             Log.d(tag, "입력된 인증번호: ${_verificationCode.value}")
+
+            if (IS_DEV_MODE) {
+                Log.d(tag, "🔧 개발 모드 활성화 - API 호출 생략하고 바로 회원가입으로 이동")
+                viewModelScope.launch {
+                    _isLoading.value = true
+                    delay(500) // UI 피드백을 위한 짧은 지연
+
+                    _isVerified.value = true
+                    _isTimerActive.value = false
+                    _navigateToSignup.value = true
+
+                    _isLoading.value = false
+                    Log.d(tag, "✅ 개발 모드 인증 완료 - 회원가입 화면으로 이동")
+                }
+                return
+            }
 
             viewModelScope.launch {
                 try {
@@ -184,6 +221,24 @@ class PhoneVerificationViewModel : ViewModel() {
 
         Log.d(tag, "=== 인증번호 재전송 ===")
         Log.d(tag, "전화번호: ${_phoneNumber.value}")
+
+        if (IS_DEV_MODE) {
+            Log.d(tag, "🔧 개발 모드 활성화 - API 호출 생략")
+            viewModelScope.launch {
+                _isLoading.value = true
+                delay(500) // UI 피드백을 위한 짧은 지연
+
+                _remainingTime.value = 180 // 3분 리셋
+                _isTimerActive.value = true
+                startTimer()
+                startResendCooldown()
+
+                _isLoading.value = false
+                Log.d(tag, "✅ 개발 모드 인증번호 재전송 완료")
+            }
+            return
+        }
+
         Log.d(
             tag,
             "호출할 Base URL: ${com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository.BASE_URL}"

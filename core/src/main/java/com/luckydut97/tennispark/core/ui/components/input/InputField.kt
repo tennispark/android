@@ -96,7 +96,7 @@ fun InputField(
                     if (value.isEmpty()) {
                         Text(
                             text = placeholder,
-                            fontSize = 16.sp,
+                            fontSize = 15.sp,
                             color = if (enabled) AppColors.TextHint else AppColors.TextDisabledPlaceholder,
                             fontFamily = Pretendard
                         )
@@ -174,7 +174,7 @@ fun VerificationCodeFieldWithTimer(
                     .fillMaxWidth()
                     .height(47.dp)
                     .background(Color.White, RoundedCornerShape(4.dp))
-                    .border(1.dp, AppColors.Divider, RoundedCornerShape(4.dp))
+                    .border(1.dp, AppColors.InputDisabledBackground, RoundedCornerShape(6.dp))
                     .padding(horizontal = 12.dp),
                 contentAlignment = Alignment.CenterStart
             ) {

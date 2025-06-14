@@ -39,6 +39,7 @@ import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.components.input.VerificationCodeFieldWithTimer
 import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.feature_auth.verification.viewmodel.PhoneVerificationViewModel
+import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
 @Composable
 fun PhoneVerificationScreen(
@@ -150,9 +151,12 @@ fun PhoneVerificationScreen(
                                 onClick = { viewModel.resendCode() },
                                 backgroundColor = Color.White,
                                 contentColor = Color.Black,
-                                borderColor = Color.Gray,
+                                borderColor = AppColors.InputDisabledBackground,
                                 enabled = resendCooldownTime <= 0,
-                                modifier = Modifier.width(78.dp)
+                                modifier = Modifier.width(78.dp),
+                                textColor = Color.Black,
+                                fontSize = 16,
+                                fontWeight = FontWeight.Normal
                             )
 
                             Spacer(modifier = Modifier.width(12.dp))

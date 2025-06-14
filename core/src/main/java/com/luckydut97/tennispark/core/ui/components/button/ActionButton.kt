@@ -32,7 +32,7 @@ fun ActionButton(
             .fillMaxWidth()
             .height(47.dp),
         enabled = enabled,
-        shape = RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(6.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (enabled) backgroundColor else AppColors.DisabledButton,
             contentColor = contentColor,
@@ -59,7 +59,9 @@ fun SmallActionButton(
     backgroundColor: Color = AppColors.ButtonGreen,
     contentColor: Color = Color.White,
     borderColor: Color? = null,
-    textColor: Color? = null
+    textColor: Color? = null,
+    fontSize: Int = 16,
+    fontWeight: FontWeight = FontWeight.SemiBold
 ) {
     val finalTextColor = textColor ?: if (enabled) {
         if (backgroundColor == Color.White) contentColor else Color.White
@@ -72,7 +74,7 @@ fun SmallActionButton(
             onClick = onClick,
             modifier = modifier.height(47.dp),
             enabled = enabled,
-            shape = RoundedCornerShape(4.dp),
+            shape = RoundedCornerShape(6.dp),
             border = BorderStroke(1.dp, borderColor),
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = backgroundColor,
@@ -82,9 +84,9 @@ fun SmallActionButton(
         ) {
             Text(
                 text = text,
-                fontSize = 14.sp,
+                fontSize = fontSize.sp,
                 color = finalTextColor,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = fontWeight,
                 maxLines = 1
             )
         }
@@ -93,7 +95,7 @@ fun SmallActionButton(
             onClick = onClick,
             modifier = modifier.height(47.dp),
             enabled = enabled,
-            shape = RoundedCornerShape(4.dp),
+            shape = RoundedCornerShape(6.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = if (enabled) backgroundColor else AppColors.DisabledButton,
                 contentColor = contentColor,
@@ -104,9 +106,9 @@ fun SmallActionButton(
         ) {
             Text(
                 text = text,
-                fontSize = 14.sp,
+                fontSize = fontSize.sp,
                 color = finalTextColor,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = fontWeight,
                 maxLines = 1
             )
         }
