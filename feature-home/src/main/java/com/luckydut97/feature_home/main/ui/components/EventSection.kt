@@ -77,14 +77,14 @@ fun EventSection(
                     iconRes = R.drawable.ic_member,
                     title = "멤버십 등록하기",
                     subtitle = "5월 정기 멤버십 등록",
-                    pageIndicator = "${page + 1}/$totalPages",
+                    pageIndicator = "${page + 1} / $totalPages",
                     onClick = onMembershipClick
                 )
                 1 -> EventCard(
                     iconRes = R.drawable.ic_tennis,
                     title = "아카데미 등록하기",
                     subtitle = "5월 아카데미 등록",
-                    pageIndicator = "${page + 1}/$totalPages",
+                    pageIndicator = "${page + 1} / $totalPages",
                     onClick = onAcademyClick
                 )
             }
@@ -149,7 +149,7 @@ fun EventCard(
                         Image(
                             painter = painterResource(id = R.drawable.ic_arrow_right),
                             contentDescription = "Arrow Right",
-                            modifier = Modifier.size(width = 6.dp, height = 12.dp)
+                            modifier = Modifier.size(width = 7.dp, height = 14.dp)
                         )
                     }
 
@@ -177,7 +177,7 @@ fun EventCard(
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .size(width = 35.dp, height = 20.dp)
+                        .size(width = 40.dp, height = 20.dp)
                         .background(
                             color = Color(0xFFBBBBBB),
                             shape = RoundedCornerShape(70)
@@ -187,7 +187,7 @@ fun EventCard(
                     Text(
                         text = pageIndicator,
                         fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Normal,
                         color = Color.White,
                         fontFamily = Pretendard,
                         // 텍스트가 확실히

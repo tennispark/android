@@ -33,10 +33,10 @@ fun AppNavigation(
     navController: NavHostController = rememberNavController(),
     isLoggedIn: Boolean = false
 ) {
-    // 🔥 메인 화면으로 바로 가기 (홈화면 + 바텀 네비게이션)
-    //var startDestination by remember { mutableStateOf("main") }
-    // 🔥 원래 코드: 테스트 완료 후 이걸 사용
-    var startDestination by remember { mutableStateOf(if (isLoggedIn) "main" else "auth") }
+    // 메인 화면으로 바로 가기 (홈화면 + 바텀 네비게이션)
+    var startDestination by remember { mutableStateOf("main") }
+    // 원래 코드: 테스트 완료 후 이걸 사용
+    //var startDestination by remember { mutableStateOf(if (isLoggedIn) "main" else "auth") }
 
     NavHost(
         navController = navController,

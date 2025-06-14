@@ -89,7 +89,7 @@ fun WeeklyApplicationCard(
                 Image(
                     painter = painterResource(id = R.drawable.ic_arrow_right),
                     contentDescription = "Arrow Right",
-                    modifier = Modifier.size(width = 6.dp, height = 12.dp)
+                    modifier = Modifier.size(width = 7.dp, height = 14.dp)
                 )
             }
 
