@@ -16,6 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.theme.AppColors
+import com.luckydut97.tennispark.core.ui.theme.AppColors.AssistiveColor
+import com.luckydut97.tennispark.core.ui.theme.AppColors.InputDisabledBackground
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
 @Composable
@@ -28,21 +30,21 @@ fun JoinPathButton(
     Box(
         modifier = modifier
             .height(47.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(6.dp))
             .background(if (isSelected) AppColors.Primary else Color.White)
             .border(
                 width = 1.dp,
-                color = if (isSelected) AppColors.Primary else Color(0xFFC4C4C4),
-                shape = RoundedCornerShape(8.dp)
+                color = if (isSelected) AppColors.Primary else InputDisabledBackground,
+                shape = RoundedCornerShape(6.dp)
             )
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = if (isSelected) Color.White else Color(0xFFC4C4C4),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Normal,
+            color = if (isSelected) Color.White else AssistiveColor,
             fontFamily = Pretendard
         )
     }

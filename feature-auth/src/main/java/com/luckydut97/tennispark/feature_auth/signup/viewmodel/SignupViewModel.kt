@@ -126,8 +126,7 @@ class SignupViewModel : ViewModel() {
                 _experience.value.isNotEmpty() &&
                 _birthYear.value.isNotEmpty() &&
                 _instagramId.value.isNotEmpty() &&
-                _joinPath.value != -1 &&
-                _agreeToTerms.value
+                _joinPath.value != -1
 
         if (isValid) {
             if (IS_DEV_MODE) {

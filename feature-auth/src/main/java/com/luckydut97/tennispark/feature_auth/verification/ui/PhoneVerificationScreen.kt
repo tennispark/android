@@ -159,7 +159,7 @@ fun PhoneVerificationScreen(
                                 fontWeight = FontWeight.Normal
                             )
 
-                            Spacer(modifier = Modifier.width(12.dp))
+                            Spacer(modifier = Modifier.width(7.dp))
 
                             // 확인 버튼
                             SmallActionButton(

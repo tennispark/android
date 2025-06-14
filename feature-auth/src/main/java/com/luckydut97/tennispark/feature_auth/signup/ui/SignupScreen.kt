@@ -1,6 +1,8 @@
 package com.luckydut97.tennispark.feature_auth.signup.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.tennispark.feature_auth.signup.ui.components.JoinPathButton
 import com.luckydut97.tennispark.core.ui.components.button.ActionButton
@@ -32,7 +36,6 @@ import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.tennispark.feature_auth.signup.viewmodel.SignupViewModel
-import androidx.compose.ui.graphics.Color
 
 @Composable
 fun SignupScreen(
@@ -55,262 +58,277 @@ fun SignupScreen(
         onSignupComplete()
     }
 
-    Scaffold(
-        containerColor = Color.White,
-        topBar = {
-            TopBar(
-                title = "회원가입",
-                onBackClick = onBackClick
-            )
-        }
-    ) { paddingValues ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .systemBarsPadding()
+    ) {
+        TopBar(
+            title = "회원가입",
+            onBackClick = onBackClick
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-            ) {
-                Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-                // 개인정보 입력
+            // 개인정보 입력
+            Text(
+                text = "개인정보 입력",
+                fontSize = 16.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = Pretendard
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 이름
+            InputField(
+                value = name,
+                onValueChange = { viewModel.updateName(it) },
+                label = "이름",
+                isRequired = true,
+                placeholder = "이름을 입력해주세요.",
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 성별 선택
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "개인정보 입력",
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.SemiBold,
+                    text = "성별 선택",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.TextPrimary,
                     fontFamily = Pretendard
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 이름
-                InputField(
-                    value = name,
-                    onValueChange = { viewModel.updateName(it) },
-                    label = "이름",
-                    isRequired = true,
-                    placeholder = "이름을 입력해주세요.",
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 성별 선택
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "성별 선택",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = AppColors.TextPrimary,
-                        fontFamily = Pretendard
-                    )
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    Text(
-                        text = "*",
-                        fontSize = 14.sp,
-                        color = AppColors.Required,
-                        fontFamily = Pretendard
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    GenderSelectionButton(
-                        text = "남자",
-                        isSelected = isMale,
-                        onClick = { viewModel.updateGender(true) },
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    GenderSelectionButton(
-                        text = "여자",
-                        isSelected = !isMale,
-                        onClick = { viewModel.updateGender(false) },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 구력
-                InputField(
-                    value = experience,
-                    onValueChange = { viewModel.updateExperience(it) },
-                    label = "구력",
-                    isRequired = true,
-                    placeholder = "ex) 1년 2개월",
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 나이 (탄생년도)
-                InputField(
-                    value = birthYear,
-                    onValueChange = { viewModel.updateBirthYear(it) },
-                    label = "나이 (탄생년도)",
-                    isRequired = true,
-                    placeholder = "ex) 1990",
-                    keyboardType = KeyboardType.Number,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 가입경로
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "가입경로 (택1)",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = AppColors.TextPrimary,
-                        fontFamily = Pretendard
-                    )
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    Text(
-                        text = "*",
-                        fontSize = 14.sp,
-                        color = AppColors.Required,
-                        fontFamily = Pretendard
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    JoinPathButton(
-                        text = "인스타",
-                        isSelected = joinPath == 0,
-                        onClick = { viewModel.updateJoinPath(0) },
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    Spacer(modifier = Modifier.width(6.dp))
-
-                    JoinPathButton(
-                        text = "네이버 검색",
-                        isSelected = joinPath == 1,
-                        onClick = { viewModel.updateJoinPath(1) },
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    Spacer(modifier = Modifier.width(6.dp))
-
-                    JoinPathButton(
-                        text = "친구 추천",
-                        isSelected = joinPath == 2,
-                        onClick = { viewModel.updateJoinPath(2) },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 추천인
-                InputField(
-                    value = referrer,
-                    onValueChange = { viewModel.updateReferrer(it) },
-                    label = "추천인",
-                    placeholder = "ex) 추천인 이름 + 연락처 끝 4자리",
-                    enabled = joinPath == 2, // 친구 추천(2)을 선택했을 때만 활성화
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 인스타그램 ID
-                InputField(
-                    value = instagramId,
-                    onValueChange = { viewModel.updateInstagramId(it) },
-                    label = "인스타그램 ID",
-                    isRequired = true,
-                    placeholder = "ID를 입력해주세요.",
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 테니스파크 인스타 계정 팔로우 여부
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "테니스파크 인스타 계정을 팔로우 하셨습니까?",
-                        fontSize = 14.sp,
-                        fontFamily = Pretendard,
-                        color = AppColors.TextPrimary
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    CheckBox(
-                        text = "예",
-                        isChecked = agreeToTerms,
-                        onCheckedChange = { viewModel.updateAgreeToTerms(it) }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // 테니스파크 카카오톡 채널 추가 여부
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "테니스파크 카카오톡 채널을 추가하셨습니까?",
-                        fontSize = 14.sp,
-                        fontFamily = Pretendard,
-                        color = AppColors.TextPrimary
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    CheckBox(
-                        text = "예",
-                        isChecked = agreeToKakaoChannel,
-                        onCheckedChange = { viewModel.updateAgreeToKakaoChannel(it) }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.width(2.dp))
 
                 Text(
-                    text = "* 테니스파크의 다양하고 유용한 정보를 확인하실 수 있습니다.",
-                    fontSize = 12.sp,
-                    fontFamily = Pretendard,
-                    color = AppColors.TextTertiary
+                    text = "*",
+                    fontSize = 14.sp,
+                    color = AppColors.Required,
+                    fontFamily = Pretendard
                 )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 가입하기 버튼
-                ActionButton(
-                    text = "가입하기",
-                    onClick = { viewModel.signup() },
-                    enabled = name.isNotEmpty() && experience.isNotEmpty() && birthYear.isNotEmpty() && agreeToTerms
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                GenderSelectionButton(
+                    text = "남자",
+                    isSelected = isMale,
+                    onClick = { viewModel.updateGender(true) },
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.width(6.dp))
+
+                GenderSelectionButton(
+                    text = "여자",
+                    isSelected = !isMale,
+                    onClick = { viewModel.updateGender(false) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 구력
+            InputField(
+                value = experience,
+                onValueChange = { viewModel.updateExperience(it) },
+                label = "구력",
+                isRequired = true,
+                placeholder = "ex) 1년 2개월",
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 나이 (탄생년도)
+            InputField(
+                value = birthYear,
+                onValueChange = { viewModel.updateBirthYear(it) },
+                label = "나이 (탄생년도)",
+                isRequired = true,
+                placeholder = "ex) 1990",
+                keyboardType = KeyboardType.Number,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 가입경로
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "가입경로 (택1)",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.TextPrimary,
+                    fontFamily = Pretendard
+                )
+
+                Spacer(modifier = Modifier.width(2.dp))
+
+                Text(
+                    text = "*",
+                    fontSize = 14.sp,
+                    color = AppColors.Required,
+                    fontFamily = Pretendard
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                JoinPathButton(
+                    text = "인스타",
+                    isSelected = joinPath == 0,
+                    onClick = { viewModel.updateJoinPath(0) },
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.width(6.dp))
+
+                JoinPathButton(
+                    text = "네이버 검색",
+                    isSelected = joinPath == 1,
+                    onClick = { viewModel.updateJoinPath(1) },
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.width(6.dp))
+
+                JoinPathButton(
+                    text = "친구 추천",
+                    isSelected = joinPath == 2,
+                    onClick = { viewModel.updateJoinPath(2) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 추천인
+            InputField(
+                value = referrer,
+                onValueChange = { viewModel.updateReferrer(it) },
+                label = "추천인",
+                placeholder = "ex) 추천인 이름 + 연락처 끝 4자리",
+                enabled = joinPath == 2, // 친구 추천(2)을 선택했을 때만 활성화
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 인스타그램 ID
+            InputField(
+                value = instagramId,
+                onValueChange = { viewModel.updateInstagramId(it) },
+                label = "인스타그램 ID",
+                isRequired = true,
+                placeholder = "ID를 입력해주세요.",
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 테니스파크 인스타 계정 팔로우 여부
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "테니스파크 인스타 계정을 팔로우 하셨습니까?",
+                    fontSize = 14.sp,
+                    fontFamily = Pretendard,
+                    color = AppColors.TextPrimary
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(
+                    text = "예",
+                    fontSize = 14.sp,
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.SemiBold,
+                    color = AppColors.TextPrimary,
+                    modifier = Modifier.padding(end = 6.dp)
+                )
+
+                CheckBox(
+                    text = "",
+                    isChecked = agreeToTerms,
+                    onCheckedChange = { viewModel.updateAgreeToTerms(it) }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // 테니스파크 카카오톡 채널 추가 여부
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "테니스파크 카카오톡 채널을 추가 하셨습니까?",
+                    fontSize = 14.sp,
+                    fontFamily = Pretendard,
+                    color = AppColors.TextPrimary
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(
+                    text = "예",
+                    fontSize = 14.sp,
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.SemiBold,
+                    color = AppColors.TextPrimary,
+                    modifier = Modifier.padding(end = 6.dp)
+                )
+
+                CheckBox(
+                    text = "",
+                    isChecked = agreeToKakaoChannel,
+                    onCheckedChange = { viewModel.updateAgreeToKakaoChannel(it) }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "* 테니스파크의 다양하고 유용한 정보를 확인하실 수 있습니다.",
+                fontSize = 12.sp,
+                fontFamily = Pretendard,
+                color = AppColors.TextTertiary
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 가입하기 버튼
+            ActionButton(
+                text = "가입하기",
+                onClick = { viewModel.signup() },
+                enabled = name.isNotEmpty() && experience.isNotEmpty() && birthYear.isNotEmpty() && instagramId.isNotEmpty() && joinPath != -1,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }

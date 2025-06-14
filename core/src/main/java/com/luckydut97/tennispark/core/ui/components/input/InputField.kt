@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.theme.AppColors
+import com.luckydut97.tennispark.core.ui.theme.AppColors.AssistiveColor
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
 @Composable
@@ -71,8 +72,9 @@ fun InputField(
             enabled = enabled,
             textStyle = TextStyle(
                 fontSize = 16.sp,
-                color = if (enabled) AppColors.TextPrimary else AppColors.TextSecondary,
-                fontFamily = Pretendard
+                color = if (enabled) AppColors.TextPrimary else AssistiveColor,
+                fontFamily = Pretendard,
+                fontWeight = FontWeight.Normal
             ),
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType,
@@ -87,9 +89,9 @@ fun InputField(
                         .height(47.dp)
                         .background(
                             color = if (enabled) Color.White else AppColors.InputDisabledBackground,
-                            shape = RoundedCornerShape(4.dp)
+                            shape = RoundedCornerShape(6.dp)
                         )
-                        .border(1.dp, AppColors.Divider, RoundedCornerShape(4.dp))
+                        .border(1.dp, AppColors.InputDisabledBackground, RoundedCornerShape(6.dp))
                         .padding(horizontal = 12.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
@@ -97,8 +99,9 @@ fun InputField(
                         Text(
                             text = placeholder,
                             fontSize = 15.sp,
-                            color = if (enabled) AppColors.TextHint else AppColors.TextDisabledPlaceholder,
-                            fontFamily = Pretendard
+                            color = if (enabled) AssistiveColor else AssistiveColor,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal
                         )
                     }
                     innerTextField()
@@ -134,8 +137,8 @@ fun VerificationCodeField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(47.dp)
-                    .background(Color.White, RoundedCornerShape(4.dp))
-                    .border(1.dp, AppColors.Divider, RoundedCornerShape(4.dp))
+                    .background(Color.White, RoundedCornerShape(6.dp))
+                    .border(1.dp, AppColors.InputDisabledBackground, RoundedCornerShape(6.dp))
                     .padding(horizontal = 12.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
@@ -161,7 +164,8 @@ fun VerificationCodeFieldWithTimer(
         textStyle = TextStyle(
             fontSize = 16.sp,
             color = AppColors.TextPrimary,
-            fontFamily = Pretendard
+            fontFamily = Pretendard,
+            fontWeight = FontWeight.Normal
         ),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
