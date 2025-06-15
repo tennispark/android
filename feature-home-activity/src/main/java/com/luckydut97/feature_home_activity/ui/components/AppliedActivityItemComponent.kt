@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,8 +38,8 @@ fun AppliedActivityItemComponent(
 ) {
     Box(
         modifier = modifier
-            .width(367.dp)
-            .height(101.5.dp)
+            .fillMaxWidth()
+            .height(107.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(Color(0xFFF2FAF4)) // 연한 초록색 배경
             .border(
@@ -46,12 +47,10 @@ fun AppliedActivityItemComponent(
                 color = Color(0xFF145F44), // 진한 초록색 테두리
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(18.dp)
+            .padding(horizontal = 20.dp, vertical = 18.dp)
     ) {
         Column(
-            modifier = Modifier
-                .width(331.dp)
-                .height(65.5.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             // 첫 번째 줄: 날짜/시간 정보
@@ -87,6 +86,8 @@ fun AppliedActivityItemComponent(
                 )
             }
 
+            Spacer(modifier = Modifier.height(2.dp))
+
             // 두 번째 줄: 게임코트
             Text(
                 text = appliedActivity.gameCode,
@@ -95,6 +96,8 @@ fun AppliedActivityItemComponent(
                 fontWeight = FontWeight.SemiBold,
                 color = Color.Black
             )
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             // 세 번째 줄: 장소 정보
             Row(

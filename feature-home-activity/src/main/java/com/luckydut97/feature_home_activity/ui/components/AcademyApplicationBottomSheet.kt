@@ -150,7 +150,7 @@ fun AcademyApplicationBottomSheet(
                         // 아카데미 목록 Column
                         Column(
                             modifier = Modifier
-                                .width(367.dp)
+                                .fillMaxWidth()
                                 .height(442.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
@@ -158,7 +158,7 @@ fun AcademyApplicationBottomSheet(
                                 // 로딩 상태 표시
                                 Box(
                                     modifier = Modifier
-                                        .width(367.dp)
+                                        .fillMaxWidth()
                                         .height(442.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -173,7 +173,7 @@ fun AcademyApplicationBottomSheet(
                                 // 에러 상태 표시
                                 Box(
                                     modifier = Modifier
-                                        .width(367.dp)
+                                        .fillMaxWidth()
                                         .height(422.dp),
                                     contentAlignment = Alignment.Center
                                 ) {

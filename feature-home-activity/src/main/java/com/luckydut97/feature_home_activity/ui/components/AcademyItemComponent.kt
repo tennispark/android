@@ -54,7 +54,7 @@ fun AcademyItemComponent(
     val statusText = when {
         isDisabled -> "모집완료"
         isAlmostFull -> "마감임박"
-        else -> "모집중"
+        else -> "모집 중"
     }
     val statusTextColor = when {
         isDisabled -> Color(0xFF8B9096)
@@ -64,8 +64,8 @@ fun AcademyItemComponent(
 
     Box(
         modifier = modifier
-            .width(367.dp)
-            .height(101.5.dp)
+            .fillMaxWidth()
+            .height(107.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .border(
@@ -76,19 +76,16 @@ fun AcademyItemComponent(
             .clickable(enabled = !isDisabled) {
                 onAcademyClick(academy)
             }
-            .padding(18.dp)
+            .padding(horizontal = 20.dp, vertical = 18.dp)
     ) {
         Row(
-            modifier = Modifier
-                .width(331.dp)
-                .height(65.5.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // 객체1: 아카데미 정보
+            // 왼쪽: 아카데미 정보
             Column(
-                modifier = Modifier
-                    .width(272.dp)
-                    .height(65.5.dp),
+                modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 // 날짜/시간 정보
@@ -124,6 +121,8 @@ fun AcademyItemComponent(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(2.dp))
+
                 // 게임코트 (아카데미에서는 court 사용)
                 Text(
                     text = academy.court,
@@ -132,6 +131,8 @@ fun AcademyItemComponent(
                     fontWeight = FontWeight.SemiBold,
                     color = textColor
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 // 장소 정보
                 Row(
@@ -177,13 +178,10 @@ fun AcademyItemComponent(
                 }
             }
 
-            // 객체2: 인원/상태 정보
+            // 오른쪽: 인원/상태 정보
             Column(
-                modifier = Modifier
-                    .width(59.dp)
-                    .height(51.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.Center
             ) {
                 // 인원 표시 박스
                 Box(
@@ -203,12 +201,14 @@ fun AcademyItemComponent(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(4.dp))
+
                 // 상태 텍스트
                 Text(
                     text = statusText,
-                    fontSize = 10.sp,
+                    fontSize = 12.sp,
                     fontFamily = Pretendard,
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = FontWeight.SemiBold,
                     color = statusTextColor
                 )
             }

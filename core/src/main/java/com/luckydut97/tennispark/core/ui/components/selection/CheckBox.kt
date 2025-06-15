@@ -24,7 +24,9 @@ fun CheckBox(
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    fontSize: Int = 14
+    fontSize: Int = 14,
+    fontWeight: FontWeight = FontWeight.SemiBold,
+    letterSpacing: Int = -1
 ) {
     Row(
         modifier = modifier.clickable { onCheckedChange(!isChecked) },
@@ -45,8 +47,10 @@ fun CheckBox(
         Text(
             text = text,
             fontSize = fontSize.sp,
-            color = AppColors.TextPrimary,
-            fontFamily = Pretendard
+            fontWeight = if (isChecked) FontWeight.Bold else fontWeight,
+            color = if (isChecked) AppColors.Primary else AppColors.TextPrimary,
+            fontFamily = Pretendard,
+            letterSpacing = letterSpacing.sp
         )
     }
 }

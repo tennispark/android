@@ -45,7 +45,7 @@ fun ShopAdBanner(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(67.dp)
+            .height(134.dp)
     ) {
         // 광고 페이저
         HorizontalPager(
@@ -56,7 +56,7 @@ fun ShopAdBanner(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(67.dp)
+                    .height(134.dp)
                     .background(Color(0xFFE0E0E0)),
                 contentAlignment = Alignment.Center
             ) {

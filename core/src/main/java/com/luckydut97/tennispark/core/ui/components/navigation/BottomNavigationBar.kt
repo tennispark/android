@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.Box
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
@@ -40,7 +41,6 @@ fun BottomNavigationBar(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(72.dp)
             .background(Color.White)
     ) {
         Divider(
@@ -51,32 +51,43 @@ fun BottomNavigationBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(72.dp)
-                .padding(horizontal = 17.dp),  // 좌우 여백
-            horizontalArrangement = Arrangement.SpaceBetween,  // 균등 배치
+                .height(71.dp)
+                .padding(horizontal = 16.dp),  // 좌우 여백 16dp (총 32dp)
+            horizontalArrangement = Arrangement.SpaceEvenly,  // 균등 배치
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 홈 버튼
             BottomNavItem(
                 item = BottomNavigationItem.HOME,
                 isSelected = currentRoute == BottomNavigationItem.HOME.route,
-                onClick = { onItemClick(BottomNavigationItem.HOME.route) }
+                onClick = { onItemClick(BottomNavigationItem.HOME.route) },
+                modifier = Modifier.weight(1f)
             )
 
             // 상품 구매 버튼
             BottomNavItem(
                 item = BottomNavigationItem.SHOP,
                 isSelected = currentRoute == BottomNavigationItem.SHOP.route,
-                onClick = { onItemClick(BottomNavigationItem.SHOP.route) }
+                onClick = { onItemClick(BottomNavigationItem.SHOP.route) },
+                modifier = Modifier.weight(1f)
             )
 
             // 내 정보 버튼
             BottomNavItem(
                 item = BottomNavigationItem.PROFILE,
                 isSelected = currentRoute == BottomNavigationItem.PROFILE.route,
-                onClick = { onItemClick(BottomNavigationItem.PROFILE.route) }
+                onClick = { onItemClick(BottomNavigationItem.PROFILE.route) },
+                modifier = Modifier.weight(1f)
             )
         }
+
+        // 하단 여백용 박스 (갤럭시 S25 등을 위한 추가 공간)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(10.dp)
+                .background(Color.White)
+        )
     }
 }
 
@@ -95,8 +106,7 @@ fun BottomNavItem(
 
     Column(
         modifier = modifier
-            .width(123.33.dp)
-            .height(44.5.dp)
+            .fillMaxWidth()
             .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -115,7 +125,7 @@ fun BottomNavItem(
             text = item.label,
             fontSize = 13.sp,
             fontFamily = Pretendard,
-            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Bold,
             color = if (isSelected) AppColors.PrimaryVariant else Color(0xFF8B9096)
         )
     }

@@ -51,7 +51,7 @@ fun InputField(
                     fontSize = 14.sp,
                     color = AppColors.TextPrimary,
                     fontFamily = Pretendard,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.SemiBold
                 )
                 if (isRequired) {
                     Spacer(modifier = Modifier.width(2.dp))

@@ -13,8 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.TextUnit
 import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.core.ui.theme.AppColors.AssistiveColor
 import com.luckydut97.tennispark.core.ui.theme.AppColors.InputDisabledBackground
@@ -25,7 +27,9 @@ fun JoinPathButton(
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Center, // 기본값은 중앙 정렬
+    lineHeight: TextUnit? = null // 줄 간격 파라미터 추가
 ) {
     Box(
         modifier = modifier
@@ -43,9 +47,11 @@ fun JoinPathButton(
         Text(
             text = text,
             fontSize = 15.sp,
-            fontWeight = FontWeight.Normal,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             color = if (isSelected) Color.White else AssistiveColor,
-            fontFamily = Pretendard
+            fontFamily = Pretendard,
+            textAlign = textAlign, // 파라미터로 받은 정렬 적용
+            lineHeight = lineHeight ?: 15.sp // 줄 간격 적용
         )
     }
 }

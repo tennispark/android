@@ -125,9 +125,12 @@ fun MyInfoScreen(
                             color = Color(0xFFF2FAF4),
                             shape = RoundedCornerShape(8.dp)
                         )
-                        .padding(horizontal = 24.dp, vertical = 16.dp)
+                        .padding(horizontal = 24.dp),
+                    contentAlignment = Alignment.Center // 중앙 정렬
                 ) {
-                    Column {
+                    Column(
+                        verticalArrangement = Arrangement.Center // 수직 중앙 정렬
+                    ) {
                         // 내 포인트 Row
                         Row(
                             modifier = Modifier.fillMaxWidth(),

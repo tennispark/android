@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -140,6 +142,7 @@ fun ShopDetailScreen(
     
     Scaffold(
         containerColor = Color.White,
+        modifier = Modifier.statusBarsPadding(), // 상태바 패딩 추가
         topBar = {
             TopBar(
                 title = "마이살래",
@@ -184,10 +187,11 @@ fun ShopDetailScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 제품 이미지 (402*402)
+            // 제품 이미지 (정사각형)
             Box(
                 modifier = Modifier
-                    .size(402.dp)
+                    .fillMaxWidth()
+                    .aspectRatio(1f) // 정사각형 비율
                     .background(
                         color = Color(0xFFF5F5F5),
                         shape = RoundedCornerShape(8.dp)
@@ -196,10 +200,10 @@ fun ShopDetailScreen(
                 // 나중에 서버에서 이미지가 오면 여기에 AsyncImage 등으로 표시
             }
 
-            // 제품 정보 컬럼 (402*139)
+            // 제품 정보 컬럼
             Column(
                 modifier = Modifier
-                    .width(402.dp)
+                    .fillMaxWidth()
                     .height(139.dp)
                     .border(
                         width = 1.dp,
@@ -264,10 +268,11 @@ fun ShopDetailScreen(
             // 26dp 여백
             Spacer(modifier = Modifier.height(26.dp))
 
-            // 상품 설명 박스 (350*278)
+            // 상품 설명 박스 (좌우 26dp 여백)
             Box(
                 modifier = Modifier
-                    .width(350.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 26.dp) // 좌우 26dp 여백
                     .height(278.dp)
                     .background(
                         color = Color(0xFFF5F5F5),
@@ -295,6 +300,7 @@ fun ShopDetailScreen(
 현금 교환불가 또는 유의사항도 활용 가능합니다. 상품 설명이 필요한 경우 이 영역을 이용하여 주의사항 또는 상품에 대한 자세한 설명을 작성할 수 있습니다.
 
 현금 교환불가 또는 유의사항도 활용 가능합니다. 상품 설명이 필요한 경우 이 영역을 이용하여 주의사항 또는 상품에 대한 자세한 설명을 작성할 수 있습니다.
+
 현금 교환불가 또는 유의사항도 활용 가능합니다.""",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,

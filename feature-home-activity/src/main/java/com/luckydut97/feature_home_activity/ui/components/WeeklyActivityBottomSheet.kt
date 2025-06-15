@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -120,18 +122,17 @@ fun WeeklyActivityBottomSheet(
 
                         Spacer(modifier = Modifier.height(18.dp))
 
-                        // 활동 목록 Column
-                        Column(
+                        // 활동 목록 LazyColumn으로 변경
+                        Box(
                             modifier = Modifier
-                                .width(367.dp)
-                                .height(442.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                .fillMaxWidth()
+                                .height(442.dp)
                         ) {
                             if (isLoading) {
                                 // 로딩 상태 표시
                                 Box(
                                     modifier = Modifier
-                                        .width(367.dp)
+                                        .fillMaxWidth()
                                         .height(442.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -146,7 +147,7 @@ fun WeeklyActivityBottomSheet(
                                 // 에러 상태 표시
                                 Box(
                                     modifier = Modifier
-                                        .width(367.dp)
+                                        .fillMaxWidth()
                                         .height(422.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -168,21 +169,21 @@ fun WeeklyActivityBottomSheet(
                                     }
                                 }
                             } else {
-                                // 활동 목록 표시 (최대 4개)
-                                activities.take(4).forEach { activity ->
-                                    ActivityItemComponent(
-                                        activity = activity,
-                                        onActivityClick = { selectedActivity ->
-                                            // 변경: 바로 신청하지 않고 상세 다이얼로그 표시
-                                            viewModel.selectActivityAndShowDetail(selectedActivity)
-                                        }
-                                    )
-                                }
-
-                                // 빈 공간 채우기 (4개 미만일 경우)
-                                if (activities.size < 4) {
-                                    repeat(4 - activities.size) {
-                                        Spacer(modifier = Modifier.height(96.5.dp))
+                                // 활동 목록 표시 - LazyColumn으로 스크롤 가능
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    items(activities) { activity ->
+                                        ActivityItemComponent(
+                                            activity = activity,
+                                            onActivityClick = { selectedActivity ->
+                                                // 변경: 바로 신청하지 않고 상세 다이얼로그 표시
+                                                viewModel.selectActivityAndShowDetail(
+                                                    selectedActivity
+                                                )
+                                            }
+                                        )
                                     }
                                 }
                             }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,8 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.tennispark.core.ui.components.button.ActionButton
@@ -61,6 +65,7 @@ fun MembershipRegistrationScreen(
 
     Scaffold(
         containerColor = Color.White,
+        modifier = Modifier.statusBarsPadding(),
         topBar = {
             TopBar(
                 title = "멤버십 등록",
@@ -82,7 +87,7 @@ fun MembershipRegistrationScreen(
                 Text(
                     text = "멤버십",
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = AppColors.TextPrimary,
                     fontFamily = Pretendard
                 )
@@ -119,9 +124,10 @@ fun MembershipRegistrationScreen(
 
             Text(
                 text = "* 이전에 멤버십으로 활동하신 회원분들은 기존 정회원으로 신청 부탁드립니다.",
-                fontSize = 12.sp,
-                color = AppColors.TextSecondary,
-                fontFamily = Pretendard
+                fontSize = 11.8.sp,
+                color = AppColors.TextSecondary26,
+                fontFamily = Pretendard,
+                letterSpacing = (-1).sp
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -143,7 +149,7 @@ fun MembershipRegistrationScreen(
                 Text(
                     text = "멤버십 비용 안내",
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = AppColors.TextPrimary,
                     fontFamily = Pretendard
                 )
@@ -156,13 +162,14 @@ fun MembershipRegistrationScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
             Text(
                 text = "선택하신 코트에 따라 멤버십 비용이 상이합니다.",
                 fontSize = 12.sp,
-                color = AppColors.TextSecondary,
-                fontFamily = Pretendard
+                color = AppColors.TextSecondary26,
+                fontFamily = Pretendard,
+                letterSpacing = (-1).sp
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -177,7 +184,7 @@ fun MembershipRegistrationScreen(
                 Text(
                     text = "코트 선택",
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = AppColors.TextPrimary,
                     fontFamily = Pretendard
                 )
@@ -198,10 +205,12 @@ fun MembershipRegistrationScreen(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 JoinPathButton(
-                    text = "게임/\n게임도전",
+                    text = "게임\n/게임도전",
                     isSelected = selectedCourt == 0,
                     onClick = { viewModel.updateSelectedCourt(0) },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center,
+                    lineHeight = 16.sp // 줄 간격 9sp
                 )
                 JoinPathButton(
                     text = "랠리",
@@ -230,7 +239,7 @@ fun MembershipRegistrationScreen(
                 Text(
                     text = "기간 선택",
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = AppColors.TextPrimary,
                     fontFamily = Pretendard
                 )
@@ -284,23 +293,23 @@ fun MembershipRegistrationScreen(
 
             // 친구 추천 혜택
             Text(
-                text = "* 친구 추천 혜택",
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+                    ) {
+                        append("* 친구 추천 혜택")
+                    }
+                    append("\n추천인(멤버십 회원만 접수) : 쿠폰 5장 추가\n추천으로 멤버십 가입 시 : 쿠폰 1장 추가")
+                },
                 fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = AppColors.TextPrimary,
-                fontFamily = Pretendard
-            )
-            Text(
-                text = "추천인(멤버십 회원만 접수) : 쿠폰 5장 추가",
-                fontSize = 11.sp,
-                color = Color(0xFF000000),
-                fontFamily = Pretendard
-            )
-            Text(
-                text = "추천으로 멤버십 가입 시 : 쿠폰 1장 추가",
-                fontSize = 11.sp,
-                color = Color(0xFF000000),
-                fontFamily = Pretendard
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF262626),
+                fontFamily = Pretendard,
+                lineHeight = 23.sp,
+                letterSpacing = 0.5.sp
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -312,15 +321,28 @@ fun MembershipRegistrationScreen(
             ) {
                 Text(
                     text = "멤버십 활동규정에 동의",
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     fontFamily = Pretendard,
-                    color = AppColors.TextPrimary
+                    fontWeight = FontWeight.Normal,
+                    color = AppColors.CaptionColor,
+                    letterSpacing = 0.5.sp
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                CheckBox(
+                Text(
                     text = "예",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = Pretendard,
+                    color = AppColors.TextPrimary,
+                    letterSpacing = 0.5.sp
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                CheckBox(
+                    text = "",
                     isChecked = agreeToRules,
                     onCheckedChange = {
                         viewModel.updateAgreeToRules(true)
@@ -329,8 +351,19 @@ fun MembershipRegistrationScreen(
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                CheckBox(
+                Text(
                     text = "아니오",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = Pretendard,
+                    color = AppColors.TextPrimary,
+                    letterSpacing = 0.5.sp
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                CheckBox(
+                    text = "",
                     isChecked = !agreeToRules,
                     onCheckedChange = {
                         viewModel.updateAgreeToRules(false)
@@ -345,7 +378,8 @@ fun MembershipRegistrationScreen(
                 text = "본인이 촬영된 사진 및 영상은 테니스파크 컨텐츠로 제작되어 인스타그램 @tennispark_official / 네이버 블로그 '테니스파크매거진'에 노출되고 홍보 목적으로 이용될 수 있습니다. 동의하십니까?",
                 fontSize = 12.sp,
                 fontFamily = Pretendard,
-                color = AppColors.TextPrimary,
+                fontWeight = FontWeight.Normal,
+                color = AppColors.CaptionColor,
                 lineHeight = 16.sp
             )
 
@@ -355,8 +389,19 @@ fun MembershipRegistrationScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                CheckBox(
+                Text(
                     text = "예",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = Pretendard,
+                    color = AppColors.TextPrimary,
+                    letterSpacing = 0.5.sp
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                CheckBox(
+                    text = "",
                     isChecked = agreeToMediaUsage,
                     onCheckedChange = {
                         viewModel.updateAgreeToMediaUsage(true)
@@ -365,8 +410,19 @@ fun MembershipRegistrationScreen(
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                CheckBox(
+                Text(
                     text = "아니오",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = Pretendard,
+                    color = AppColors.TextPrimary,
+                    letterSpacing = 0.5.sp
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                CheckBox(
+                    text = "",
                     isChecked = !agreeToMediaUsage,
                     onCheckedChange = {
                         viewModel.updateAgreeToMediaUsage(false)
@@ -396,8 +452,9 @@ private fun PriceInfoSection() {
             text = "게임 / 게임 도전코트 & 랠리코트",
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            fontFamily = Pretendard
+            color = AppColors.TextBrandColor14,
+            fontFamily = Pretendard,
+            letterSpacing = (-1).sp
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -419,12 +476,14 @@ private fun PriceInfoSection() {
                     Text(
                         text = "7주",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "175,000원 (17.5장)",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )
@@ -437,12 +496,14 @@ private fun PriceInfoSection() {
                     Text(
                         text = "9주",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "245,000원 (24.5장)",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )
@@ -455,12 +516,14 @@ private fun PriceInfoSection() {
                     Text(
                         text = "13주",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "350,000원 (35장)",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )
@@ -475,8 +538,9 @@ private fun PriceInfoSection() {
             text = "게임스터디 코트 & 초보 코트",
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            fontFamily = Pretendard
+            color = AppColors.TextBrandColor14,
+            fontFamily = Pretendard,
+            letterSpacing = (-1).sp
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -498,12 +562,14 @@ private fun PriceInfoSection() {
                     Text(
                         text = "7주",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "195,000원 (19.5장)",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )
@@ -516,12 +582,14 @@ private fun PriceInfoSection() {
                     Text(
                         text = "9주",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "275,000원 (27.5장)",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )
@@ -534,12 +602,14 @@ private fun PriceInfoSection() {
                     Text(
                         text = "13주",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )
                     Text(
                         text = "390,000원 (39장)",
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black,
                         fontFamily = Pretendard
                     )

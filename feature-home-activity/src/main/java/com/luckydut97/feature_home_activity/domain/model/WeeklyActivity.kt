@@ -62,7 +62,7 @@ data class WeeklyActivity(
  * 활동 상태
  */
 enum class ActivityStatus {
-    RECRUITING,     // 모집중
+    RECRUITING,     // 모집 중
     ALMOST_FULL,    // 마감임박
     FULL           // 모집완료
 }

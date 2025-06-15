@@ -121,14 +121,14 @@ fun AppliedActivityBottomSheet(
                         // 활동 목록 Column
                         Column(
                             modifier = Modifier
-                                .width(367.dp)
+                                .fillMaxWidth()
                                 .height(442.dp)
                         ) {
                             if (isLoading) {
                                 // 로딩 상태 표시
                                 Box(
                                     modifier = Modifier
-                                        .width(367.dp)
+                                        .fillMaxWidth()
                                         .height(442.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -143,7 +143,7 @@ fun AppliedActivityBottomSheet(
                                 // 빈 상태 표시
                                 Box(
                                     modifier = Modifier
-                                        .width(367.dp)
+                                        .fillMaxWidth()
                                         .height(442.dp),
                                     contentAlignment = Alignment.Center
                                 ) {

@@ -32,7 +32,7 @@ import com.luckydut97.feature_home_activity.domain.model.WeeklyActivity
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
 /**
- * 활동 아이템 컴포넌트 (367×96.5dp)
+ * 활동 아이템 컴포넌트 (반응형)
  */
 @Composable
 fun ActivityItemComponent(
@@ -55,7 +55,7 @@ fun ActivityItemComponent(
     val statusText = when {
         isDisabled -> "모집완료"
         isAlmostFull -> "마감임박"
-        else -> "모집중"
+        else -> "모집 중"
     }
     val statusTextColor = when {
         isDisabled -> Color(0xFF8B9096)
@@ -65,8 +65,8 @@ fun ActivityItemComponent(
 
     Box(
         modifier = modifier
-            .width(367.dp)
-            .height(101.5.dp)
+            .fillMaxWidth()
+            .height(107.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .border(
@@ -77,19 +77,16 @@ fun ActivityItemComponent(
             .clickable(enabled = !isDisabled) {
                 onActivityClick(activity)
             }
-            .padding(18.dp)
+            .padding(horizontal = 20.dp, vertical = 18.dp)
     ) {
         Row(
-            modifier = Modifier
-                .width(331.dp)
-                .height(65.5.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // 객체1: 활동 정보
+            // 왼쪽: 활동 정보
             Column(
-                modifier = Modifier
-                    .width(272.dp)
-                    .height(65.5.dp),
+                modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 // 날짜/시간 정보
@@ -125,6 +122,8 @@ fun ActivityItemComponent(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(2.dp))
+
                 // 게임코트
                 Text(
                     text = activity.gameCode,
@@ -133,6 +132,8 @@ fun ActivityItemComponent(
                     fontWeight = FontWeight.SemiBold,
                     color = textColor
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 // 장소 정보
                 Row(
@@ -178,13 +179,10 @@ fun ActivityItemComponent(
                 }
             }
 
-            // 객체2: 인원/상태 정보
+            // 오른쪽: 인원/상태 정보
             Column(
-                modifier = Modifier
-                    .width(59.dp)
-                    .height(51.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.Center
             ) {
                 // 인원 표시 박스
                 Box(
@@ -204,12 +202,14 @@ fun ActivityItemComponent(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(4.dp))
+
                 // 상태 텍스트
                 Text(
                     text = statusText,
-                    fontSize = 10.sp,
+                    fontSize = 12.sp,
                     fontFamily = Pretendard,
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = FontWeight.SemiBold,
                     color = statusTextColor
                 )
             }

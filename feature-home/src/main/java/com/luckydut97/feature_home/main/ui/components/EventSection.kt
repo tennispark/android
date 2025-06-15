@@ -104,7 +104,7 @@ fun EventCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         onClick = onClick
     ) {
         Spacer(modifier = Modifier.height(8.dp))
@@ -177,7 +177,7 @@ fun EventCard(
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .size(width = 40.dp, height = 20.dp)
+                        .size(width = 40.dp, height = 17.dp)
                         .background(
                             color = Color(0xFFBBBBBB),
                             shape = RoundedCornerShape(70)
