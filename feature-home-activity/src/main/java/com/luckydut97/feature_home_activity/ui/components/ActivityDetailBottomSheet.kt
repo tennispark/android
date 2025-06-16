@@ -168,22 +168,35 @@ fun ActivityDetailBottomSheet(
                             color = Color.Black
                         )
                         Row(
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.height(20.dp) // 고정 높이로 정렬 보장
                         ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_location),
-                                contentDescription = "위치",
-                                modifier = Modifier.size(12.dp),
-                                tint = Color(0xFF8B9096)
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .size(12.dp)
+                                    .align(Alignment.CenterVertically),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_location),
+                                    contentDescription = "위치",
+                                    modifier = Modifier.size(12.dp),
+                                    tint = Color(0xFF8B9096)
+                                )
+                            }
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = activity.location,
-                                fontSize = 16.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.Black
-                            )
+                            Box(
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = activity.location,
+                                    fontSize = 16.sp,
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.Black
+                                )
+                            }
                         }
                     }
 

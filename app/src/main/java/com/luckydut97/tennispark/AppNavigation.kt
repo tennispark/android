@@ -23,9 +23,11 @@ import com.luckydut97.feature_home_shop.ui.ShopDetailScreen
 import com.luckydut97.feature_myinfo.ui.MyInfoScreen
 import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
 import com.luckydut97.tennispark.feature_auth.membership.ui.MembershipRegistrationScreen
+import com.luckydut97.feature.attendance.ui.AttendanceScreen
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationItem
 import com.luckydut97.tennispark.core.data.model.ShopItem
+import android.util.Log
 
 /**
  * 앱 전체의 메인 네비게이션을 처리하는 컴포넌트
@@ -97,6 +99,21 @@ fun AppNavigation(
                 }
             )
         }
+
+        // 출석체크 화면
+        composable("attendance") {
+            AttendanceScreen(
+                onBackClick = {
+                    Log.d("카메라 디버깅:", "AttendanceScreen back button clicked")
+                    navController.popBackStack()
+                },
+                onAttendanceComplete = {
+                    Log.d("카메라 디버깅:", "AttendanceScreen complete")
+                    // 출석 완료 후 처리
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }
 
@@ -138,7 +155,12 @@ fun MainScreenWithBottomNav(
             composable(BottomNavigationItem.HOME.route) {
                 HomeScreen(
                     onMembershipClick = {
+                        Log.d("카메라 디버깅:", "Membership click from HomeScreen")
                         mainNavController?.navigate("membership")
+                    },
+                    onAttendanceClick = {
+                        Log.d("카메라 디버깅:", "Attendance click from HomeScreen")
+                        mainNavController?.navigate("attendance")
                     }
                 )
             }

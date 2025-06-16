@@ -25,6 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.feature_home_activity.viewmodel.AcademyApplicationViewModel
@@ -107,42 +110,45 @@ fun AcademyApplicationBottomSheet(
 
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            // 부제목
+                            // 부제목 및 안내문
+                            val captionColor = Color(0xFF555555)
                             Text(
                                 text = "원하는 활동을 선택해 주세요.",
-                                fontSize = 16.sp,
+                                fontSize = 14.sp,
                                 fontFamily = Pretendard,
                                 fontWeight = FontWeight.Normal,
                                 textAlign = TextAlign.Center,
-                                color = Color(0xFF8B9096)
+                                color = captionColor
                             )
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(5.dp))
 
-                            // 비용 안내
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "비용은 총 240,000원입니다.",
-                                    fontSize = 16.sp,
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center,
-                                    color = Color.Black
-                                )
+                            // 비용 안내(Bold + Caption Color)
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("비용은 ")
+                                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        append("총 240,000원")
+                                    }
+                                    append("입니다.")
+                                },
+                                fontSize = 14.sp,
+                                fontFamily = Pretendard,
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Center,
+                                color = captionColor
+                            )
 
-                                Spacer(modifier = Modifier.height(4.dp))
+                            
 
-                                Text(
-                                    text = "신청 후 입금계좌 정보를 안내 드리겠습니다.",
-                                    fontSize = 14.sp,
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.Normal,
-                                    textAlign = TextAlign.Center,
-                                    color = Color(0xFF8B9096)
-                                )
-                            }
+                            Text(
+                                text = "신청 후 입금계좌 정보를 안내 드리겠습니다.",
+                                fontSize = 14.sp,
+                                fontFamily = Pretendard,
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Center,
+                                color = captionColor
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(18.dp))

@@ -51,7 +51,8 @@ import com.luckydut97.tennispark.feature.home.R
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
-    onMembershipClick: () -> Unit = {}
+    onMembershipClick: () -> Unit = {},
+    onAttendanceClick: () -> Unit = {}
 ) {
     val currentEventPage by viewModel.currentEventPage.collectAsState()
     val totalEventPages by viewModel.totalEventPages.collectAsState()
@@ -104,7 +105,7 @@ fun HomeScreen(
 
             // 메인 액션 버튼들 - 활동인증 버튼 연동 (업데이트)
             MainActionButtons(
-                onAttendanceClick = { /* 출석체크 클릭 이벤트 */ },
+                onAttendanceClick = onAttendanceClick,
                 onActivityVerificationClick = {
                     // 활동인증 바텀시트 표시
                     appliedActivityViewModel.showAppliedActivitiesSheet()

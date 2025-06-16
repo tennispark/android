@@ -71,17 +71,6 @@ class MockAcademyRepository {
                 currentParticipants = 5,
                 maxParticipants = 6,
                 status = AcademyStatus.FULL
-            ),
-            Academy(
-                id = "academy_4",
-                date = "05.14 (수)",
-                time = "19:00 ~ 21:00",
-                court = "랠리코트",
-                location = "강남 테니스코트",
-                activityType = "B클래스",
-                currentParticipants = 3,
-                maxParticipants = 6,
-                status = AcademyStatus.AVAILABLE
             )
         )
     }

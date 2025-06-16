@@ -1,5 +1,6 @@
 package com.luckydut97.feature_home.main.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,8 @@ fun MainActionButtons(
     onAttendanceClick: () -> Unit,
     onActivityVerificationClick: () -> Unit
 ) {
+    Log.d("카메라 디버깅:", "MainActionButtons Composable called")
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,14 +41,20 @@ fun MainActionButtons(
         // 출석체크 버튼
         ActionButton(
             text = "출석체크",
-            onClick = onAttendanceClick,
+            onClick = {
+                Log.d("카메라 디버깅:", "출석체크 button clicked")
+                onAttendanceClick()
+            },
             modifier = Modifier.weight(1f)
         )
 
         // 활동인증 버튼
         ActionButton(
             text = "활동인증",
-            onClick = onActivityVerificationClick,
+            onClick = {
+                Log.d("카메라 디버깅:", "활동인증 button clicked")
+                onActivityVerificationClick()
+            },
             modifier = Modifier.weight(1f)
         )
     }

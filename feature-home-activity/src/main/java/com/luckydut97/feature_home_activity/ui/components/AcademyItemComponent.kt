@@ -65,7 +65,7 @@ fun AcademyItemComponent(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(107.dp)
+            .height(115.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .border(
