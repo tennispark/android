@@ -105,7 +105,15 @@ fun AppNavigation(
             AttendanceScreen(
                 onBackClick = {
                     Log.d("카메라 디버깅:", "AttendanceScreen back button clicked")
-                    navController.popBackStack()
+                    val canGoBack = navController.previousBackStackEntry != null
+                    if (canGoBack) {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate("main") {
+                            popUpTo("main") { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    }
                 },
                 onAttendanceComplete = {
                     Log.d("카메라 디버깅:", "AttendanceScreen complete")
