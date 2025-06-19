@@ -65,7 +65,7 @@ fun AcademyItemComponent(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(115.dp)
+            .height(113.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .border(
@@ -132,7 +132,7 @@ fun AcademyItemComponent(
                     color = textColor
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(2.dp))
 
                 // 장소 정보
                 Row(

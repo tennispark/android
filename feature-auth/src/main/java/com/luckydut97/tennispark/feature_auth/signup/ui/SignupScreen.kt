@@ -31,12 +31,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.tennispark.feature_auth.signup.ui.components.JoinPathButton
 import com.luckydut97.tennispark.core.ui.components.button.ActionButton
-import com.luckydut97.tennispark.core.ui.components.selection.CheckBox
-import com.luckydut97.tennispark.feature_auth.signup.ui.components.GenderSelectionButton
 import com.luckydut97.tennispark.core.ui.components.input.InputField
+import com.luckydut97.tennispark.core.ui.components.selection.CheckBox
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.tennispark.feature_auth.signup.ui.components.GenderSelectionButton
 import com.luckydut97.tennispark.feature_auth.signup.viewmodel.SignupViewModel
 
 @Composable
@@ -175,11 +175,16 @@ fun SignupScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 InputField(
                     value = experience,
-                    onValueChange = { viewModel.updateExperience(it) },
+                    onValueChange = {
+                        val numbersOnly = it.filter { c -> c.isDigit() }.take(3)
+                        viewModel.updateExperience(numbersOnly)
+                    },
                     label = "",
                     placeholder = "ex) 15",
                     keyboardType = KeyboardType.Number,
-                    modifier = Modifier.width(118.dp).height(47.dp)
+                    modifier = Modifier
+                        .width(118.dp)
+                        .height(47.dp)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -220,11 +225,16 @@ fun SignupScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 InputField(
                     value = birthYear,
-                    onValueChange = { viewModel.updateBirthYear(it) },
+                    onValueChange = {
+                        val numbersOnly = it.filter { c -> c.isDigit() }.take(4)
+                        viewModel.updateBirthYear(numbersOnly)
+                    },
                     label = "",
                     placeholder = "ex) 1990",
                     keyboardType = KeyboardType.Number,
-                    modifier = Modifier.width(118.dp).height(47.dp)
+                    modifier = Modifier
+                        .width(118.dp)
+                        .height(47.dp)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -269,7 +279,10 @@ fun SignupScreen(
                 JoinPathButton(
                     text = "인스타",
                     isSelected = joinPath == 0,
-                    onClick = { viewModel.updateJoinPath(0) },
+                    onClick = {
+                        if (joinPath == 2) viewModel.updateReferrer("")
+                        viewModel.updateJoinPath(0)
+                    },
                     modifier = Modifier.weight(1f)
                 )
 
@@ -278,7 +291,10 @@ fun SignupScreen(
                 JoinPathButton(
                     text = "네이버 검색",
                     isSelected = joinPath == 1,
-                    onClick = { viewModel.updateJoinPath(1) },
+                    onClick = {
+                        if (joinPath == 2) viewModel.updateReferrer("")
+                        viewModel.updateJoinPath(1)
+                    },
                     modifier = Modifier.weight(1f)
                 )
 
@@ -309,7 +325,10 @@ fun SignupScreen(
             // 인스타그램 ID
             InputField(
                 value = instagramId,
-                onValueChange = { viewModel.updateInstagramId(it) },
+                onValueChange = {
+                    val filtered = it.filter { ch -> ch.isLetterOrDigit() }
+                    viewModel.updateInstagramId(filtered)
+                },
                 label = "인스타그램 ID",
                 isRequired = true,
                 placeholder = "ID를 입력해주세요.",
@@ -330,10 +349,15 @@ fun SignupScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            val underlineColor = Color(0xFFABABAB)
+            val rowPaddingStart = 0.dp
+
             // 전체 동의
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = rowPaddingStart, end = 20.dp)
             ) {
                 CheckBox(
                     text = "",
@@ -347,23 +371,24 @@ fun SignupScreen(
                     fontWeight = FontWeight.Bold,
                     color = AppColors.CaptionColor,
                     fontFamily = Pretendard,
+                    letterSpacing = (-1).sp,
                 )
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            val underlineColor = Color(0xFFABABAB)
-            val rowPaddingStart = 20.dp + 16.dp
-
             // 하위 약관 3줄
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(start = rowPaddingStart, end = 20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = rowPaddingStart, end = 20.dp)
             ) {
                 CheckBox(
                     text = "",
                     isChecked = agreeTerms,
-                    onCheckedChange = { checked -> viewModel.setAgreeTerms(checked) }
+                    onCheckedChange = { checked -> viewModel.setAgreeTerms(checked) },
+                    modifier = Modifier.padding(start = 13.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
@@ -371,7 +396,8 @@ fun SignupScreen(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
                     color = AppColors.TextPrimary,
-                    fontFamily = Pretendard
+                    fontFamily = Pretendard,
+                    letterSpacing = (-1).sp
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
@@ -381,18 +407,22 @@ fun SignupScreen(
                     fontWeight = FontWeight.Normal,
                     fontFamily = Pretendard,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable { /* TODO: 상세 팝업 */ }
+                    modifier = Modifier.clickable { /* TODO: 상세 팝업 */ },
+                    letterSpacing = (-1).sp
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(start = rowPaddingStart, end = 20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = rowPaddingStart, end = 20.dp)
             ) {
                 CheckBox(
                     text = "",
                     isChecked = agreePrivacy,
-                    onCheckedChange = { checked -> viewModel.setAgreePrivacy(checked) }
+                    onCheckedChange = { checked -> viewModel.setAgreePrivacy(checked) },
+                    modifier = Modifier.padding(start = 13.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
@@ -400,7 +430,8 @@ fun SignupScreen(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
                     color = AppColors.TextPrimary,
-                    fontFamily = Pretendard
+                    fontFamily = Pretendard,
+                    letterSpacing = (-1).sp
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
@@ -410,18 +441,22 @@ fun SignupScreen(
                     fontWeight = FontWeight.Normal,
                     fontFamily = Pretendard,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable { /* TODO: 상세 팝업 */ }
+                    modifier = Modifier.clickable { /* TODO: 상세 팝업 */ },
+                    letterSpacing = (-1).sp
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(start = rowPaddingStart, end = 20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = rowPaddingStart, end = 20.dp)
             ) {
                 CheckBox(
                     text = "",
                     isChecked = agreeFourteen,
-                    onCheckedChange = { checked -> viewModel.setAgreeFourteen(checked) }
+                    onCheckedChange = { checked -> viewModel.setAgreeFourteen(checked) },
+                    modifier = Modifier.padding(start = 13.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
@@ -429,7 +464,8 @@ fun SignupScreen(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
                     color = AppColors.TextPrimary,
-                    fontFamily = Pretendard
+                    fontFamily = Pretendard,
+                    letterSpacing = (-1).sp
                 )
             }
 
@@ -442,7 +478,8 @@ fun SignupScreen(
                 color = Color.Black,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = Pretendard,
-                modifier = Modifier.padding(start = 0.dp, end = 20.dp)
+                modifier = Modifier.padding(start = 0.dp, end = 20.dp),
+                letterSpacing = (-1).sp
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -450,7 +487,9 @@ fun SignupScreen(
             // 인스타/카카오 Row
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(start = rowPaddingStart, end = 20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = rowPaddingStart, end = 20.dp)
             ) {
                 CheckBox(
                     text = "",
@@ -463,13 +502,16 @@ fun SignupScreen(
                     fontSize = 14.sp,
                     fontFamily = Pretendard,
                     fontWeight = FontWeight.Normal,
-                    color = AppColors.TextPrimary
+                    color = AppColors.TextPrimary,
+                    letterSpacing = (-1).sp
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(start = rowPaddingStart, end = 20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = rowPaddingStart, end = 20.dp)
             ) {
                 CheckBox(
                     text = "",
@@ -482,7 +524,8 @@ fun SignupScreen(
                     fontSize = 14.sp,
                     fontFamily = Pretendard,
                     fontWeight = FontWeight.Normal,
-                    color = AppColors.TextPrimary
+                    color = AppColors.TextPrimary,
+                    letterSpacing = (-1).sp
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -491,7 +534,8 @@ fun SignupScreen(
                 fontSize = 12.sp,
                 fontFamily = Pretendard,
                 color = AppColors.TextTertiary,
-                modifier = Modifier.padding(start = rowPaddingStart, end = 20.dp)
+                modifier = Modifier.padding(start = rowPaddingStart, end = 20.dp),
+                letterSpacing = (-1).sp
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -500,7 +544,16 @@ fun SignupScreen(
             ActionButton(
                 text = "가입하기",
                 onClick = { viewModel.signup() },
-                enabled = name.isNotEmpty() && experience.isNotEmpty() && birthYear.isNotEmpty() && instagramId.isNotEmpty() && joinPath != -1,
+                enabled = name.isNotEmpty()
+                        && experience.isNotEmpty()
+                        && birthYear.isNotEmpty()
+                        && instagramId.isNotEmpty()
+                        && joinPath != -1
+                        && agreeTerms
+                        && agreePrivacy
+                        && agreeFourteen
+                        && agreeInstagram
+                        && agreeKakaoChannel,
                 modifier = Modifier.fillMaxWidth()
             )
 

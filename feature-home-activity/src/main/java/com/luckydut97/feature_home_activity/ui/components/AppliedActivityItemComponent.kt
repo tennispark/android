@@ -39,7 +39,7 @@ fun AppliedActivityItemComponent(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(115.dp)
+            .height(113.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(Color(0xFFF2FAF4)) // 연한 초록색 배경
             .border(
@@ -97,42 +97,29 @@ fun AppliedActivityItemComponent(
                 color = Color.Black
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
             // 세 번째 줄: 장소 정보
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.height(16.dp) // 고정 높이로 정렬 보장
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 // 위치 아이콘
-                Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .align(Alignment.CenterVertically),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_location),
-                        contentDescription = "위치",
-                        modifier = Modifier.size(10.dp),
-                        tint = Color(0xFF8B9096)
-                    )
-                }
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_location),
+                    contentDescription = "위치",
+                    modifier = Modifier.size(10.dp),
+                    tint = Color(0xFF8B9096)
+                )
 
                 Spacer(modifier = Modifier.width(4.dp))
 
-                Box(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = appliedActivity.location,
-                        fontSize = 12.sp,
-                        fontFamily = Pretendard,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF8B9096)
-                    )
-                }
+                Text(
+                    text = appliedActivity.location,
+                    fontSize = 12.sp,
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF8B9096)
+                )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
@@ -142,23 +129,17 @@ fun AppliedActivityItemComponent(
                         .width(1.dp)
                         .height(12.dp)
                         .background(Color(0xFFDDDDDD))
-                        .align(Alignment.CenterVertically)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Box(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = appliedActivity.court,
-                        fontSize = 12.sp,
-                        fontFamily = Pretendard,
-                        fontWeight = FontWeight.Normal,
-                        color = Color(0xFF8B9096)
-                    )
-                }
+                Text(
+                    text = appliedActivity.court,
+                    fontSize = 12.sp,
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.Normal,
+                    color = Color(0xFF8B9096)
+                )
             }
         }
     }
