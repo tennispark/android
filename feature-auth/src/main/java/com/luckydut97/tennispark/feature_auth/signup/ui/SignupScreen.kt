@@ -1,6 +1,7 @@
 package com.luckydut97.tennispark.feature_auth.signup.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +18,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
@@ -50,8 +52,12 @@ fun SignupScreen(
     val joinPath by viewModel.joinPath.collectAsState()
     val referrer by viewModel.referrer.collectAsState()
     val instagramId by viewModel.instagramId.collectAsState()
-    val agreeToTerms by viewModel.agreeToTerms.collectAsState()
-    val agreeToKakaoChannel by viewModel.agreeToKakaoChannel.collectAsState()
+    val agreeAll by viewModel.agreeAll.collectAsState()
+    val agreeTerms by viewModel.agreeTerms.collectAsState()
+    val agreePrivacy by viewModel.agreePrivacy.collectAsState()
+    val agreeFourteen by viewModel.agreeFourteen.collectAsState()
+    val agreeInstagram by viewModel.agreeInstagram.collectAsState()
+    val agreeKakaoChannel by viewModel.agreeKakaoChannel.collectAsState()
     val isSignupComplete by viewModel.isSignupComplete.collectAsState()
 
     if (isSignupComplete) {
@@ -145,27 +151,92 @@ fun SignupScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             // 구력
-            InputField(
-                value = experience,
-                onValueChange = { viewModel.updateExperience(it) },
-                label = "구력",
-                isRequired = true,
-                placeholder = "ex) 1년 2개월",
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "구력",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.TextPrimary,
+                    fontFamily = Pretendard
+                )
+
+                Spacer(modifier = Modifier.width(2.dp))
+
+                Text(
+                    text = "*",
+                    fontSize = 14.sp,
+                    color = AppColors.Required,
+                    fontFamily = Pretendard
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                InputField(
+                    value = experience,
+                    onValueChange = { viewModel.updateExperience(it) },
+                    label = "",
+                    placeholder = "ex) 15",
+                    keyboardType = KeyboardType.Number,
+                    modifier = Modifier.width(118.dp).height(47.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "개월",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color(0xFF262626),
+                    fontFamily = Pretendard
+                )
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             // 나이 (탄생년도)
-            InputField(
-                value = birthYear,
-                onValueChange = { viewModel.updateBirthYear(it) },
-                label = "나이 (탄생년도)",
-                isRequired = true,
-                placeholder = "ex) 1990",
-                keyboardType = KeyboardType.Number,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "나이 (탄생년도)",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.TextPrimary,
+                    fontFamily = Pretendard
+                )
+
+                Spacer(modifier = Modifier.width(2.dp))
+
+                Text(
+                    text = "*",
+                    fontSize = 14.sp,
+                    color = AppColors.Required,
+                    fontFamily = Pretendard
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                InputField(
+                    value = birthYear,
+                    onValueChange = { viewModel.updateBirthYear(it) },
+                    label = "",
+                    placeholder = "ex) 1990",
+                    keyboardType = KeyboardType.Number,
+                    modifier = Modifier.width(118.dp).height(47.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "년도",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color(0xFF262626),
+                    fontFamily = Pretendard
+                )
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -247,75 +318,180 @@ fun SignupScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // 테니스파크 인스타 계정 팔로우 여부
+            // 약관 동의
+            Text(
+                text = "약관 동의",
+                fontSize = 16.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = Pretendard,
+                modifier = Modifier.padding(start = 0.dp, end = 20.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // 전체 동의
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp)
             ) {
-                Text(
-                    text = "테니스파크 인스타 계정을 팔로우 하셨습니까?",
-                    fontSize = 14.sp,
-                    fontFamily = Pretendard,
-                    color = AppColors.TextPrimary
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Text(
-                    text = "예",
-                    fontSize = 14.sp,
-                    fontFamily = Pretendard,
-                    fontWeight = FontWeight.SemiBold,
-                    color = AppColors.TextPrimary,
-                    modifier = Modifier.padding(end = 6.dp)
-                )
-
                 CheckBox(
                     text = "",
-                    isChecked = agreeToTerms,
-                    onCheckedChange = { viewModel.updateAgreeToTerms(it) }
+                    isChecked = agreeAll,
+                    onCheckedChange = { checked -> viewModel.setAgreeAll(checked) }
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "전체 동의합니다.",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.CaptionColor,
+                    fontFamily = Pretendard,
                 )
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // 테니스파크 카카오톡 채널 추가 여부
+            val underlineColor = Color(0xFFABABAB)
+            val rowPaddingStart = 20.dp + 16.dp
+
+            // 하위 약관 3줄
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(start = rowPaddingStart, end = 20.dp)
             ) {
-                Text(
-                    text = "테니스파크 카카오톡 채널을 추가 하셨습니까?",
-                    fontSize = 14.sp,
-                    fontFamily = Pretendard,
-                    color = AppColors.TextPrimary
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Text(
-                    text = "예",
-                    fontSize = 14.sp,
-                    fontFamily = Pretendard,
-                    fontWeight = FontWeight.SemiBold,
-                    color = AppColors.TextPrimary,
-                    modifier = Modifier.padding(end = 6.dp)
-                )
-
                 CheckBox(
                     text = "",
-                    isChecked = agreeToKakaoChannel,
-                    onCheckedChange = { viewModel.updateAgreeToKakaoChannel(it) }
+                    isChecked = agreeTerms,
+                    onCheckedChange = { checked -> viewModel.setAgreeTerms(checked) }
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "이용약관에 동의 합니다. (필수)",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = AppColors.TextPrimary,
+                    fontFamily = Pretendard
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "내용보기",
+                    fontSize = 12.sp,
+                    color = underlineColor,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = Pretendard,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable { /* TODO: 상세 팝업 */ }
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(start = rowPaddingStart, end = 20.dp)
+            ) {
+                CheckBox(
+                    text = "",
+                    isChecked = agreePrivacy,
+                    onCheckedChange = { checked -> viewModel.setAgreePrivacy(checked) }
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "개인정보 수집 및 이용에 동의합니다. (필수)",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = AppColors.TextPrimary,
+                    fontFamily = Pretendard
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "내용보기",
+                    fontSize = 12.sp,
+                    color = underlineColor,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = Pretendard,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable { /* TODO: 상세 팝업 */ }
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(start = rowPaddingStart, end = 20.dp)
+            ) {
+                CheckBox(
+                    text = "",
+                    isChecked = agreeFourteen,
+                    onCheckedChange = { checked -> viewModel.setAgreeFourteen(checked) }
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "만 14세 이상입니다. (필수)",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = AppColors.TextPrimary,
+                    fontFamily = Pretendard
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
+            // 서비스 이용 조건
+            Text(
+                text = "서비스 이용 조건",
+                fontSize = 16.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = Pretendard,
+                modifier = Modifier.padding(start = 0.dp, end = 20.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // 인스타/카카오 Row
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(start = rowPaddingStart, end = 20.dp)
+            ) {
+                CheckBox(
+                    text = "",
+                    isChecked = agreeInstagram,
+                    onCheckedChange = { checked -> viewModel.setAgreeInstagram(checked) }
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "테니스파크 인스타 계정을 팔로우 하셨습니까? (필수)",
+                    fontSize = 14.sp,
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.Normal,
+                    color = AppColors.TextPrimary
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(start = rowPaddingStart, end = 20.dp)
+            ) {
+                CheckBox(
+                    text = "",
+                    isChecked = agreeKakaoChannel,
+                    onCheckedChange = { checked -> viewModel.setAgreeKakaoChannel(checked) }
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "테니스파크 카카오톡 채널을 추가 하셨습니까? (필수)",
+                    fontSize = 14.sp,
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.Normal,
+                    color = AppColors.TextPrimary
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = "* 테니스파크의 다양하고 유용한 정보를 확인하실 수 있습니다.",
                 fontSize = 12.sp,
                 fontFamily = Pretendard,
-                color = AppColors.TextTertiary
+                color = AppColors.TextTertiary,
+                modifier = Modifier.padding(start = rowPaddingStart, end = 20.dp)
             )
 
             Spacer(modifier = Modifier.height(20.dp))

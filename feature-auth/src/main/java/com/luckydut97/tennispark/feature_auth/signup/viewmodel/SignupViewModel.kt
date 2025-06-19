@@ -52,13 +52,21 @@ class SignupViewModel : ViewModel() {
     private val _instagramId = MutableStateFlow("")
     val instagramId = _instagramId.asStateFlow()
 
-    // 테니스파크 계정 생성 동의
-    private val _agreeToTerms = MutableStateFlow(false)
-    val agreeToTerms = _agreeToTerms.asStateFlow()
+    // 약관 관련 상태들
+    private val _agreeAll = MutableStateFlow(false)
+    val agreeAll = _agreeAll.asStateFlow()
 
-    // 테니스파크 카카오톡 채널 추가 여부
-    private val _agreeToKakaoChannel = MutableStateFlow(false)
-    val agreeToKakaoChannel = _agreeToKakaoChannel.asStateFlow()
+    private val _agreeTerms = MutableStateFlow(false)         // 이용약관
+    val agreeTerms = _agreeTerms.asStateFlow()
+    private val _agreePrivacy = MutableStateFlow(false)       // 개인정보
+    val agreePrivacy = _agreePrivacy.asStateFlow()
+    private val _agreeFourteen = MutableStateFlow(false)      // 만 14세 이상
+    val agreeFourteen = _agreeFourteen.asStateFlow()
+
+    private val _agreeInstagram = MutableStateFlow(false)     // 인스타 팔로우
+    val agreeInstagram = _agreeInstagram.asStateFlow()
+    private val _agreeKakaoChannel = MutableStateFlow(false)  // 카카오 추가
+    val agreeKakaoChannel = _agreeKakaoChannel.asStateFlow()
 
     // 로딩 상태
     private val _isLoading = MutableStateFlow(false)
@@ -103,12 +111,34 @@ class SignupViewModel : ViewModel() {
         _instagramId.value = id
     }
 
-    fun updateAgreeToTerms(agree: Boolean) {
-        _agreeToTerms.value = agree
+    fun setAgreeAll(checked: Boolean) {
+        _agreeAll.value = checked
+        _agreeTerms.value = checked
+        _agreePrivacy.value = checked
+        _agreeFourteen.value = checked
     }
 
-    fun updateAgreeToKakaoChannel(agree: Boolean) {
-        _agreeToKakaoChannel.value = agree
+    fun setAgreeTerms(checked: Boolean) {
+        _agreeTerms.value = checked
+        _agreeAll.value = _agreeTerms.value && _agreePrivacy.value && _agreeFourteen.value
+    }
+
+    fun setAgreePrivacy(checked: Boolean) {
+        _agreePrivacy.value = checked
+        _agreeAll.value = _agreeTerms.value && _agreePrivacy.value && _agreeFourteen.value
+    }
+
+    fun setAgreeFourteen(checked: Boolean) {
+        _agreeFourteen.value = checked
+        _agreeAll.value = _agreeTerms.value && _agreePrivacy.value && _agreeFourteen.value
+    }
+
+    fun setAgreeInstagram(checked: Boolean) {
+        _agreeInstagram.value = checked
+    }
+
+    fun setAgreeKakaoChannel(checked: Boolean) {
+        _agreeKakaoChannel.value = checked
     }
 
     fun signup() {
@@ -126,7 +156,10 @@ class SignupViewModel : ViewModel() {
                 _experience.value.isNotEmpty() &&
                 _birthYear.value.isNotEmpty() &&
                 _instagramId.value.isNotEmpty() &&
-                _joinPath.value != -1
+                _joinPath.value != -1 &&
+                _agreeTerms.value &&
+                _agreePrivacy.value &&
+                _agreeFourteen.value
 
         if (isValid) {
             if (IS_DEV_MODE) {

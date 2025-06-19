@@ -74,4 +74,6 @@ dependencies {
     implementation(project(":feature-myinfo"))
     implementation(project(":feature-home-activity"))
     implementation(project(":feature-attendance"))
+
+    implementation("androidx.appcompat:appcompat:1.6.1")
 }

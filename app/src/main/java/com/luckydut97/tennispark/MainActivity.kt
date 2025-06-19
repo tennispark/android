@@ -1,6 +1,7 @@
 package com.luckydut97.tennispark
 
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import com.luckydut97.tennispark.core.ui.theme.TennisParkTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         // 시스템 UI 설정 - 상태바를 표시하도록 설정
         WindowCompat.setDecorFitsSystemWindows(window, true)
