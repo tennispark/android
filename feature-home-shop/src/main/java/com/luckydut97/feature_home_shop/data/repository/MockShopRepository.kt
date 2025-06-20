@@ -1,6 +1,6 @@
 package com.luckydut97.feature_home_shop.data.repository
 
-import com.luckydut97.tennispark.core.data.model.ShopItem
+import com.luckydut97.feature_home_shop.data.model.ShopItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

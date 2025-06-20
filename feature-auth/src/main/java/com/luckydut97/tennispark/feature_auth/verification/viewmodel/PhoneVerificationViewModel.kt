@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository
+import com.luckydut97.tennispark.core.data.repository.PhoneVerificationRepository
 import com.luckydut97.tennispark.core.data.storage.TokenManager
 import com.luckydut97.tennispark.core.data.storage.TokenManagerImpl
 import com.luckydut97.tennispark.core.data.network.NetworkModule

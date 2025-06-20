@@ -16,7 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import android.util.Log
-import com.luckydut97.tennispark.core.data.model.ShopItem
+import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationItem
 import com.luckydut97.feature_home.main.ui.HomeScreen

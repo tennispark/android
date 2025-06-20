@@ -1,4 +1,4 @@
-package com.luckydut97.tennispark.core.ui.components.shop
+package com.luckydut97.feature_home_shop.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,8 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.R
-
-import com.luckydut97.tennispark.core.data.model.ShopItem
+import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
 /**

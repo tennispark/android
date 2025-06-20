@@ -1,10 +1,11 @@
-package com.luckydut97.tennispark.core.data.network
+package com.luckydut97.tennispark.core.data.repository
 
 import android.util.Log
 import com.luckydut97.tennispark.core.data.model.ApiResponse
 import com.luckydut97.tennispark.core.data.model.PhoneVerificationRequest
 import com.luckydut97.tennispark.core.data.model.PhoneVerificationCodeRequest
 import com.luckydut97.tennispark.core.data.model.PhoneVerificationResponse
+import com.luckydut97.tennispark.core.data.network.NetworkModule
 
 class PhoneVerificationRepository {
 

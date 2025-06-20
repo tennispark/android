@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import com.luckydut97.tennispark.core.data.network.MembershipRepository
+import com.luckydut97.tennispark.core.data.repository.MembershipRepository
 import com.luckydut97.tennispark.core.data.model.MemberRegistrationRequest
 
 class MembershipRegistrationViewModel : ViewModel() {

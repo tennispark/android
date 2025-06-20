@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.luckydut97.tennispark.core.R
-import com.luckydut97.tennispark.core.data.model.ShopItem
+import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
