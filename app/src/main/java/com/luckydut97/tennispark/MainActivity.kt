@@ -12,13 +12,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import com.luckydut97.tennispark.core.ui.theme.TennisParkTheme
+import com.luckydut97.tennispark.core.data.network.NetworkModule
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 다크모드 비활성화
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        // 시스템 UI 설정 - 상태바를 표시하도록 설정
+        // NetworkModule 초기화
+        NetworkModule.initialize(this)
+
+        // 시스템 UI 설정
         WindowCompat.setDecorFitsSystemWindows(window, true)
 
         setContent {
@@ -37,7 +44,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TennisParkApp() {
     // 앱 네비게이션 사용
-    AppNavigation(isLoggedIn = false) // 기본값은 로그인 안된 상태로 시작
+    AppNavigation() // isLoggedIn 파라미터 제거 (스플래시에서 처리)
 }
 
 @Preview(showBackground = true)

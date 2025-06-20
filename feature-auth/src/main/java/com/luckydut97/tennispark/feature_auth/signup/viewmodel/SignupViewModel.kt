@@ -10,11 +10,24 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.luckydut97.tennispark.core.data.network.MembershipRepository
 import com.luckydut97.tennispark.core.data.model.MemberRegistrationRequest
+import com.luckydut97.tennispark.core.data.storage.TokenManager
+import com.luckydut97.tennispark.core.data.storage.TokenManagerImpl
+import com.luckydut97.tennispark.core.data.network.NetworkModule
 
 class SignupViewModel : ViewModel() {
 
     private val tag = "🔍 디버깅: SignupViewModel"
     private val membershipRepository = MembershipRepository()
+
+    // TokenManager 인스턴스 생성
+    private val tokenManager: TokenManager by lazy {
+        val context = NetworkModule.getContext()
+        if (context != null) {
+            TokenManagerImpl(context)
+        } else {
+            throw IllegalStateException("NetworkModule not initialized")
+        }
+    }
 
     // 휴대폰 번호 (인증 화면에서 전달받을 예정)
     private val _phoneNumber = MutableStateFlow("")
@@ -75,9 +88,6 @@ class SignupViewModel : ViewModel() {
     // 에러 메시지
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
-
-    // 개발 모드 플래그 - true로 설정하면 실제 API 호출 없이 동작
-    private val IS_DEV_MODE = true
 
     fun setPhoneNumber(phoneNumber: String) {
         _phoneNumber.value = phoneNumber
@@ -162,19 +172,6 @@ class SignupViewModel : ViewModel() {
                 _agreeFourteen.value
 
         if (isValid) {
-            if (IS_DEV_MODE) {
-                Log.d(tag, "🔧 개발 모드 활성화 - API 호출 생략")
-                viewModelScope.launch {
-                    _isLoading.value = true
-                    delay(500) // UI 피드백을 위한 짧은 지연
-
-                    Log.d(tag, "✅ 개발 모드 회원가입 성공!")
-                    _isSignupComplete.value = true
-                    _isLoading.value = false
-                }
-                return
-            }
-
             viewModelScope.launch {
                 try {
                     _isLoading.value = true
@@ -209,14 +206,29 @@ class SignupViewModel : ViewModel() {
                             Log.d(tag, "🔑 AccessToken 수신: ${registrationResponse.accessToken}")
                             Log.d(tag, "🔄 RefreshToken 수신: ${registrationResponse.refreshToken}")
 
-                            // TODO: 토큰 저장 로직 추가
-                            // TokenManager.saveTokens(accessToken, refreshToken)
+                            // 토큰 저장
+                            tokenManager.saveTokens(
+                                registrationResponse.accessToken,
+                                registrationResponse.refreshToken
+                            )
+                            Log.d(tag, "💾 토큰 저장 완료")
                         }
 
                         _isSignupComplete.value = true
                     } else {
                         Log.e(tag, "❌ 회원가입 실패: ${response.error}")
-                        _errorMessage.value = response.error ?: "회원가입에 실패했습니다."
+
+                        // 중복 휴대폰 번호 에러 체크
+                        val errorMessage = response.error ?: ""
+                        if (errorMessage.contains("휴대폰") || errorMessage.contains("중복") || errorMessage.contains(
+                                "이미"
+                            )
+                        ) {
+                            _errorMessage.value = "이미 가입된 휴대폰 번호입니다. 휴대폰 인증을 통해 로그인해주세요."
+                            Log.w(tag, "⚠️ 중복 가입 시도 - 서버에서 기존 회원을 찾지 못한 것으로 보임")
+                        } else {
+                            _errorMessage.value = response.error ?: "회원가입에 실패했습니다."
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e(tag, "🔥 회원가입 예외 발생: ${e.message}", e)

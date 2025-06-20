@@ -28,18 +28,22 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.tennispark.feature.auth.R
 import com.luckydut97.tennispark.feature_auth.splash.viewmodel.SplashViewModel
+import com.luckydut97.tennispark.feature_auth.splash.viewmodel.AuthState
 
 @Composable
 fun SplashScreen(
-    viewModel: SplashViewModel = viewModel(),
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    onNavigateToMain: () -> Unit
 ) {
-    val isLoading by viewModel.isLoading.collectAsState()
-    val navigateToLogin by viewModel.navigateToLogin.collectAsState()
-    
-    LaunchedEffect(navigateToLogin) {
-        if (navigateToLogin) {
-            onNavigateToLogin()
+    val viewModel: SplashViewModel = viewModel()
+    val authState by viewModel.authState.collectAsState()
+
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> onNavigateToMain()
+            is AuthState.Unauthenticated -> onNavigateToLogin()
+            is AuthState.Loading -> { /* 로딩 상태 - 스플래시 화면 유지 */
+            }
         }
     }
     

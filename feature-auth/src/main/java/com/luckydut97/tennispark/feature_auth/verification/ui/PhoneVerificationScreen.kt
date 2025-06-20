@@ -38,15 +38,16 @@ import com.luckydut97.tennispark.core.ui.components.button.SmallActionButton
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.components.input.VerificationCodeFieldWithTimer
 import com.luckydut97.tennispark.core.ui.theme.AppColors
-import com.luckydut97.tennispark.feature_auth.verification.viewmodel.PhoneVerificationViewModel
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.tennispark.feature_auth.verification.viewmodel.PhoneVerificationViewModel
 
 @Composable
 fun PhoneVerificationScreen(
-    viewModel: PhoneVerificationViewModel = viewModel(),
     onBackClick: () -> Unit,
-    onNavigateToSignup: () -> Unit
+    onNavigateToSignup: (String) -> Unit, // 전화번호 파라미터 추가
+    onNavigateToMain: () -> Unit
 ) {
+    val viewModel: PhoneVerificationViewModel = viewModel()
     val phoneNumber by viewModel.phoneNumber.collectAsState()
     val verificationCode by viewModel.verificationCode.collectAsState()
     val isVerificationRequested by viewModel.isVerificationRequested.collectAsState()
@@ -55,12 +56,20 @@ fun PhoneVerificationScreen(
     val isTimerActive by viewModel.isTimerActive.collectAsState()
     val isNextButtonEnabled by viewModel.isNextButtonEnabled.collectAsState()
     val navigateToSignup by viewModel.navigateToSignup.collectAsState()
+    val navigateToMain by viewModel.navigateToMain.collectAsState()
     val resendCooldownTime by viewModel.resendCooldownTime.collectAsState()
 
     LaunchedEffect(navigateToSignup) {
         if (navigateToSignup) {
             viewModel.navigateToSignupComplete()
-            onNavigateToSignup()
+            onNavigateToSignup(phoneNumber) // 전화번호와 함께 전달
+        }
+    }
+
+    LaunchedEffect(navigateToMain) {
+        if (navigateToMain) {
+            viewModel.navigateToMainComplete()
+            onNavigateToMain()
         }
     }
 

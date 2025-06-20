@@ -59,6 +59,9 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
 
+    // DataStore (토큰 저장용)
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     // 테스트 의존성
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

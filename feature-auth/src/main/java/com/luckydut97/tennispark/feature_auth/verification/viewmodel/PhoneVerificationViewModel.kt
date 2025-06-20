@@ -9,14 +9,24 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository
+import com.luckydut97.tennispark.core.data.storage.TokenManager
+import com.luckydut97.tennispark.core.data.storage.TokenManagerImpl
+import com.luckydut97.tennispark.core.data.network.NetworkModule
 
 class PhoneVerificationViewModel : ViewModel() {
 
     private val tag = "🔍 디버깅: PhoneVerificationVM"
     private val phoneVerificationRepository = PhoneVerificationRepository()
 
-    // 개발 모드 플래그 - true로 설정하면 실제 API 호출 없이 동작
-    private val IS_DEV_MODE = true
+    // TokenManager 인스턴스 생성
+    private val tokenManager: TokenManager by lazy {
+        val context = NetworkModule.getContext()
+        if (context != null) {
+            TokenManagerImpl(context)
+        } else {
+            throw IllegalStateException("NetworkModule not initialized")
+        }
+    }
 
     // 휴대폰 번호
     private val _phoneNumber = MutableStateFlow("")
@@ -50,6 +60,10 @@ class PhoneVerificationViewModel : ViewModel() {
     private val _navigateToSignup = MutableStateFlow(false)
     val navigateToSignup = _navigateToSignup.asStateFlow()
 
+    // 기존 회원 로그인 완료 이벤트
+    private val _navigateToMain = MutableStateFlow(false)
+    val navigateToMain = _navigateToMain.asStateFlow()
+
     // 로딩 상태
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
@@ -81,36 +95,6 @@ class PhoneVerificationViewModel : ViewModel() {
         if (_phoneNumber.value.isNotEmpty()) {
             Log.d(tag, "=== 인증번호 요청 버튼 클릭 ===")
             Log.d(tag, "입력된 전화번호: ${_phoneNumber.value}")
-
-            if (IS_DEV_MODE) {
-                Log.d(tag, "🔧 개발 모드 활성화 - API 호출 생략")
-                viewModelScope.launch {
-                    _isLoading.value = true
-                    delay(500) // UI 피드백을 위한 짧은 지연
-
-                    _isVerificationRequested.value = true
-                    _isTimerActive.value = true
-                    _remainingTime.value = 180 // 3분 리셋
-                    startTimer()
-
-                    _isLoading.value = false
-                    Log.d(tag, "✅ 개발 모드 인증번호 요청 완료")
-                }
-                return
-            }
-
-            Log.d(
-                tag,
-                "호출할 Base URL: ${com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository.BASE_URL}"
-            )
-            Log.d(
-                tag,
-                "호출할 Endpoint: ${com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository.PHONE_VERIFICATION_ENDPOINT}"
-            )
-            Log.d(
-                tag,
-                "전체 URL: ${com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository.BASE_URL}${com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository.PHONE_VERIFICATION_ENDPOINT}"
-            )
 
             viewModelScope.launch {
                 try {
@@ -148,22 +132,6 @@ class PhoneVerificationViewModel : ViewModel() {
             Log.d(tag, "입력된 전화번호: ${_phoneNumber.value}")
             Log.d(tag, "입력된 인증번호: ${_verificationCode.value}")
 
-            if (IS_DEV_MODE) {
-                Log.d(tag, "🔧 개발 모드 활성화 - API 호출 생략하고 바로 회원가입으로 이동")
-                viewModelScope.launch {
-                    _isLoading.value = true
-                    delay(500) // UI 피드백을 위한 짧은 지연
-
-                    _isVerified.value = true
-                    _isTimerActive.value = false
-                    _navigateToSignup.value = true
-
-                    _isLoading.value = false
-                    Log.d(tag, "✅ 개발 모드 인증 완료 - 회원가입 화면으로 이동")
-                }
-                return
-            }
-
             viewModelScope.launch {
                 try {
                     _isLoading.value = true
@@ -185,12 +153,20 @@ class PhoneVerificationViewModel : ViewModel() {
                             Log.d(tag, "🔑 AccessToken: ${verificationResponse.accessToken}")
                             Log.d(tag, "🔄 RefreshToken: ${verificationResponse.refreshToken}")
 
-                            // TODO: 토큰 저장 로직 추가
-                            // TokenManager.saveTokens(accessToken, refreshToken)
+                            // 토큰 저장 - null 체크를 명시적으로 수행
+                            val accessToken = verificationResponse.accessToken
+                            val refreshToken = verificationResponse.refreshToken
+
+                            if (accessToken != null && refreshToken != null) {
+                                tokenManager.saveTokens(accessToken, refreshToken)
+                                Log.d(tag, "💾 기존 회원 토큰 저장 완료")
+                            } else {
+                                Log.e(tag, "⚠️ 토큰이 null입니다")
+                            }
 
                             _isVerified.value = true
                             _isTimerActive.value = false
-                            // TODO: 메인 화면으로 이동하는 로직 추가
+                            _navigateToMain.value = true
                         } else {
                             // 신규 사용자 - 회원가입 화면으로
                             Log.d(tag, "🆕 신규 사용자 회원가입 화면으로 이동")
@@ -221,36 +197,6 @@ class PhoneVerificationViewModel : ViewModel() {
 
         Log.d(tag, "=== 인증번호 재전송 ===")
         Log.d(tag, "전화번호: ${_phoneNumber.value}")
-
-        if (IS_DEV_MODE) {
-            Log.d(tag, "🔧 개발 모드 활성화 - API 호출 생략")
-            viewModelScope.launch {
-                _isLoading.value = true
-                delay(500) // UI 피드백을 위한 짧은 지연
-
-                _remainingTime.value = 180 // 3분 리셋
-                _isTimerActive.value = true
-                startTimer()
-                startResendCooldown()
-
-                _isLoading.value = false
-                Log.d(tag, "✅ 개발 모드 인증번호 재전송 완료")
-            }
-            return
-        }
-
-        Log.d(
-            tag,
-            "호출할 Base URL: ${com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository.BASE_URL}"
-        )
-        Log.d(
-            tag,
-            "호출할 Endpoint: ${com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository.PHONE_VERIFICATION_ENDPOINT}"
-        )
-        Log.d(
-            tag,
-            "전체 URL: ${com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository.BASE_URL}${com.luckydut97.tennispark.core.data.network.PhoneVerificationRepository.PHONE_VERIFICATION_ENDPOINT}"
-        )
 
         viewModelScope.launch {
             try {
@@ -283,6 +229,10 @@ class PhoneVerificationViewModel : ViewModel() {
 
     fun navigateToSignupComplete() {
         _navigateToSignup.value = false
+    }
+
+    fun navigateToMainComplete() {
+        _navigateToMain.value = false
     }
 
     private fun startTimer() {

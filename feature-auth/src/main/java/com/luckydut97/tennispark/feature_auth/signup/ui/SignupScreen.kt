@@ -18,8 +18,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -41,10 +43,19 @@ import com.luckydut97.tennispark.feature_auth.signup.viewmodel.SignupViewModel
 
 @Composable
 fun SignupScreen(
-    viewModel: SignupViewModel = viewModel(),
+    phoneNumber: String = "", // 전화번호 파라미터 추가
     onBackClick: () -> Unit,
     onSignupComplete: () -> Unit
 ) {
+    val viewModel: SignupViewModel = viewModel()
+
+    // 전화번호 설정
+    LaunchedEffect(phoneNumber) {
+        if (phoneNumber.isNotEmpty()) {
+            viewModel.setPhoneNumber(phoneNumber)
+        }
+    }
+
     val name by viewModel.name.collectAsState()
     val isMale by viewModel.isMale.collectAsState()
     val experience by viewModel.experience.collectAsState()
