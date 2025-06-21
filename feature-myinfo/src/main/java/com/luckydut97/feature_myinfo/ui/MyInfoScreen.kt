@@ -378,7 +378,8 @@ fun MyInfoScreen(
                 }
             }
 
-            // 로딩 인디케이터
+            // 로딩 인디케이터 (주석 처리 - 사용자가 API 호출을 알 필요 없음)
+            /*
             if (isLoading) {
                 Box(
                     modifier = Modifier
@@ -391,6 +392,7 @@ fun MyInfoScreen(
                     )
                 }
             }
+            */
 
             // 에러 메시지 표시 (필요시)
             errorMessage?.let { message ->
