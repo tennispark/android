@@ -17,6 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,10 +58,20 @@ fun MembershipRegistrationScreen(
     val agreeToMediaUsage by viewModel.agreeToMediaUsage.collectAsState()
     val isMembershipComplete by viewModel.isMembershipComplete.collectAsState()
     val isSubmitEnabled by viewModel.isSubmitEnabled.collectAsState(initial = false)
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     LaunchedEffect(isMembershipComplete) {
         if (isMembershipComplete) {
             onMembershipComplete()
+        }
+    }
+
+    // 에러 메시지 표시
+    errorMessage?.let { message ->
+        LaunchedEffect(message) {
+            android.util.Log.e("MembershipRegistrationScreen", "Error: $message")
+            // TODO: Toast나 SnackBar로 에러 메시지 표시 가능
         }
     }
 
@@ -432,11 +444,47 @@ fun MembershipRegistrationScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
+            // 로딩 및 에러 상태 표시
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = AppColors.PrimaryVariant
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // 에러 메시지 표시
+            errorMessage?.let { message ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = Color(0xFFFFF2F2),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = message,
+                        fontSize = 14.sp,
+                        color = Color(0xFFEF3629),
+                        fontFamily = Pretendard,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
             // 가입하기 버튼
             ActionButton(
                 text = "가입하기",
                 onClick = { viewModel.submitMembershipRegistration() },
-                enabled = isSubmitEnabled
+                enabled = isSubmitEnabled && !isLoading
             )
 
             Spacer(modifier = Modifier.height(40.dp))

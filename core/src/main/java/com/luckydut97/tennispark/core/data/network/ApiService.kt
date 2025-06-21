@@ -1,5 +1,6 @@
 package com.luckydut97.tennispark.core.data.network
 
+import com.luckydut97.tennispark.core.data.model.AcademyListResponse
 import com.luckydut97.tennispark.core.data.model.ApiResponse
 import com.luckydut97.tennispark.core.data.model.MemberRegistrationRequest
 import com.luckydut97.tennispark.core.data.model.MemberRegistrationResponse
@@ -8,10 +9,10 @@ import com.luckydut97.tennispark.core.data.model.PhoneVerificationCodeRequest
 import com.luckydut97.tennispark.core.data.model.PhoneVerificationResponse
 import com.luckydut97.tennispark.core.data.model.TokenResponse
 import com.luckydut97.tennispark.core.data.model.ActivityListResponse
+import com.luckydut97.tennispark.core.data.model.MemberInfoResponse
 import com.luckydut97.tennispark.core.data.model.MyPointResponse
 import com.luckydut97.tennispark.core.data.model.PointHistoryListResponse
-import com.luckydut97.tennispark.core.data.model.AcademyListResponse
-import com.luckydut97.tennispark.core.data.model.MemberInfoResponse
+import com.luckydut97.tennispark.core.data.model.MembershipRegistrationRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -56,6 +57,10 @@ interface ApiService {
 
     @GET("api/members/points/me/history")
     suspend fun getPointHistories(): Response<ApiResponse<PointHistoryListResponse>>
+
+    // 멤버십 관련 API
+    @POST("api/members/memberships")
+    suspend fun registerMembership(@Body request: MembershipRegistrationRequest): Response<ApiResponse<Any>>
 
     // QR 이벤트 처리 API (동적 URL) - Body 없는 POST
     @POST

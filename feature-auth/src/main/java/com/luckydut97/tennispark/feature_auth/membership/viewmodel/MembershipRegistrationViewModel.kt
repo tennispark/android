@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import com.luckydut97.tennispark.core.data.repository.MembershipRepository
-import com.luckydut97.tennispark.core.data.model.MemberRegistrationRequest
+import com.luckydut97.tennispark.core.data.model.MembershipRegistrationRequest
 
 class MembershipRegistrationViewModel : ViewModel() {
 
@@ -114,20 +114,43 @@ class MembershipRegistrationViewModel : ViewModel() {
                 _isLoading.value = true
                 _errorMessage.value = null
 
-                // TODO: 실제 사용자 정보를 가져와야 함 (이름, 전화번호, 성별, 테니스 경력 등)
-                val request = MemberRegistrationRequest(
-                    phoneNumber = "01012345678", // TODO: 실제 전화번호
-                    name = "홍길동", // TODO: 실제 이름
-                    gender = "MAN", // TODO: 실제 성별
-                    tennisCareer = _joinReason.value, // 가입 이유를 테니스 경력으로 사용
-                    year = 2025,
-                    registrationSource = "INSTAGRAM",
-                    recommender = _referrer.value,
-                    instagramId = ""
+                // 멤버십 타입 매핑
+                val membershipType = when (_membershipType.value) {
+                    0 -> "NEW"
+                    1 -> "EXISTING"
+                    else -> "NEW"
+                }
+
+                // 코트 타입 매핑
+                val courtType = when (_selectedCourt.value) {
+                    0 -> "GAME_CHALLENGE"
+                    1 -> "RALLY"
+                    2 -> "STUDY"
+                    3 -> "BEGINNER"
+                    else -> "BEGINNER"
+                }
+
+                // 기간 매핑
+                val period = when (_selectedPeriod.value) {
+                    0 -> "7WEEKS"
+                    1 -> "9WEEKS"
+                    2 -> "13WEEKS"
+                    else -> "7WEEKS"
+                }
+
+                // 추천인 처리 (빈 문자열이면 null로 변환)
+                val recommender = if (_referrer.value.isBlank()) null else _referrer.value
+
+                val request = MembershipRegistrationRequest(
+                    membershipType = membershipType,
+                    reason = _joinReason.value,
+                    courtType = courtType,
+                    period = period,
+                    recommender = recommender
                 )
 
                 Log.d(tag, "Repository 호출 시작...")
-                val response = membershipRepository.registerMember(request)
+                val response = membershipRepository.registerMembership(request)
                 Log.d(tag, "Repository 호출 완료")
 
                 if (response.success) {
@@ -135,12 +158,12 @@ class MembershipRegistrationViewModel : ViewModel() {
                     _isMembershipComplete.value = true
                 } else {
                     val errorMessage = response.error?.message ?: "멤버십 등록에 실패했습니다."
-                    Log.e(tag, "디버깅: 멤버십 등록 실패: $errorMessage")
+                    Log.e(tag, "멤버십 등록 실패: $errorMessage")
                     _errorMessage.value = errorMessage
                 }
             } catch (e: Exception) {
-                Log.e(tag, "디버깅: API 호출 예외 발생: ${e.message}", e)
-                _errorMessage.value = "네트워크 오류가 발생했습니다: ${e.message}"
+                Log.e(tag, "API 호출 예외 발생: ${e.message}", e)
+                _errorMessage.value = "오류가 발생했습니다."
             } finally {
                 _isLoading.value = false
                 Log.d(tag, "=== 멤버십 등록 처리 완료 ===")
