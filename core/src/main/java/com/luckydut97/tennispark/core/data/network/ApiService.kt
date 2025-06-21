@@ -10,6 +10,7 @@ import com.luckydut97.tennispark.core.data.model.TokenResponse
 import com.luckydut97.tennispark.core.data.model.ActivityListResponse
 import com.luckydut97.tennispark.core.data.model.MyPointResponse
 import com.luckydut97.tennispark.core.data.model.PointHistoryListResponse
+import com.luckydut97.tennispark.core.data.model.AcademyListResponse
 import com.luckydut97.tennispark.core.data.model.MemberInfoResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -37,6 +38,13 @@ interface ApiService {
 
     @POST("api/members/activities/{activityId}/apply")
     suspend fun applyForActivity(@Path("activityId") activityId: Long): Response<ApiResponse<Any>>
+
+    // 아카데미 관련 API
+    @GET("api/members/activities/academies")
+    suspend fun getAcademies(): Response<ApiResponse<AcademyListResponse>>
+
+    @POST("api/members/activities/academies/{academyId}/apply")
+    suspend fun applyForAcademy(@Path("academyId") academyId: Long): Response<ApiResponse<Any>>
 
     // 회원정보 조회 API
     @GET("api/members/name/me")

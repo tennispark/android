@@ -3,18 +3,21 @@ package com.luckydut97.feature_home_activity.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.luckydut97.feature_home_activity.data.model.Academy
-import com.luckydut97.feature_home_activity.data.repository.MockAcademyRepository
+import com.luckydut97.feature_home_activity.data.repository.AcademyRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import android.util.Log
 
 /**
  * 아카데미 신청을 위한 ViewModel
  */
 class AcademyApplicationViewModel(
-    private val repository: MockAcademyRepository
+    private val repository: AcademyRepository
 ) : ViewModel() {
+
+    private val tag = "🔍 디버깅: AcademyApplicationViewModel"
 
     // 아카데미 목록
     private val _academies = MutableStateFlow<List<Academy>>(emptyList())
@@ -45,6 +48,7 @@ class AcademyApplicationViewModel(
     val selectedAcademy: StateFlow<Academy?> = _selectedAcademy.asStateFlow()
 
     init {
+        Log.d(tag, "AcademyApplicationViewModel 초기화")
         loadAcademies()
     }
 
@@ -52,6 +56,7 @@ class AcademyApplicationViewModel(
      * 아카데미 목록 로드
      */
     private fun loadAcademies() {
+        Log.d(tag, "=== 아카데미 목록 로드 시작 ===")
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
@@ -60,10 +65,12 @@ class AcademyApplicationViewModel(
                 repository.getAcademies().collect { academyList ->
                     _academies.value = academyList
                     _isLoading.value = false
+                    Log.d(tag, "✅ 아카데미 목록 로드 성공: ${academyList.size}개")
                 }
             } catch (e: Exception) {
                 _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
                 _isLoading.value = false
+                Log.e(tag, "❌ 아카데미 목록 로드 실패: ${e.message}", e)
             }
         }
     }
@@ -72,6 +79,7 @@ class AcademyApplicationViewModel(
      * 아카데미 신청 바텀시트 표시
      */
     fun showAcademyApplicationSheet() {
+        Log.d(tag, "아카데미 신청 바텀시트 표시")
         _showBottomSheet.value = true
         loadAcademies() // 바텀시트 열 때마다 최신 데이터 로드
     }
@@ -80,6 +88,7 @@ class AcademyApplicationViewModel(
      * 아카데미 신청 바텀시트 숨기기
      */
     fun hideAcademyApplicationSheet() {
+        Log.d(tag, "아카데미 신청 바텀시트 숨기기")
         _showBottomSheet.value = false
     }
 
@@ -87,6 +96,7 @@ class AcademyApplicationViewModel(
      * 아카데미 선택 및 상세 다이얼로그 표시
      */
     fun selectAcademyAndShowDetail(academy: Academy) {
+        Log.d(tag, "아카데미 선택: ${academy.id}")
         _selectedAcademy.value = academy
         _showDetailDialog.value = true
     }
@@ -95,6 +105,7 @@ class AcademyApplicationViewModel(
      * 상세 다이얼로그 숨기기
      */
     fun hideDetailDialog() {
+        Log.d(tag, "상세 다이얼로그 숨기기")
         _showDetailDialog.value = false
         _selectedAcademy.value = null
     }
@@ -103,21 +114,25 @@ class AcademyApplicationViewModel(
      * 아카데미 신청
      */
     fun applyForAcademy(academyId: String) {
+        Log.d(tag, "=== 아카데미 신청 시작: $academyId ===")
         viewModelScope.launch {
             try {
                 val result = repository.applyForAcademy(academyId)
                 result.fold(
-                    onSuccess = {
+                    onSuccess = { message ->
+                        Log.d(tag, "✅ 아카데미 신청 성공: $message")
                         _showDetailDialog.value = false
                         _showCompleteDialog.value = true
                         loadAcademies() // 신청 후 목록 새로고침
                     },
                     onFailure = { exception ->
+                        Log.e(tag, "❌ 아카데미 신청 실패: ${exception.message}")
                         _error.value = exception.message ?: "신청 중 오류가 발생했습니다."
                         _showDetailDialog.value = false
                     }
                 )
             } catch (e: Exception) {
+                Log.e(tag, "❌ 아카데미 신청 예외: ${e.message}", e)
                 _error.value = e.message ?: "신청 중 오류가 발생했습니다."
                 _showDetailDialog.value = false
             }
@@ -128,6 +143,14 @@ class AcademyApplicationViewModel(
      * 완료 다이얼로그 숨기기
      */
     fun hideCompleteDialog() {
+        Log.d(tag, "완료 다이얼로그 숨기기")
         _showCompleteDialog.value = false
+    }
+
+    /**
+     * 에러 메시지 초기화
+     */
+    fun clearError() {
+        _error.value = null
     }
 }

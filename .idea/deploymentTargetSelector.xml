@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="tennispark.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-06-21T02:37:55.801314Z">
+        <DropdownSelection timestamp="2025-06-21T17:17:50.307245Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/sbha/.android/avd/Galaxy_S25_Edge.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/sbha/.android/avd/Nexus_5_API_33.avd" />
             </handle>
           </Target>
         </DropdownSelection>

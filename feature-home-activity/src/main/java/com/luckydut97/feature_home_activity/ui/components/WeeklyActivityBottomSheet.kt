@@ -151,22 +151,29 @@ fun WeeklyActivityBottomSheet(
                                         .height(422.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "오류가 발생했습니다",
-                                            fontSize = 16.sp,
-                                            fontFamily = Pretendard,
-                                            color = Color(0xFFEF3629)
-                                        )
-                                        Text(
-                                            text = error ?: "",
-                                            fontSize = 14.sp,
-                                            fontFamily = Pretendard,
-                                            color = Color(0xFF8B9096)
-                                        )
-                                    }
+                                    Text(
+                                        text = error ?: "오류가 발생했습니다.",
+                                        fontSize = 16.sp,
+                                        fontFamily = Pretendard,
+                                        color = Color(0xFFEF3629),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            } else if (activities.isEmpty()) {
+                                // 빈 상태 표시 (0개 조회)
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(422.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "현재 신청 가능한 활동이 없습니다.",
+                                        fontSize = 16.sp,
+                                        fontFamily = Pretendard,
+                                        color = Color(0xFF8B9096),
+                                        textAlign = TextAlign.Center
+                                    )
                                 }
                             } else {
                                 // 활동 목록 표시 - LazyColumn으로 스크롤 가능

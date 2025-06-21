@@ -60,7 +60,16 @@ class WeeklyActivityRepositoryImpl : WeeklyActivityRepository {
             } else {
                 val errorMessage = response.error?.message ?: "활동 목록을 가져올 수 없습니다."
                 Log.e(tag, "❌ 활동 목록 조회 실패: $errorMessage")
-                throw Exception(errorMessage)
+
+                // 깔끔한 에러 메시지 제공
+                val cleanErrorMessage = when {
+                    errorMessage.contains("서버 오류") -> "서버 오류가 발생했습니다."
+                    errorMessage.contains("인증") -> "인증이 되지 않았습니다."
+                    errorMessage.contains("네트워크") -> "네트워크 오류가 발생했습니다."
+                    else -> "오류가 발생했습니다."
+                }
+
+                throw Exception(cleanErrorMessage)
             }
         } catch (e: Exception) {
             Log.e(tag, "❌ 활동 목록 조회 실패", e)

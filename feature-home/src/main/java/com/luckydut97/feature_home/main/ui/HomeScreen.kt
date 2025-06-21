@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.luckydut97.feature_home_activity.data.repository.AcademyRepositoryImpl
 import com.luckydut97.feature_home_activity.data.repository.WeeklyActivityRepositoryImpl
 import com.luckydut97.feature_home_activity.viewmodel.AppliedActivityViewModel
 import com.luckydut97.feature_home_activity.viewmodel.AcademyApplicationViewModel
@@ -29,7 +30,6 @@ import com.luckydut97.feature_home_activity.ui.components.AppliedActivityBottomS
 import com.luckydut97.feature_home_activity.ui.components.AcademyApplicationBottomSheet
 import com.luckydut97.feature_home_activity.ui.components.WeeklyActivityBottomSheet
 import com.luckydut97.feature_home_activity.data.repository.MockAppliedActivityRepository
-import com.luckydut97.feature_home_activity.data.repository.MockAcademyRepository
 import com.luckydut97.tennispark.core.data.network.NetworkModule
 import com.luckydut97.tennispark.feature.home.R
 import com.luckydut97.feature_home.main.ui.components.AdBanner
@@ -62,9 +62,9 @@ fun HomeScreen(
     }
     val showAppliedActivityBottomSheet by appliedActivityViewModel.showBottomSheet.collectAsState()
 
-    // Academy ViewModel 생성 (신규 - TODO: ViewModel 구현 후 활성화)
+    // Academy ViewModel 생성 (실제 API 연동)
     val academyApplicationViewModel: AcademyApplicationViewModel = viewModel {
-        AcademyApplicationViewModel(MockAcademyRepository())
+        AcademyApplicationViewModel(AcademyRepositoryImpl())
     }
     val showAcademyApplicationBottomSheet by academyApplicationViewModel.showBottomSheet.collectAsState()
 

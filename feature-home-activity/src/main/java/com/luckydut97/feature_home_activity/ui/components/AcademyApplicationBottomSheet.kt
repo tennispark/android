@@ -183,22 +183,29 @@ fun AcademyApplicationBottomSheet(
                                         .height(422.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "오류가 발생했습니다",
-                                            fontSize = 16.sp,
-                                            fontFamily = Pretendard,
-                                            color = Color(0xFFEF3629)
-                                        )
-                                        Text(
-                                            text = error ?: "",
-                                            fontSize = 14.sp,
-                                            fontFamily = Pretendard,
-                                            color = Color(0xFF8B9096)
-                                        )
-                                    }
+                                    Text(
+                                        text = error ?: "오류가 발생했습니다.",
+                                        fontSize = 16.sp,
+                                        fontFamily = Pretendard,
+                                        color = Color(0xFFEF3629),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            } else if (academies.isEmpty()) {
+                                // 빈 상태 표시 (0개 조회)
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(422.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "현재 신청 가능한 아카데미가 없습니다.",
+                                        fontSize = 16.sp,
+                                        fontFamily = Pretendard,
+                                        color = Color(0xFF8B9096),
+                                        textAlign = TextAlign.Center
+                                    )
                                 }
                             } else {
                                 // 아카데미 목록 표시 (최대 4개)
