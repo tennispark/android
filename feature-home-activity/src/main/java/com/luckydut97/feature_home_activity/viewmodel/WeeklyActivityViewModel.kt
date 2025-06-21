@@ -45,7 +45,8 @@ class WeeklyActivityViewModel(
     val showCompleteDialog: StateFlow<Boolean> = _showCompleteDialog.asStateFlow()
 
     init {
-        loadWeeklyActivities()
+        // 자동 로드 제거 - 사용자가 버튼 클릭할 때만 로드
+        // loadWeeklyActivities()
     }
 
     /**
@@ -117,23 +118,70 @@ class WeeklyActivityViewModel(
     }
 
     /**
-     * 활동 신청 (API 호출 준비)
+     * 활동 신청 (실제 API 호출)
      */
     fun applyForActivity(activityId: String) {
+        android.util.Log.d(
+            "WeeklyActivityViewModel",
+            "🔥 applyForActivity 함수 호출됨: activityId=$activityId"
+        )
+
         viewModelScope.launch {
             try {
-                // TODO: 서버 API 준비되면 실제 구현
-                val result = repository.applyForActivity(activityId)
+                android.util.Log.d("WeeklyActivityViewModel", "🔄 viewModelScope.launch 시작")
+
+                // 먼저 해당 활동이 신청 가능한지 확인
+                val targetActivity = _activities.value.find { it.id == activityId }
+                android.util.Log.d("WeeklyActivityViewModel", "🔍 대상 활동 검색 결과: $targetActivity")
+
+                if (targetActivity == null) {
+                    android.util.Log.e("WeeklyActivityViewModel", "❌ 활동을 찾을 수 없습니다: $activityId")
+                    _error.value = "활동을 찾을 수 없습니다."
+                    return@launch
+                }
+
+                android.util.Log.d("WeeklyActivityViewModel", "📊 활동 상태: ${targetActivity.status}")
+                android.util.Log.d(
+                    "WeeklyActivityViewModel",
+                    "🆔 실제 ActivityId: ${targetActivity.actualActivityId}"
+                )
+
+                if (targetActivity.actualActivityId == null) {
+                    android.util.Log.e(
+                        "WeeklyActivityViewModel",
+                        "❌ 서버 데이터 오류: actualActivityId가 null"
+                    )
+                    _error.value = "서버 데이터 오류로 인해 현재 신청할 수 없습니다.\n나중에 다시 시도해주세요."
+                    return@launch
+                }
+
+                if (targetActivity.status == com.luckydut97.feature_home_activity.domain.model.ActivityStatus.UNAVAILABLE) {
+                    android.util.Log.e("WeeklyActivityViewModel", "❌ 신청 불가 상태")
+                    _error.value = "현재 신청할 수 없는 활동입니다."
+                    return@launch
+                }
+
+                android.util.Log.d(
+                    "WeeklyActivityViewModel",
+                    "🚀 Repository.applyForActivityWithId 호출 시작"
+                )
+                val result = repository.applyForActivityWithId(targetActivity.actualActivityId!!)
+                android.util.Log.d("WeeklyActivityViewModel", "📨 Repository 결과: $result")
 
                 if (result.isSuccess) {
+                    android.util.Log.d("WeeklyActivityViewModel", "✅ 신청 성공!")
                     // 신청 성공 시
                     hideDetailDialog() // 상세 다이얼로그 닫기
                     showCompleteDialog() // 완료 다이얼로그 표시
                     loadWeeklyActivities() // 목록 새로고침
                 } else {
-                    _error.value = "신청에 실패했습니다."
+                    val exception = result.exceptionOrNull()
+                    val errorMessage = exception?.message ?: "신청에 실패했습니다."
+                    android.util.Log.e("WeeklyActivityViewModel", "❌ 신청 실패: $errorMessage")
+                    _error.value = errorMessage
                 }
             } catch (e: Exception) {
+                android.util.Log.e("WeeklyActivityViewModel", "💥 예외 발생: ${e.message}", e)
                 _error.value = e.message ?: "신청 중 오류가 발생했습니다."
             }
         }

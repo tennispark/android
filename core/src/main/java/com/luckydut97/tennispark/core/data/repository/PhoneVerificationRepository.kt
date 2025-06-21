@@ -5,6 +5,7 @@ import com.luckydut97.tennispark.core.data.model.ApiResponse
 import com.luckydut97.tennispark.core.data.model.PhoneVerificationRequest
 import com.luckydut97.tennispark.core.data.model.PhoneVerificationCodeRequest
 import com.luckydut97.tennispark.core.data.model.PhoneVerificationResponse
+import com.luckydut97.tennispark.core.data.model.ErrorResponse
 import com.luckydut97.tennispark.core.data.network.NetworkModule
 
 class PhoneVerificationRepository {
@@ -44,7 +45,10 @@ class PhoneVerificationRepository {
                 body ?: ApiResponse(
                     success = false,
                     response = null,
-                    error = "응답 본문이 비어있습니다."
+                    error = ErrorResponse(
+                        status = 500,
+                        message = "응답 본문이 비어있습니다."
+                    )
                 )
             } else {
                 val errorBody = response.errorBody()?.string()
@@ -56,7 +60,10 @@ class PhoneVerificationRepository {
                 ApiResponse(
                     success = false,
                     response = null,
-                    error = "서버 오류: ${response.code()} - ${response.message()}"
+                    error = ErrorResponse(
+                        status = response.code(),
+                        message = "서버 오류가 발생했습니다."
+                    )
                 )
             }
         } catch (e: Exception) {
@@ -64,7 +71,10 @@ class PhoneVerificationRepository {
             ApiResponse(
                 success = false,
                 response = null,
-                error = "네트워크 오류: ${e.message}"
+                error = ErrorResponse(
+                    status = 0,
+                    message = "네트워크 오류: ${e.message}"
+                )
             )
         } finally {
             Log.d(tag, "=== 실제 인증번호 요청 API 호출 완료 ===")
@@ -111,7 +121,10 @@ class PhoneVerificationRepository {
                 body ?: ApiResponse(
                     success = false,
                     response = null,
-                    error = "응답 본문이 비어있습니다."
+                    error = ErrorResponse(
+                        status = 500,
+                        message = "응답 본문이 비어있습니다."
+                    )
                 )
             } else {
                 val errorBody = response.errorBody()?.string()
@@ -120,12 +133,18 @@ class PhoneVerificationRepository {
                 Log.e(tag, "Error Message: ${response.message()}")
                 Log.e(tag, "Error Body: $errorBody")
 
-                ApiResponse(
+                ApiResponse<PhoneVerificationResponse>(
                     success = false,
                     response = null,
                     error = when (response.code()) {
-                        401 -> "인증번호가 올바르지 않습니다."
-                        else -> "서버 오류: ${response.code()} - ${response.message()}"
+                        401 -> ErrorResponse(
+                            status = 401,
+                            message = "인증번호가 올바르지 않습니다."
+                        )
+                        else -> ErrorResponse(
+                            status = response.code(),
+                            message = "서버 오류: ${response.code()} - ${response.message()}"
+                        )
                     }
                 )
             }
@@ -134,7 +153,10 @@ class PhoneVerificationRepository {
             ApiResponse(
                 success = false,
                 response = null,
-                error = "네트워크 오류: ${e.message}"
+                error = ErrorResponse(
+                    status = 0,
+                    message = "네트워크 오류: ${e.message}"
+                )
             )
         } finally {
             Log.d(tag, "=== 인증번호 확인 API 호출 완료 ===")

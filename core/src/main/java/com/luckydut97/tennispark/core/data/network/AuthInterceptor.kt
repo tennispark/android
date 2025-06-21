@@ -17,43 +17,64 @@ class AuthInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
+        Log.d(tag, "🔍 API 요청 인터셉트: ${originalRequest.url}")
+        Log.d(tag, "  요청 URL: ${originalRequest.url}")
+        Log.d(tag, "  요청 Method: ${originalRequest.method}")
+        Log.d(tag, "  요청 Path: ${originalRequest.url.encodedPath}")
+
         // 토큰이 필요 없는 API들 (인증, 회원가입 등)
         val skipAuthUrls = listOf(
-            "api/members/auth/phones/code",
-            "api/members/auth/phones/code/verify",
-            "api/members/auth/token/refresh",
-            "api/members" // 회원가입
+            "/api/members/auth/phones/code",
+            "/api/members/auth/phones/code/verify",
+            "/api/members/auth/token/refresh",
+            "/api/members" // 회원가입만 정확히 매치
         )
 
         val shouldSkipAuth = skipAuthUrls.any { url ->
-            originalRequest.url.encodedPath.contains(url)
+            originalRequest.url.encodedPath == url
         }
 
+        Log.d(tag, "🔍 인증 헤더 필요성 체크:")
+        Log.d(tag, "  Skip Auth URLs: $skipAuthUrls")
+        Log.d(tag, "  Should Skip Auth: $shouldSkipAuth")
+
         if (shouldSkipAuth) {
-            Log.d(tag, "인증 헤더 생략: ${originalRequest.url}")
+            Log.d(tag, "✅ 인증 헤더 생략: ${originalRequest.url}")
             return chain.proceed(originalRequest)
         }
 
         // 액세스 토큰 가져오기
         val accessToken = runBlocking { tokenManager.getAccessToken() }
 
+        Log.d(tag, "🔑 토큰 확인:")
+        Log.d(tag, "  AccessToken 존재: ${accessToken != null}")
+        Log.d(tag, "  AccessToken 길이: ${accessToken?.length ?: 0}")
+
         if (accessToken.isNullOrEmpty()) {
-            Log.d(tag, "액세스 토큰이 없음 - 헤더 추가 생략")
+            Log.e(tag, "❌ 액세스 토큰이 없음 - 헤더 추가 생략")
             return chain.proceed(originalRequest)
         }
+
+        Log.d(tag, "  AccessToken 앞 20자: ${accessToken.take(20)}...")
 
         // Authorization 헤더 추가
         val authenticatedRequest = originalRequest.newBuilder()
             .header("Authorization", "Bearer $accessToken")
             .build()
 
-        Log.d(tag, "Authorization 헤더 추가: ${authenticatedRequest.url}")
+        Log.d(tag, "✅ Authorization 헤더 추가 완료!")
+        Log.d(tag, "  헤더 값: Bearer ${accessToken.take(20)}...")
+        Log.d(tag, "  최종 요청 URL: ${authenticatedRequest.url}")
 
         val response = chain.proceed(authenticatedRequest)
 
+        Log.d(tag, "📡 응답 수신:")
+        Log.d(tag, "  응답 코드: ${response.code}")
+        Log.d(tag, "  응답 메시지: ${response.message}")
+
         // 401 응답 시 토큰 재발급 시도
         if (response.code == 401) {
-            Log.d(tag, "401 응답 받음 - 토큰 재발급 시도")
+            Log.e(tag, "🚨 401 응답 받음 - 토큰 재발급 시도")
             response.close()
 
             return try {

@@ -13,6 +13,7 @@ import com.luckydut97.tennispark.core.data.repository.AuthRepository
 import com.luckydut97.tennispark.core.data.repository.AuthRepositoryImpl
 import com.luckydut97.tennispark.core.data.storage.TokenManager
 import com.luckydut97.tennispark.core.data.storage.TokenManagerImpl
+import com.luckydut97.tennispark.core.config.AppConfig
 
 sealed class AuthState {
     object Loading : AuthState()
@@ -44,6 +45,21 @@ class SplashViewModel : ViewModel() {
 
                 // 스플래시 화면 표시 시간
                 delay(2000)
+
+                // 🔥 개발 모드 체크 추가
+                if (AppConfig.isDevelopment) {
+                    Log.d(tag, "🚀 개발 모드 - 하드코딩된 토큰으로 바로 메인 화면 이동")
+
+                    // 개발용 토큰 자동 저장
+                    val tokenManager = TokenManagerImpl(NetworkModule.getContext()!!)
+                    tokenManager.saveTokens(
+                        AppConfig.DEV_ACCESS_TOKEN,
+                        AppConfig.DEV_REFRESH_TOKEN
+                    )
+
+                    _authState.value = AuthState.Authenticated
+                    return@launch
+                }
 
                 Log.d(tag, "🚀 프로덕션 모드 - 토큰 상태 확인")
 

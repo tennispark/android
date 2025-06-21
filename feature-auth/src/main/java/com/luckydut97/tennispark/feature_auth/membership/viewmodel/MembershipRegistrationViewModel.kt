@@ -134,8 +134,9 @@ class MembershipRegistrationViewModel : ViewModel() {
                     Log.d(tag, "멤버십 등록 성공!")
                     _isMembershipComplete.value = true
                 } else {
-                    Log.e(tag, "디버깅: 멤버십 등록 실패: ${response.error}")
-                    _errorMessage.value = response.error ?: "멤버십 등록에 실패했습니다."
+                    val errorMessage = response.error?.message ?: "멤버십 등록에 실패했습니다."
+                    Log.e(tag, "디버깅: 멤버십 등록 실패: $errorMessage")
+                    _errorMessage.value = errorMessage
                 }
             } catch (e: Exception) {
                 Log.e(tag, "디버깅: API 호출 예외 발생: ${e.message}", e)

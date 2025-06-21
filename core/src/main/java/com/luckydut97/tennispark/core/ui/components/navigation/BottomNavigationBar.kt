@@ -85,7 +85,7 @@ fun BottomNavigationBar(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(10.dp)
+                .height(8.dp)
                 .background(Color.White)
         )
     }

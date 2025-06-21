@@ -21,6 +21,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.luckydut97.feature_home_activity.data.repository.WeeklyActivityRepositoryImpl
+import com.luckydut97.feature_home_activity.viewmodel.AppliedActivityViewModel
+import com.luckydut97.feature_home_activity.viewmodel.AcademyApplicationViewModel
+import com.luckydut97.feature_home_activity.viewmodel.WeeklyActivityViewModel
+import com.luckydut97.feature_home_activity.ui.components.AppliedActivityBottomSheet
+import com.luckydut97.feature_home_activity.ui.components.AcademyApplicationBottomSheet
+import com.luckydut97.feature_home_activity.ui.components.WeeklyActivityBottomSheet
+import com.luckydut97.feature_home_activity.data.repository.MockAppliedActivityRepository
+import com.luckydut97.feature_home_activity.data.repository.MockAcademyRepository
+import com.luckydut97.tennispark.core.data.network.NetworkModule
+import com.luckydut97.tennispark.feature.home.R
 import com.luckydut97.feature_home.main.ui.components.AdBanner
 import com.luckydut97.feature_home.main.ui.components.EventSection
 import com.luckydut97.feature_home.main.ui.components.HomeTopAppBar
@@ -28,25 +39,6 @@ import com.luckydut97.feature_home.main.ui.components.MainActionButtons
 import com.luckydut97.feature_home.main.ui.components.WeeklyApplicationSection
 import com.luckydut97.feature_home.main.ui.components.WeeklyPhotoSection
 import com.luckydut97.feature_home.main.viewmodel.HomeViewModel
-
-// feature-home-activity 모듈 import (기존)
-import com.luckydut97.feature_home_activity.viewmodel.WeeklyActivityViewModel
-import com.luckydut97.feature_home_activity.ui.components.WeeklyActivityBottomSheet
-import com.luckydut97.feature_home_activity.data.repository.MockWeeklyActivityRepository
-
-// feature-home-activity 모듈 import (신규 - 활동인증)
-import com.luckydut97.feature_home_activity.viewmodel.AppliedActivityViewModel
-import com.luckydut97.feature_home_activity.ui.components.AppliedActivityBottomSheet
-import com.luckydut97.feature_home_activity.data.repository.MockAppliedActivityRepository
-
-// feature-home-activity 모듈 import (신규 - 아카데미 신청)
-import com.luckydut97.feature_home_activity.viewmodel.AcademyApplicationViewModel
-import com.luckydut97.feature_home_activity.ui.components.AcademyApplicationBottomSheet
-import com.luckydut97.feature_home_activity.data.repository.MockAcademyRepository
-
-import androidx.compose.foundation.Image
-import androidx.compose.ui.res.painterResource
-import com.luckydut97.tennispark.feature.home.R
 
 @Composable
 fun HomeScreen(
@@ -58,9 +50,9 @@ fun HomeScreen(
     val totalEventPages by viewModel.totalEventPages.collectAsState()
     val scrollState = rememberScrollState()
 
-    // WeeklyActivity ViewModel 생성 (기존)
+    // WeeklyActivity ViewModel 생성 (변경됨)
     val weeklyActivityViewModel: WeeklyActivityViewModel = viewModel {
-        WeeklyActivityViewModel(MockWeeklyActivityRepository())
+        WeeklyActivityViewModel(WeeklyActivityRepositoryImpl())
     }
     val showWeeklyActivityBottomSheet by weeklyActivityViewModel.showBottomSheet.collectAsState()
 
@@ -70,7 +62,7 @@ fun HomeScreen(
     }
     val showAppliedActivityBottomSheet by appliedActivityViewModel.showBottomSheet.collectAsState()
 
-    // Academy ViewModel 생성 (신규 - 아카데미 신청)
+    // Academy ViewModel 생성 (신규 - TODO: ViewModel 구현 후 활성화)
     val academyApplicationViewModel: AcademyApplicationViewModel = viewModel {
         AcademyApplicationViewModel(MockAcademyRepository())
     }

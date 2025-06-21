@@ -19,7 +19,8 @@ data class WeeklyActivity(
     val court: String,
     val currentParticipants: Int,
     val maxParticipants: Int,
-    val status: ActivityStatus
+    val status: ActivityStatus,
+    val actualActivityId: Long? = null // 실제 서버 ActivityId (null이면 신청 불가)
 ) {
     /**
      * 마감임박 여부 확인 (최대인원 - 현재인원 = 1)
@@ -64,5 +65,6 @@ data class WeeklyActivity(
 enum class ActivityStatus {
     RECRUITING,     // 모집 중
     ALMOST_FULL,    // 마감임박
-    FULL           // 모집완료
+    FULL,          // 모집완료
+    UNAVAILABLE    // 신청 불가 (서버 데이터 오류)
 }

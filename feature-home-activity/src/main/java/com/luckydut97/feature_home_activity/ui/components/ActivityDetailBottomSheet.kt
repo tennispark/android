@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.luckydut97.feature_home_activity.R
 import com.luckydut97.feature_home_activity.domain.model.WeeklyActivity
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import android.util.Log
 
 /**
  * 활동 신청 상세 Bottom Sheet
@@ -249,7 +250,13 @@ fun ActivityDetailBottomSheet(
 
                 // 신청하기 버튼
                 Button(
-                    onClick = { onConfirm(activity.id) },
+                    onClick = {
+                        android.util.Log.d(
+                            "ActivityDetailBottomSheet",
+                            "🔥 신청하기 버튼 클릭됨: activityId=${activity.id}"
+                        )
+                        onConfirm(activity.id)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),

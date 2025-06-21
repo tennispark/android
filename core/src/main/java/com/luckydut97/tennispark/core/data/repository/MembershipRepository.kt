@@ -51,7 +51,10 @@ class MembershipRepository {
                 body ?: ApiResponse(
                     success = false,
                     response = null,
-                    error = "응답 본문이 비어있습니다."
+                    error = com.luckydut97.tennispark.core.data.model.ErrorResponse(
+                        status = 500,
+                        message = "응답 본문이 비어있습니다."
+                    )
                 )
             } else {
                 val errorBody = response.errorBody()?.string()
@@ -63,10 +66,13 @@ class MembershipRepository {
                 ApiResponse(
                     success = false,
                     response = null,
-                    error = when (response.code()) {
-                        400 -> "필수 항목이 누락되었습니다. 모든 필수 정보를 입력해주세요."
-                        else -> "서버 오류: ${response.code()} - ${response.message()}"
-                    }
+                    error = com.luckydut97.tennispark.core.data.model.ErrorResponse(
+                        status = response.code(),
+                        message = when (response.code()) {
+                            400 -> "필수 항목이 누락되었습니다. 모든 필수 정보를 입력해주세요."
+                            else -> "서버 오류가 발생했습니다."
+                        }
+                    )
                 )
             }
         } catch (e: Exception) {
@@ -74,7 +80,10 @@ class MembershipRepository {
             ApiResponse(
                 success = false,
                 response = null,
-                error = "네트워크 오류: ${e.message}"
+                error = com.luckydut97.tennispark.core.data.model.ErrorResponse(
+                    status = 0,
+                    message = "네트워크 오류: ${e.message}"
+                )
             )
         } finally {
             Log.d(tag, "=== 회원가입 API 호출 완료 ===")

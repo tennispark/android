@@ -182,7 +182,7 @@ fun AppliedActivityBottomSheet(
                 }
 
                 // 하단 빈 박스 (36dp 높이)
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }

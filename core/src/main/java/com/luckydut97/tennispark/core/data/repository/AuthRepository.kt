@@ -4,6 +4,7 @@ import android.util.Log
 import com.luckydut97.tennispark.core.data.model.ApiResponse
 import com.luckydut97.tennispark.core.data.model.TokenResponse
 import com.luckydut97.tennispark.core.data.network.ApiService
+import com.luckydut97.tennispark.core.data.model.ErrorResponse
 import com.luckydut97.tennispark.core.data.storage.TokenManager
 
 interface AuthRepository {
@@ -25,7 +26,13 @@ class AuthRepositoryImpl(
         val refreshToken = tokenManager.getRefreshToken()
         if (refreshToken == null) {
             Log.e(tag, "Refresh token이 없습니다.")
-            return ApiResponse(success = false, error = "No refresh token")
+            return ApiResponse(
+                success = false,
+                error = ErrorResponse(
+                    status = 401,
+                    message = "No refresh token"
+                )
+            )
         }
 
         return try {
@@ -44,11 +51,23 @@ class AuthRepositoryImpl(
                 response.body()!!
             } else {
                 Log.e(tag, "토큰 재발급 실패: ${response.code()}")
-                ApiResponse(success = false, error = "Token refresh failed")
+                ApiResponse(
+                    success = false,
+                    error = ErrorResponse(
+                        status = response.code(),
+                        message = "Token refresh failed"
+                    )
+                )
             }
         } catch (e: Exception) {
             Log.e(tag, "토큰 재발급 예외: ${e.message}", e)
-            ApiResponse(success = false, error = e.message)
+            ApiResponse(
+                success = false,
+                error = ErrorResponse(
+                    status = 0,
+                    message = e.message ?: "Unknown error"
+                )
+            )
         }
     }
 

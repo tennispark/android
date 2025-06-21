@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.luckydut97.tennispark.core.data.repository.MembershipRepository
 import com.luckydut97.tennispark.core.data.model.MemberRegistrationRequest
+import com.luckydut97.tennispark.core.data.model.ErrorResponse
 import com.luckydut97.tennispark.core.data.storage.TokenManager
 import com.luckydut97.tennispark.core.data.storage.TokenManagerImpl
 import com.luckydut97.tennispark.core.data.network.NetworkModule
@@ -216,10 +217,10 @@ class SignupViewModel : ViewModel() {
 
                         _isSignupComplete.value = true
                     } else {
-                        Log.e(tag, "❌ 회원가입 실패: ${response.error}")
+                        val errorMessage = response.error?.message ?: "회원가입에 실패했습니다."
+                        Log.e(tag, "❌ 회원가입 실패: $errorMessage")
 
                         // 중복 휴대폰 번호 에러 체크
-                        val errorMessage = response.error ?: ""
                         if (errorMessage.contains("휴대폰") || errorMessage.contains("중복") || errorMessage.contains(
                                 "이미"
                             )
@@ -227,7 +228,7 @@ class SignupViewModel : ViewModel() {
                             _errorMessage.value = "이미 가입된 휴대폰 번호입니다. 휴대폰 인증을 통해 로그인해주세요."
                             Log.w(tag, "⚠️ 중복 가입 시도 - 서버에서 기존 회원을 찾지 못한 것으로 보임")
                         } else {
-                            _errorMessage.value = response.error ?: "회원가입에 실패했습니다."
+                            _errorMessage.value = errorMessage
                         }
                     }
                 } catch (e: Exception) {

@@ -203,6 +203,10 @@ fun WeeklyActivityBottomSheet(
             activity = selectedActivity!!,
             isVisible = showDetailDialog,
             onConfirm = { activityId ->
+                android.util.Log.d(
+                    "WeeklyActivityBottomSheet",
+                    "🔥 ActivityDetailBottomSheet onConfirm 호출됨: activityId=$activityId"
+                )
                 viewModel.applyForActivity(activityId)
             },
             onDismiss = {

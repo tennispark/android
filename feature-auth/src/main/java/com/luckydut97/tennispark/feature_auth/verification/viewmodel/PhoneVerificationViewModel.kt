@@ -112,8 +112,9 @@ class PhoneVerificationViewModel : ViewModel() {
                         _remainingTime.value = 180 // 3분 리셋
                         startTimer()
                     } else {
-                        Log.e(tag, "🔥 인증번호 요청 실패: ${response.error}")
-                        _errorMessage.value = response.error ?: "인증번호 요청에 실패했습니다."
+                        val errorMessage = response.error?.message ?: "인증번호 요청에 실패했습니다."
+                        Log.e(tag, "🔥 인증번호 요청 실패: $errorMessage")
+                        _errorMessage.value = errorMessage
                     }
                 } catch (e: Exception) {
                     Log.e(tag, "🔥 인증번호 요청 예외 발생: ${e.message}", e)
@@ -175,8 +176,9 @@ class PhoneVerificationViewModel : ViewModel() {
                             _navigateToSignup.value = true
                         }
                     } else {
-                        Log.e(tag, "❌ 인증번호 확인 실패: ${response.error}")
-                        _errorMessage.value = response.error ?: "인증번호 확인에 실패했습니다."
+                        val errorMessage = response.error?.message ?: "인증번호 확인에 실패했습니다."
+                        Log.e(tag, "❌ 인증번호 확인 실패: $errorMessage")
+                        _errorMessage.value = errorMessage
                     }
                 } catch (e: Exception) {
                     Log.e(tag, "🔥 인증번호 확인 예외 발생: ${e.message}", e)
@@ -214,8 +216,9 @@ class PhoneVerificationViewModel : ViewModel() {
                     startTimer()
                     startResendCooldown()
                 } else {
-                    Log.e(tag, "❌ 인증번호 재전송 실패: ${response.error}")
-                    _errorMessage.value = response.error ?: "인증번호 재전송에 실패했습니다."
+                    val errorMessage = response.error?.message ?: "인증번호 재전송에 실패했습니다."
+                    Log.e(tag, "❌ 인증번호 재전송 실패: $errorMessage")
+                    _errorMessage.value = errorMessage
                 }
             } catch (e: Exception) {
                 Log.e(tag, "🔥 인증번호 재전송 예외 발생: ${e.message}", e)
