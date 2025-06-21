@@ -1,6 +1,8 @@
 package com.luckydut97.feature_myinfo.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +44,7 @@ import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.tennispark.core.data.model.PointHistoryItem
 import com.luckydut97.feature_myinfo.viewmodel.MyInfoViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * 내 정보 화면
@@ -54,11 +59,24 @@ fun MyInfoScreen(
     val histories by viewModel.histories.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val memberInfo by viewModel.memberInfo.collectAsState()
 
-    // 임시 사용자 정보 (실제로는 ViewModel에서 관리할 수도 있음)
-    val userName = "김지수"
-    val gameRecord = GameRecord(wins = 5, draws = 2, losses = 4, totalScore = 23, rank = 3)
-    
+    // 포인트 새로고침 핸들러
+    val coroutineScope = rememberCoroutineScope()
+    val refreshPoints = remember { { viewModel.refreshAllData() } }
+
+    // 실제 API 데이터 또는 기본값 사용
+    val userName = memberInfo?.name ?: "로딩 중..."
+    val gameRecord = memberInfo?.record ?: com.luckydut97.tennispark.core.data.model.GameRecord(
+        wins = 0, draws = 0, losses = 0, score = 0, ranking = 0
+    )
+
+    // 🔥 화면 진입 시마다 자동 새로고침
+    LaunchedEffect(Unit) {
+        Log.d("🔍 디버깅: MyInfoScreen", "화면 진입 - 포인트 데이터 자동 새로고침 시작")
+        viewModel.refreshAllData()
+    }
+
     // 광고 배너 관련
     val adBannerPages = 3
     val pagerState = rememberPagerState(pageCount = { adBannerPages })
@@ -68,9 +86,13 @@ fun MyInfoScreen(
         while (true) {
             delay(5000)
             if (pagerState.currentPage < adBannerPages - 1) {
-                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                }
             } else {
-                pagerState.animateScrollToPage(0)
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(0)
+                }
             }
         }
     }
@@ -116,7 +138,8 @@ fun MyInfoScreen(
                                 color = Color(0xFFF2FAF4),
                                 shape = RoundedCornerShape(8.dp)
                             )
-                            .padding(horizontal = 24.dp),
+                            .padding(horizontal = 24.dp)
+                            .clickable { refreshPoints() }, // 포인트 박스 클릭 시 새로고침
                         contentAlignment = Alignment.Center // 중앙 정렬
                     ) {
                         Column(
@@ -234,7 +257,7 @@ fun MyInfoScreen(
                                     )
 
                                     Text(
-                                        text = "(${gameRecord.totalScore}점/${gameRecord.rank}위)",
+                                        text = "(${gameRecord.score}점/${gameRecord.ranking}위)",
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Normal,
                                         fontFamily = Pretendard,
@@ -374,7 +397,7 @@ fun MyInfoScreen(
                 LaunchedEffect(message) {
                     // 에러 처리 (예: Toast, SnackBar 등)
                     // 임시로 로그만 출력
-                    android.util.Log.e("MyInfoScreen", "Error: $message")
+                    Log.e("MyInfoScreen", "Error: $message")
                 }
             }
         }
@@ -439,11 +462,3 @@ fun ApiPointHistoryItem(
         )
     }
 }
-
-data class GameRecord(
-    val wins: Int,
-    val draws: Int,
-    val losses: Int,
-    val totalScore: Int,
-    val rank: Int
-)

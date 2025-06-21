@@ -37,3 +37,37 @@ data class PointHistoryListResponse(
     @SerializedName("histories")
     val histories: List<PointHistoryItem>
 )
+
+/**
+ * 경기 기록 모델
+ */
+data class GameRecord(
+    @SerializedName("wins")
+    val wins: Int,
+
+    @SerializedName("draws")
+    val draws: Int,
+
+    @SerializedName("losses")
+    val losses: Int,
+
+    @SerializedName("score")
+    val score: Int,
+
+    @SerializedName("ranking")
+    val ranking: Int
+)
+
+/**
+ * 회원 정보 응답 모델 (이름, 포인트, 경기기록 통합)
+ */
+data class MemberInfoResponse(
+    @SerializedName("name")
+    val name: String,
+
+    @SerializedName("point")
+    val point: Int,
+
+    @SerializedName("record")
+    val record: GameRecord
+)

@@ -3,6 +3,8 @@ package com.luckydut97.feature_myinfo.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.luckydut97.tennispark.core.data.model.PointHistoryItem
+import com.luckydut97.tennispark.core.data.model.MemberInfoResponse
+import com.luckydut97.tennispark.core.data.model.GameRecord
 import com.luckydut97.tennispark.core.data.repository.PointRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +33,10 @@ class MyInfoViewModel(
     // 에러 메시지
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    // 회원정보 상태 추가
+    private val _memberInfo = MutableStateFlow<MemberInfoResponse?>(null)
+    val memberInfo: StateFlow<MemberInfoResponse?> = _memberInfo.asStateFlow()
 
     init {
         Log.d(tag, "MyInfoViewModel 초기화")
@@ -79,6 +85,23 @@ class MyInfoViewModel(
                 } else {
                     Log.e(tag, "❌ 포인트 내역 조회 실패: ${historiesResponse.error?.message}")
                     _errorMessage.value = historiesResponse.error?.message ?: "포인트 내역 조회 실패"
+                }
+
+                // 3. 회원정보 조회 추가
+                Log.d(tag, "3. 회원정보 조회 시작")
+                val memberInfoResponse = pointRepository.getMemberInfo()
+                if (memberInfoResponse.success) {
+                    val responseData = memberInfoResponse.response
+                    if (responseData != null) {
+                        _memberInfo.value = responseData
+                        Log.d(tag, "✅ 회원정보 조회 성공: ${responseData.name}")
+                    } else {
+                        Log.e(tag, "❌ 회원정보 조회 실패: 응답 데이터가 null")
+                        _errorMessage.value = "회원정보 조회 실패: 응답 데이터가 없습니다"
+                    }
+                } else {
+                    Log.e(tag, "❌ 회원정보 조회 실패: ${memberInfoResponse.error?.message}")
+                    _errorMessage.value = memberInfoResponse.error?.message ?: "회원정보 조회 실패"
                 }
 
             } catch (e: Exception) {

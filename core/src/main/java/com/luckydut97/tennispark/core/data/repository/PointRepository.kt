@@ -2,6 +2,7 @@ package com.luckydut97.tennispark.core.data.repository
 
 import android.util.Log
 import com.luckydut97.tennispark.core.data.model.ApiResponse
+import com.luckydut97.tennispark.core.data.model.MemberInfoResponse
 import com.luckydut97.tennispark.core.data.model.PointHistoryItem
 import com.luckydut97.tennispark.core.data.network.NetworkModule
 
@@ -43,27 +44,13 @@ class PointRepository {
                 Log.e(tag, "🔥 Error Message: ${response.message()}")
                 Log.e(tag, "🔥 Error Body: $errorBody")
 
-                // 서버에서 온 실제 에러 메시지 파싱
-                val actualErrorMessage = try {
-                    if (errorBody != null) {
-                        val gson = com.google.gson.Gson()
-                        val errorResponse = gson.fromJson(
-                            errorBody,
-                            com.luckydut97.tennispark.core.data.model.ApiResponse::class.java
-                        )
-                        errorResponse.error?.message
-                    } else null
-                } catch (e: Exception) {
-                    null
-                }
-
                 ApiResponse(
                     success = false,
                     response = null,
                     error = com.luckydut97.tennispark.core.data.model.ErrorResponse(
                         status = response.code(),
                         message = when (response.code()) {
-                            400 -> actualErrorMessage ?: "잘못된 요청입니다."
+                            400 -> "잘못된 요청입니다."
                             401 -> "인증이 되지 않았습니다."
                             404 -> "해당 이벤트를 찾을 수 없습니다."
                             else -> "서버 오류가 발생했습니다."
@@ -104,6 +91,11 @@ class PointRepository {
                 val body = response.body()
                 Log.d(tag, "✅ 내 포인트 조회 API 호출 성공!")
                 Log.d(tag, "📄 Response Body: $body")
+
+                if (body?.success == true && body.response != null) {
+                    Log.d(tag, "📊 내 포인트 데이터:")
+                    Log.d(tag, "  포인트: ${body.response.points}")
+                }
 
                 body ?: ApiResponse(
                     success = false,
@@ -216,6 +208,88 @@ class PointRepository {
             )
         } finally {
             Log.d(tag, "=== 포인트 내역 조회 API 호출 완료 ===")
+        }
+    }
+
+    suspend fun getMemberInfo(): ApiResponse<MemberInfoResponse> {
+        Log.d(tag, "=== 회원정보 조회 API 호출 시작 ===")
+        Log.d(tag, "Endpoint: GET /api/members/name/me")
+        Log.d(tag, "HTTP Method: GET")
+
+        return try {
+            Log.d(tag, "🔄 Retrofit API 호출 시작...")
+
+            val response = apiService.getMemberInfo()
+
+            Log.d(tag, "📡 API 응답 수신:")
+            Log.d(tag, "  HTTP Status Code: ${response.code()}")
+            Log.d(tag, "  HTTP Status Message: ${response.message()}")
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                Log.d(tag, "✅ 회원정보 조회 API 호출 성공!")
+                Log.d(tag, "📄 Response Body: $body")
+
+                if (body?.success == true && body.response != null) {
+                    Log.d(tag, "📊 회원정보 데이터:")
+                    Log.d(tag, "  이름: ${body.response.name}")
+                    Log.d(tag, "  포인트: ${body.response.point}")
+
+                    // record가 null일 수 있으므로 안전하게 처리
+                    val record = body.response.record
+                    if (record != null) {
+                        Log.d(
+                            tag,
+                            "  경기기록: 승=${record.wins}, 무=${record.draws}, 패=${record.losses}"
+                        )
+                        Log.d(
+                            tag,
+                            "  점수: ${record.score}, 순위: ${record.ranking}"
+                        )
+                    } else {
+                        Log.d(tag, "  경기기록: null")
+                    }
+                }
+
+                body ?: ApiResponse(
+                    success = false,
+                    response = null,
+                    error = com.luckydut97.tennispark.core.data.model.ErrorResponse(
+                        status = 500,
+                        message = "응답 본문이 비어있습니다."
+                    )
+                )
+            } else {
+                val errorBody = response.errorBody()?.string()
+                Log.e(tag, "❌ 회원정보 조회 API 호출 실패!")
+                Log.e(tag, "  Error Code: ${response.code()}")
+                Log.e(tag, "  Error Message: ${response.message()}")
+                Log.e(tag, "  Error Body: $errorBody")
+
+                ApiResponse(
+                    success = false,
+                    response = null,
+                    error = com.luckydut97.tennispark.core.data.model.ErrorResponse(
+                        status = response.code(),
+                        message = when (response.code()) {
+                            401 -> "인증이 되지 않았습니다."
+                            else -> "서버 오류가 발생했습니다."
+                        }
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(tag, "💥 네트워크 예외 발생: ${e.message}", e)
+            ApiResponse(
+                success = false,
+                response = null,
+                error = com.luckydut97.tennispark.core.data.model.ErrorResponse(
+                    status = 0,
+                    message = "네트워크 오류: ${e.message}"
+                )
+            )
+        } finally {
+            Log.d(tag, "=== 회원정보 조회 API 호출 완료 ===")
         }
     }
 }

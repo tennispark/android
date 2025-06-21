@@ -185,6 +185,7 @@ fun MainScreenWithBottomNav(
 
             // 내 정보 화면
             composable(BottomNavigationItem.PROFILE.route) {
+                Log.d("🔍 디버깅: Navigation", "MyInfoScreen 네비게이션 - 새로운 인스턴스 생성")
                 MyInfoScreen()
             }
         }
