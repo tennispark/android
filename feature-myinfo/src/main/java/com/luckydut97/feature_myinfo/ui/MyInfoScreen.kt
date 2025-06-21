@@ -52,6 +52,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MyInfoScreen(
     onBackClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
     viewModel: MyInfoViewModel = viewModel()
 ) {
     // ViewModel에서 데이터 구독
@@ -119,13 +120,31 @@ fun MyInfoScreen(
                 item {
                     // 회원명
                     Spacer(modifier = Modifier.height(24.dp))
-                    Text(
-                        text = "$userName 회원님",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = Pretendard,
-                        color = Color.Black
-                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "$userName 회원님",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = Pretendard,
+                            color = Color.Black
+                        )
+
+                        Icon(
+                            painter = painterResource(id = com.luckydut97.feature_myinfo.R.drawable.ic_setting),
+                            contentDescription = "설정",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable { onSettingsClick() },
+                            tint = Color.Unspecified
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
 

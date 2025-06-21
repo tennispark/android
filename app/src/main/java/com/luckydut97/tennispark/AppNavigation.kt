@@ -22,13 +22,13 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.rememberNavController
+import com.luckydut97.feature_home_shop.ui.ShopDetailScreen
 import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationItem
 import com.luckydut97.feature_home.main.ui.HomeScreen
 import com.luckydut97.feature_home_shop.ui.ShopScreen
-import com.luckydut97.feature_home_shop.ui.ShopDetailScreen
-import com.luckydut97.feature_myinfo.ui.MyInfoScreen
+import com.luckydut97.feature_myinfo.navigation.MyInfoNavigation
 import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
 
 /**
@@ -91,23 +91,6 @@ fun AppNavigation(
             MainScreenWithBottomNav(navController)
         }
 
-        // 상품 상세 화면
-        composable("shop_detail/{productId}") { backStackEntry ->
-            val productId = backStackEntry.arguments?.getString("productId")
-            val mockItem = ShopItem(
-                id = productId ?: "",
-                brandName = "Wilson",
-                productName = "오버그립",
-                price = 4500
-            )
-            ShopDetailScreen(
-                item = mockItem,
-                onBackClick = {
-                    navController.popBackStack()
-                }
-            )
-        }
-
         // 멤버십 등록 화면
         composable("membership") {
             com.luckydut97.tennispark.feature_auth.membership.ui.MembershipRegistrationScreen(
@@ -141,11 +124,28 @@ fun AppNavigation(
                 }
             )
         }
+
+        // 상품 상세 화면
+        composable("shop_detail/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId")
+            val mockItem = ShopItem(
+                id = productId ?: "",
+                brandName = "Wilson",
+                productName = "오버그립",
+                price = 4500
+            )
+            ShopDetailScreen(
+                item = mockItem,
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }
 
 /**
- * 바텀 네비게이션이 포함된 메인 화면
+ * 바텀 네비게이션 포함된 메인 화면
  */
 @Composable
 fun MainScreenWithBottomNav(
@@ -270,7 +270,6 @@ fun MainScreenWithBottomNav(
             ) {
                 ShopScreen(
                     onBackClick = {
-                        // 홈으로 이동
                         navController.navigate(BottomNavigationItem.HOME.route) {
                             popUpTo(BottomNavigationItem.HOME.route) {
                                 inclusive = false
@@ -322,10 +321,8 @@ fun MainScreenWithBottomNav(
                     }
                 }
             ) {
-                Log.d("🔍 디버깅: Navigation", "MyInfoScreen 네비게이션 - 새로운 인스턴스 생성")
-                MyInfoScreen(
+                MyInfoNavigation(
                     onBackClick = {
-                        // 홈으로 이동
                         navController.navigate(BottomNavigationItem.HOME.route) {
                             popUpTo(BottomNavigationItem.HOME.route) {
                                 inclusive = false
