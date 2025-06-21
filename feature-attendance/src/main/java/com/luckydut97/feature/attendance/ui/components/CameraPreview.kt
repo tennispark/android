@@ -7,19 +7,15 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,16 +30,19 @@ fun CameraPreview(
     modifier: Modifier = Modifier,
     onPermissionGranted: (Boolean) -> Unit = {}
 ) {
-    Log.d("카메라 디버깅:", "CameraPreview Composable called")
+    val tag = "🔍 디버깅: CameraPreview"
+    Log.d(tag, "CameraPreview Composable 호출됨")
 
     val context = LocalContext.current
     
     // 초기 권한 상태 확인
     val initialPermission = remember {
-        ContextCompat.checkSelfPermission(
+        val hasPermission = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
+        Log.d(tag, "초기 카메라 권한 상태: $hasPermission")
+        hasPermission
     }
     
     var hasCameraPermission by remember { mutableStateOf(initialPermission) }
@@ -51,16 +50,14 @@ fun CameraPreview(
     
     // 권한 상태가 변경될 때마다 콜백 호출
     LaunchedEffect(hasCameraPermission) {
-        Log.d("카메라 디버깅:", "CameraPreview - Permission state changed: $hasCameraPermission")
+        Log.d(tag, "카메라 권한 상태 변경됨: $hasCameraPermission")
         onPermissionGranted(hasCameraPermission)
     }
-
-    Log.d("카메라 디버깅:", "CameraPreview - hasCameraPermission: $hasCameraPermission")
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        Log.d("카메라 디버깅:", "CameraPreview - Permission result: $isGranted")
+        Log.d(tag, "권한 요청 결과: $isGranted")
         hasCameraPermission = isGranted
         hasRequestedPermission = true
     }
@@ -68,7 +65,7 @@ fun CameraPreview(
     // 권한이 없고 아직 요청하지 않았으면 바로 요청
     LaunchedEffect(hasCameraPermission, hasRequestedPermission) {
         if (!hasCameraPermission && !hasRequestedPermission) {
-            Log.d("카메라 디버깅:", "CameraPreview - Auto requesting permission")
+            Log.d(tag, "카메라 권한 자동 요청 시작")
             delay(100) // 짧은 지연으로 UI가 준비될 시간 제공
             cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
@@ -82,19 +79,26 @@ fun CameraPreview(
     ) {
         when {
             hasCameraPermission -> {
-                Log.d("카메라 디버깅:", "CameraPreview - Showing CameraContent")
+                Log.d(tag, "카메라 권한 있음 - CameraContent 표시")
                 // 카메라 권한이 있는 경우
-                CameraContent(onQrCodeScanned = onQrCodeScanned)
+                CameraContent(
+                    onQrCodeScanned = { qrCode ->
+                        Log.d(tag, "🎯 QR 코드 스캔됨: $qrCode")
+                        onQrCodeScanned(qrCode)
+                    }
+                )
             }
             !hasRequestedPermission -> {
+                Log.d(tag, "권한 요청 중...")
                 // 권한 요청 중
                 CircularProgressIndicator(
                     color = AppColors.Primary
                 )
             }
             else -> {
-                // 권한이 거부된 경우 (이미 AttendanceScreen에서 처리됨)
-                Log.d("카메라 디버깅:", "CameraPreview - Permission denied")
+                Log.d(tag, "카메라 권한 거부됨")
+                // 권한이 거부된 경우
+                PermissionDeniedContent()
             }
         }
     }
@@ -104,45 +108,56 @@ fun CameraPreview(
 private fun CameraContent(
     onQrCodeScanned: (String) -> Unit
 ) {
-    Log.d("카메라 디버깅:", "CameraContent Composable called")
-    var showSimulationButton by remember { mutableStateOf(true) }
+    val tag = "🔍 디버깅: CameraContent"
+    Log.d(tag, "CameraContent 표시됨")
 
     // 실제 카메라 프리뷰
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // 실제 카메라 뷰
-        SimpleCameraView(
-            modifier = Modifier.fillMaxSize()
-        )
-
-        // 테스트용 시뮬레이션 버튼 (오버레이로 표시)
-        if (showSimulationButton) {
-            Button(
-                onClick = {
-                    Log.d("카메라 디버깅:", "CameraContent - Simulation button clicked")
-                    showSimulationButton = false
-                    // 테스트용 QR 코드 값 전송
-                    onQrCodeScanned("TEST_QR_CODE_2024_ATTENDANCE")
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 100.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.Primary
-                )
-            ) {
-                Text("QR 코드 인식 시뮬레이션")
+        // 🔥 실제 QR 스캔 카메라 뷰 (MLKit 사용)
+        QrScannerCameraView(
+            modifier = Modifier.fillMaxSize(),
+            onQrCodeDetected = { qrCode ->
+                Log.d(tag, "📷 실제 카메라에서 QR 인식: $qrCode")
+                onQrCodeScanned(qrCode)
             }
-        }
+        )
     }
+}
 
-    // 버튼을 다시 표시하기 위한 지연
-    LaunchedEffect(showSimulationButton) {
-        if (!showSimulationButton) {
-            Log.d("카메라 디버깅:", "CameraContent - Waiting 3 seconds to show button again")
-            delay(3000) // 3초 후 버튼 다시 표시
-            showSimulationButton = true
+@Composable
+private fun PermissionDeniedContent() {
+    val tag = "🔍 디버깅: PermissionDenied"
+    Log.d(tag, "권한 거부 화면 표시")
+
+    Card(
+        modifier = Modifier
+            .padding(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "카메라 권한이 필요합니다",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "QR 코드를 스캔하려면\n카메라 권한을 허용해주세요",
+                fontSize = 14.sp,
+                color = Color.Gray,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }

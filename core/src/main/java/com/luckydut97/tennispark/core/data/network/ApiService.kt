@@ -8,12 +8,15 @@ import com.luckydut97.tennispark.core.data.model.PhoneVerificationCodeRequest
 import com.luckydut97.tennispark.core.data.model.PhoneVerificationResponse
 import com.luckydut97.tennispark.core.data.model.TokenResponse
 import com.luckydut97.tennispark.core.data.model.ActivityListResponse
+import com.luckydut97.tennispark.core.data.model.MyPointResponse
+import com.luckydut97.tennispark.core.data.model.PointHistoryListResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Url
 
 interface ApiService {
     @POST("api/members")
@@ -33,4 +36,17 @@ interface ApiService {
 
     @POST("api/members/activities/{activityId}/apply")
     suspend fun applyForActivity(@Path("activityId") activityId: Long): Response<ApiResponse<Any>>
+
+    // 포인트 관련 API
+    @GET("api/members/points/me")
+    suspend fun getMyPoints(): Response<ApiResponse<MyPointResponse>>
+
+    @GET("api/members/points/me/history")
+    suspend fun getPointHistories(): Response<ApiResponse<PointHistoryListResponse>>
+
+    // QR 이벤트 처리 API (동적 URL) - Body 없는 POST
+    @POST
+    suspend fun postQrEvent(
+        @Url eventUrl: String
+    ): Response<ApiResponse<Any>>
 }
