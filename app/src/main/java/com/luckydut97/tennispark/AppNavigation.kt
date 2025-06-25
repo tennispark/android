@@ -126,16 +126,25 @@ fun AppNavigation(
         }
 
         // 상품 상세 화면
-        composable("shop_detail/{productId}") { backStackEntry ->
-            val productId = backStackEntry.arguments?.getString("productId")
-            val mockItem = ShopItem(
-                id = productId ?: "",
-                brandName = "Wilson",
-                productName = "오버그립",
-                price = 4500
+        composable("shop_detail/{productId}/{brandName}/{productName}/{price}/{imageUrl}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            val brandName = backStackEntry.arguments?.getString("brandName") ?: ""
+            val productName = backStackEntry.arguments?.getString("productName") ?: ""
+            val price = backStackEntry.arguments?.getString("price")?.toIntOrNull() ?: 0
+            val imageUrl = backStackEntry.arguments?.getString("imageUrl")?.let {
+                java.net.URLDecoder.decode(it, "UTF-8")
+            }
+
+            val shopItem = ShopItem(
+                id = productId,
+                brandName = brandName,
+                productName = productName,
+                price = price,
+                imageUrl = imageUrl
             )
+
             ShopDetailScreen(
-                item = mockItem,
+                item = shopItem,
                 onBackClick = {
                     navController.popBackStack()
                 }
@@ -278,7 +287,12 @@ fun MainScreenWithBottomNav(
                         }
                     },
                     onItemClick = { item ->
-                        mainNavController.navigate("shop_detail/${item.id}")
+                        val encodedImageUrl = item.imageUrl?.let {
+                            java.net.URLEncoder.encode(it, "UTF-8")
+                        } ?: ""
+                        mainNavController.navigate(
+                            "shop_detail/${item.id}/${item.brandName}/${item.productName}/${item.price}/$encodedImageUrl"
+                        )
                     }
                 )
             }

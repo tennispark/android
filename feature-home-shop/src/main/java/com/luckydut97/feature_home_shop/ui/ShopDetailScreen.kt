@@ -22,28 +22,35 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.tennispark.core.data.repository.PointRepository
+import kotlinx.coroutines.launch
 
 /**
  * 제품 상세 화면
@@ -55,6 +62,42 @@ fun ShopDetailScreen(
     onConfirmClick: () -> Unit = {}
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
+    var qrCodeUrl by remember { mutableStateOf<String?>(null) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+    val pointRepository = remember { PointRepository() }
+
+    // QR 구매 함수
+    fun purchaseProduct() {
+        coroutineScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                // ShopItem.id는 String이므로 Long으로 변환 (서버에서 온 실제 productId)
+                val productId = item.id.toLongOrNull() ?: 0L
+                val response = pointRepository.purchaseProductWithQr(productId)
+
+                if (response.success && response.response != null) {
+                    qrCodeUrl = response.response?.qrCodeUrl
+                } else {
+                    errorMessage = response.error?.message ?: "구매에 실패했습니다."
+                }
+            } catch (e: Exception) {
+                errorMessage = "네트워크 오류가 발생했습니다."
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    // 다이얼로그가 열릴 때 자동으로 구매 진행
+    LaunchedEffect(showConfirmDialog) {
+        if (showConfirmDialog && qrCodeUrl == null) {
+            purchaseProduct()
+        }
+    }
     
     if (showConfirmDialog) {
         Dialog(onDismissRequest = { showConfirmDialog = false }) {
@@ -102,9 +145,28 @@ fun ShopDetailScreen(
                             .background(
                                 color = Color(0xFFF5F5F5),
                                 shape = RoundedCornerShape(8.dp)
-                            )
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
-                        // QR 코드가 들어갈 자리 (나중에 구현)
+                        if (isLoading) {
+                            CircularProgressIndicator(color = Color(0xFF145F44))
+                        } else if (qrCodeUrl != null) {
+                            AsyncImage(
+                                model = qrCodeUrl,
+                                contentDescription = "QR Code",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else if (errorMessage != null) {
+                            Text(
+                                text = errorMessage!!,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                fontFamily = Pretendard,
+                                color = Color.Red,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
                     }
                     
                     Spacer(modifier = Modifier.height(24.dp))
@@ -113,7 +175,8 @@ fun ShopDetailScreen(
                     OutlinedButton(
                         onClick = { 
                             showConfirmDialog = false
-                            onBackClick()
+                            qrCodeUrl = null
+                            errorMessage = null
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -197,7 +260,14 @@ fun ShopDetailScreen(
                         shape = RoundedCornerShape(8.dp)
                     )
             ) {
-                // 나중에 서버에서 이미지가 오면 여기에 AsyncImage 등으로 표시
+                AsyncImage(
+                    model = item.imageUrl,
+                    contentDescription = "${item.productName} 이미지",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    placeholder = null, // 플레이스홀더 제거하여 빈 배경 표시
+                    error = null // 에러 이미지도 제거하여 빈 배경 표시
+                )
             }
 
             // 제품 정보 컬럼

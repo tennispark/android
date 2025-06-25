@@ -69,5 +69,22 @@ data class MemberInfoResponse(
     val point: Int,
 
     @SerializedName("record")
-    val record: GameRecord
+    val record: GameRecord?
+)
+
+/**
+ * QR 상품 구매 응답 모델
+ */
+data class QrPurchaseResponse(
+    @SerializedName("qrCodeUrl")
+    val qrCodeUrl: String,
+
+    @SerializedName("productId")
+    val productId: Long,
+
+    @SerializedName("productName")
+    val productName: String,
+
+    @SerializedName("points")
+    val points: Int
 )

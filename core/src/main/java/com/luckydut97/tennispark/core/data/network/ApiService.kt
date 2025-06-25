@@ -13,6 +13,8 @@ import com.luckydut97.tennispark.core.data.model.MemberInfoResponse
 import com.luckydut97.tennispark.core.data.model.MyPointResponse
 import com.luckydut97.tennispark.core.data.model.PointHistoryListResponse
 import com.luckydut97.tennispark.core.data.model.MembershipRegistrationRequest
+import com.luckydut97.tennispark.core.data.model.QrPurchaseResponse
+import com.luckydut97.tennispark.core.data.model.ShopProductListResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -67,4 +69,10 @@ interface ApiService {
     suspend fun postQrEvent(
         @Url eventUrl: String
     ): Response<ApiResponse<Any>>
+
+    @GET("api/members/points/products")
+    suspend fun getShopProducts(): Response<ApiResponse<ShopProductListResponse>>
+
+    @POST("api/members/points/products/{productId}/purchases/qr")
+    suspend fun purchaseProductWithQr(@Path("productId") productId: Long): Response<ApiResponse<QrPurchaseResponse>>
 }
