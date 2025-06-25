@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -106,14 +108,14 @@ fun ShopDetailScreen(
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .width(400.dp)
-                    .height(379.dp)
+                    .heightIn(min = 379.dp)
+                    .wrapContentHeight()
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // 제품명
                     Text(
@@ -121,7 +123,8 @@ fun ShopDetailScreen(
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = Pretendard,
-                        color = Color.Black
+                        color = Color.Black,
+                        textAlign = TextAlign.Center
                     )
                     
                     Spacer(modifier = Modifier.height(8.dp))
@@ -298,7 +301,8 @@ fun ShopDetailScreen(
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = Pretendard,
-                    color = Color.Black
+                    color = Color.Black,
+                    textAlign = TextAlign.Center
                 )
 
                 // 가격 정보
