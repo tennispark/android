@@ -125,31 +125,7 @@ fun AppNavigation(
             )
         }
 
-        // 상품 상세 화면
-        composable("shop_detail/{productId}/{brandName}/{productName}/{price}/{imageUrl}") { backStackEntry ->
-            val productId = backStackEntry.arguments?.getString("productId") ?: ""
-            val brandName = backStackEntry.arguments?.getString("brandName") ?: ""
-            val productName = backStackEntry.arguments?.getString("productName") ?: ""
-            val price = backStackEntry.arguments?.getString("price")?.toIntOrNull() ?: 0
-            val imageUrl = backStackEntry.arguments?.getString("imageUrl")?.let {
-                java.net.URLDecoder.decode(it, "UTF-8")
-            }
 
-            val shopItem = ShopItem(
-                id = productId,
-                brandName = brandName,
-                productName = productName,
-                price = price,
-                imageUrl = imageUrl
-            )
-
-            ShopDetailScreen(
-                item = shopItem,
-                onBackClick = {
-                    navController.popBackStack()
-                }
-            )
-        }
     }
 }
 
@@ -290,9 +266,35 @@ fun MainScreenWithBottomNav(
                         val encodedImageUrl = item.imageUrl?.let {
                             java.net.URLEncoder.encode(it, "UTF-8")
                         } ?: ""
-                        mainNavController.navigate(
+                        navController.navigate(
                             "shop_detail/${item.id}/${item.brandName}/${item.productName}/${item.price}/$encodedImageUrl"
                         )
+                    }
+                )
+            }
+
+            // 상품 상세 화면
+            composable("shop_detail/{productId}/{brandName}/{productName}/{price}/{imageUrl}") { backStackEntry ->
+                val productId = backStackEntry.arguments?.getString("productId") ?: ""
+                val brandName = backStackEntry.arguments?.getString("brandName") ?: ""
+                val productName = backStackEntry.arguments?.getString("productName") ?: ""
+                val price = backStackEntry.arguments?.getString("price")?.toIntOrNull() ?: 0
+                val imageUrl = backStackEntry.arguments?.getString("imageUrl")?.let {
+                    java.net.URLDecoder.decode(it, "UTF-8")
+                }
+
+                val shopItem = ShopItem(
+                    id = productId,
+                    brandName = brandName,
+                    productName = productName,
+                    price = price,
+                    imageUrl = imageUrl
+                )
+
+                ShopDetailScreen(
+                    item = shopItem,
+                    onBackClick = {
+                        navController.popBackStack()
                     }
                 )
             }
