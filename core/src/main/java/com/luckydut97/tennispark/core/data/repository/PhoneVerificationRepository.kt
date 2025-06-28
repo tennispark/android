@@ -164,7 +164,7 @@ class PhoneVerificationRepository {
     }
 
     companion object {
-        const val BASE_URL = "http://3.34.83.48:8080/"
+        const val BASE_URL = "https://tennis-park.store/"
         const val PHONE_VERIFICATION_ENDPOINT = "api/members/auth/phones/code"
         const val PHONE_CODE_VERIFY_ENDPOINT = "api/members/auth/phones/code/verify"
     }

@@ -17,7 +17,7 @@ package com.luckydut97.tennispark.core.config
 object AppConfig {
 
     // 🔥 개발할 때는 true, 배포할 때는 false로 변경
-    const val IS_DEV_MODE = true
+    const val IS_DEV_MODE = false
 
     // 개발용 하드코딩된 토큰 (실제 발급받은 토큰)
     const val DEV_ACCESS_TOKEN =

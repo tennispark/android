@@ -98,8 +98,36 @@ class AuthInterceptor(
                 if (refreshResponse.isSuccessful) {
                     Log.d(tag, "토큰 재발급 성공")
 
-                    // TODO: 응답에서 새 토큰 파싱하여 저장
-                    // 지금은 단순하게 원래 요청 재시도
+                    // 응답에서 새 토큰 파싱하여 저장
+                    try {
+                        val responseBody = refreshResponse.body?.string()
+                        Log.d(tag, "토큰 재발급 응답: $responseBody")
+
+                        if (responseBody != null) {
+                            val gson = com.google.gson.Gson()
+                            val apiResponse = gson.fromJson(
+                                responseBody,
+                                com.luckydut97.tennispark.core.data.model.ApiResponse::class.java
+                            )
+
+                            if (apiResponse.success && apiResponse.response != null) {
+                                val tokenResponseMap = apiResponse.response as? Map<*, *>
+                                val newAccessToken = tokenResponseMap?.get("accessToken") as? String
+                                val newRefreshToken =
+                                    tokenResponseMap?.get("refreshToken") as? String
+
+                                if (newAccessToken != null && newRefreshToken != null) {
+                                    runBlocking {
+                                        tokenManager.saveTokens(newAccessToken, newRefreshToken)
+                                    }
+                                    Log.d(tag, "새 토큰 저장 완료")
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(tag, "토큰 파싱 실패: ${e.message}", e)
+                    }
+
                     refreshResponse.close()
 
                     val newAccessToken = runBlocking { tokenManager.getAccessToken() }

@@ -208,7 +208,6 @@ fun ShopDetailScreen(
     
     Scaffold(
         containerColor = Color.White,
-        modifier = Modifier.statusBarsPadding(), // 상태바 패딩 추가
         topBar = {
             TopBar(
                 title = "마이살래",

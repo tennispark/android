@@ -1,5 +1,7 @@
 package com.luckydut97.tennispark.core.data.model
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * 서버 에러 응답 모델
  */
@@ -21,6 +23,7 @@ data class ApiResponse<T>(
  * 인증번호 확인 응답 데이터 모델
  */
 data class PhoneVerificationResponse(
+    @SerializedName("registered")
     val isRegister: Boolean,
     val accessToken: String? = null,
     val refreshToken: String? = null
