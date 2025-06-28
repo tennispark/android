@@ -125,7 +125,6 @@ fun AppNavigation(
             )
         }
 
-
     }
 }
 
@@ -344,6 +343,12 @@ fun MainScreenWithBottomNav(
                                 inclusive = false
                             }
                             launchSingleTop = true
+                        }
+                    },
+                    onLogoutComplete = {
+                        // 로그아웃 완료 시 인증 화면으로 이동
+                        mainNavController.navigate("auth") {
+                            popUpTo("main") { inclusive = true }
                         }
                     }
                 )

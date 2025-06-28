@@ -1,12 +1,17 @@
 package com.luckydut97.feature_myinfo.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.luckydut97.feature_myinfo.ui.MyInfoScreen
 import com.luckydut97.feature_myinfo.ui.SettingsScreen
+import com.luckydut97.feature_myinfo.viewmodel.MyInfoViewModel
 
 /**
  * feature-myinfo 모듈 내부 네비게이션
@@ -15,8 +20,21 @@ import com.luckydut97.feature_myinfo.ui.SettingsScreen
 @Composable
 fun MyInfoNavigation(
     onBackClick: () -> Unit = {},
-    navController: NavHostController = rememberNavController()
+    onLogoutComplete: () -> Unit = {}, // 로그아웃 완료 시 인증 화면으로 이동
+    navController: NavHostController = rememberNavController(),
+    viewModel: MyInfoViewModel = viewModel()
 ) {
+    // 로그아웃 상태 감지
+    val isLoggedOut by viewModel.isLoggedOut.collectAsState()
+
+    // 로그아웃 완료 시 인증 화면으로 이동
+    LaunchedEffect(isLoggedOut) {
+        if (isLoggedOut) {
+            viewModel.resetLogoutState()
+            onLogoutComplete()
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = "myinfo"
@@ -27,7 +45,8 @@ fun MyInfoNavigation(
                 onBackClick = onBackClick,
                 onSettingsClick = {
                     navController.navigate("settings")
-                }
+                },
+                viewModel = viewModel
             )
         }
 
@@ -53,7 +72,8 @@ fun MyInfoNavigation(
                     navController.navigate("version_info")
                 },
                 onLogoutClick = {
-                    navController.navigate("logout")
+                    // 로그아웃 API 호출
+                    viewModel.logout()
                 },
                 onWithdrawalClick = {
                     navController.navigate("withdrawal")
@@ -97,14 +117,6 @@ fun MyInfoNavigation(
         // 버전 정보 화면 (TODO: 향후 구현)
         composable("version_info") {
             // VersionInfoScreen()
-            SettingsScreen(
-                onBackClick = { navController.popBackStack() }
-            )
-        }
-
-        // 로그아웃 화면 (TODO: 향후 구현)
-        composable("logout") {
-            // LogoutScreen()
             SettingsScreen(
                 onBackClick = { navController.popBackStack() }
             )

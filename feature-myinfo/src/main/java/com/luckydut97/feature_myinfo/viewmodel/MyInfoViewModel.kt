@@ -6,6 +6,10 @@ import com.luckydut97.tennispark.core.data.model.PointHistoryItem
 import com.luckydut97.tennispark.core.data.model.MemberInfoResponse
 import com.luckydut97.tennispark.core.data.model.GameRecord
 import com.luckydut97.tennispark.core.data.repository.PointRepository
+import com.luckydut97.tennispark.core.data.repository.AuthRepository
+import com.luckydut97.tennispark.core.data.repository.AuthRepositoryImpl
+import com.luckydut97.tennispark.core.data.storage.TokenManagerImpl
+import com.luckydut97.tennispark.core.data.network.NetworkModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +21,12 @@ class MyInfoViewModel(
 ) : ViewModel() {
 
     private val tag = "🔍 디버깅: MyInfoViewModel"
+
+    // AuthRepository 초기화
+    private val authRepository: AuthRepository by lazy {
+        val tokenManager = TokenManagerImpl(NetworkModule.getContext()!!)
+        AuthRepositoryImpl(NetworkModule.apiService, tokenManager)
+    }
 
     // 포인트 잔액
     private val _points = MutableStateFlow(0)
@@ -37,6 +47,10 @@ class MyInfoViewModel(
     // 회원정보 상태 추가
     private val _memberInfo = MutableStateFlow<MemberInfoResponse?>(null)
     val memberInfo: StateFlow<MemberInfoResponse?> = _memberInfo.asStateFlow()
+
+    // 로그아웃 성공 상태
+    private val _isLoggedOut = MutableStateFlow(false)
+    val isLoggedOut: StateFlow<Boolean> = _isLoggedOut.asStateFlow()
 
     init {
         Log.d(tag, "MyInfoViewModel 초기화")
@@ -142,6 +156,43 @@ class MyInfoViewModel(
                 _isLoading.value = false
             }
         }
+    }
+
+    /**
+     * 로그아웃 처리
+     */
+    fun logout() {
+        Log.d(tag, "=== 로그아웃 시작 ===")
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+
+            try {
+                val response = authRepository.logout()
+                if (response.success) {
+                    Log.d(tag, "✅ 로그아웃 성공!")
+                    _isLoggedOut.value = true
+                } else {
+                    Log.e(tag, "❌ 로그아웃 실패: ${response.error?.message}")
+                    // API 실패해도 로컬에서는 토큰이 삭제되었으므로 로그아웃 성공으로 처리
+                    _isLoggedOut.value = true
+                }
+            } catch (e: Exception) {
+                Log.e(tag, "🔥 로그아웃 예외: ${e.message}", e)
+                // 예외 발생해도 로컬에서는 토큰이 삭제되었으므로 로그아웃 성공으로 처리
+                _isLoggedOut.value = true
+            } finally {
+                _isLoading.value = false
+                Log.d(tag, "=== 로그아웃 완료 ===")
+            }
+        }
+    }
+
+    /**
+     * 로그아웃 상태 초기화 (화면 이동 후)
+     */
+    fun resetLogoutState() {
+        _isLoggedOut.value = false
     }
 
     /**

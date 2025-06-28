@@ -75,4 +75,8 @@ interface ApiService {
 
     @POST("api/members/points/products/{productId}/purchases/qr")
     suspend fun purchaseProductWithQr(@Path("productId") productId: Long): Response<ApiResponse<QrPurchaseResponse>>
+
+    // 로그아웃 API
+    @POST("api/members/auth/logout")
+    suspend fun logout(): Response<ApiResponse<Any>>
 }
