@@ -35,7 +35,6 @@ fun AttendanceScreen(
     // 카메라 권한 상태를 저장할 변수 추가
     var hasCameraPermission by remember { mutableStateOf(false) }
     var permissionChecked by remember { mutableStateOf(false) }
-    var hasNavigatedBack by remember { mutableStateOf(false) }
 
     // UI 상태 로깅
     Log.d(tag, "UI 상태:")
@@ -44,15 +43,6 @@ fun AttendanceScreen(
     Log.d(tag, "  - errorMessage: ${uiState.errorMessage}")
     Log.d(tag, "  - successMessage: ${uiState.successMessage}")
     
-    // 권한이 거부되었을 때 뒤로가기 (한 번만 실행)
-    LaunchedEffect(hasCameraPermission, permissionChecked) {
-        if (permissionChecked && !hasCameraPermission && !hasNavigatedBack) {
-            Log.d(tag, "카메라 권한 거부됨 - 뒤로가기 실행")
-            hasNavigatedBack = true
-            onBackClick()
-        }
-    }
-
     Scaffold(
         containerColor = Color.Black, // 배경색을 검은색으로 변경
         modifier = Modifier.statusBarsPadding(),
@@ -84,6 +74,10 @@ fun AttendanceScreen(
                     Log.d(tag, "카메라 권한 상태 업데이트: $isGranted")
                     hasCameraPermission = isGranted
                     permissionChecked = true
+                },
+                onPermissionDenied = {
+                    Log.d(tag, "카메라 권한 거부됨 - 뒤로가기")
+                    onBackClick()
                 }
             )
 

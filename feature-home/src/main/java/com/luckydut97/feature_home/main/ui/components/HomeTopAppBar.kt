@@ -54,7 +54,7 @@ fun HomeTopAppBar(
                     .clickable(onClick = onNotificationClick)
             )
 
-            Spacer(modifier = Modifier.width(9.dp))
+            /*Spacer(modifier = Modifier.width(9.dp))
 
             Image(
                 painter = painterResource(id = R.drawable.ic_search),
@@ -62,7 +62,7 @@ fun HomeTopAppBar(
                 modifier = Modifier
                     .size(27.dp)
                     .clickable(onClick = onSearchClick)
-            )
+            )*/
         }
     }
 }

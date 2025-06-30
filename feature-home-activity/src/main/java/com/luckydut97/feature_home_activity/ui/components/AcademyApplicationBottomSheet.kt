@@ -200,7 +200,7 @@ fun AcademyApplicationBottomSheet(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "현재 신청 가능한 아카데미가 없습니다.",
+                                        text = "현재 모집기간이 아닙니다.",
                                         fontSize = 16.sp,
                                         fontFamily = Pretendard,
                                         color = Color(0xFF8B9096),

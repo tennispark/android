@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.luckydut97.feature.attendance.ui.AttendanceScreen
 import com.luckydut97.feature_home_shop.ui.ShopDetailScreen
 import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
@@ -141,9 +142,37 @@ fun AppNavigation(
         }
 
         // 출석체크 화면
-        composable("attendance") {
+        composable(
+            "attendance",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(300)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            }
+        ) {
+            android.util.Log.d("출석체크 디버깅", "AttendanceScreen Composable 생성됨")
             com.luckydut97.feature.attendance.ui.AttendanceScreen(
                 onBackClick = {
+                    android.util.Log.d("출석체크 디버깅", "출석체크 뒤로가기 클릭됨")
                     val canGoBack = navController.previousBackStackEntry != null
                     if (canGoBack) {
                         navController.popBackStack()
@@ -155,6 +184,7 @@ fun AppNavigation(
                     }
                 },
                 onAttendanceComplete = {
+                    android.util.Log.d("출석체크 디버깅", "출석체크 완료됨")
                     navController.popBackStack()
                 }
             )
@@ -205,10 +235,23 @@ fun MainScreenWithBottomNav(
             composable(BottomNavigationItem.HOME.route) {
                 HomeScreen(
                     onMembershipClick = {
+                        android.util.Log.d(
+                            "출석체크 디버깅",
+                            "멤버십 클릭 - mainNavController.navigate(membership)"
+                        )
                         mainNavController.navigate("membership")
                     },
                     onAttendanceClick = {
-                        mainNavController.navigate("attendance")
+                        android.util.Log.d(
+                            "출석체크 디버깅",
+                            "출석체크 클릭 - mainNavController.navigate(attendance) 호출"
+                        )
+                        try {
+                            mainNavController.navigate("attendance")
+                            android.util.Log.d("출석체크 디버깅", "출석체크 네비게이션 성공")
+                        } catch (e: Exception) {
+                            android.util.Log.e("출석체크 디버깅", "출석체크 네비게이션 실패: ${e.message}")
+                        }
                     }
                 )
             }
