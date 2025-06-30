@@ -3,14 +3,16 @@ package com.luckydut97.feature_home.main.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -43,10 +45,10 @@ fun AdBanner() {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    // 자동 스크롤
+    // 자동 스크롤 - 5초마다
     LaunchedEffect(key1 = Unit) {
         while (true) {
-            delay(5000) // 5초마다 자동 스크롤
+            delay(5000)
             if (pagerState.currentPage < adImages.size - 1) {
                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
             } else {
@@ -87,6 +89,25 @@ fun AdBanner() {
                             }
                         },
                     contentScale = ContentScale.Fit // 이미지가 잘리지 않도록 Fit 사용
+                )
+            }
+        }
+
+        // 하단 중앙의 페이지 인디케이터 (ShopAdBanner와 동일한 스타일)
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            repeat(adImages.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .background(
+                            color = if (index == pagerState.currentPage) Color.Black else Color.Gray,
+                            shape = CircleShape
+                        )
                 )
             }
         }

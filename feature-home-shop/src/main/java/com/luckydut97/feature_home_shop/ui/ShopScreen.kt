@@ -30,13 +30,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.feature_home_shop.viewmodel.ShopViewModel
-import com.luckydut97.tennispark.core.R
 import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.feature_home_shop.data.repository.ShopRepositoryImpl
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.components.shop.ShopAdBanner
 import com.luckydut97.feature_home_shop.ui.components.ShopItemComponent
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.feature_home_shop.R
+import com.luckydut97.tennispark.core.ui.components.navigation.NoArrowTopBar
 
 /**
  * 마이살래 화면
@@ -54,9 +55,9 @@ fun ShopScreen(
     Scaffold(
         containerColor = Color.White,
         topBar = {
-            TopBar(
-                title = "마이살래", // 이미지 요청대로 "마이살래"
-                onBackClick = onBackClick
+            NoArrowTopBar(
+                title = "마이살래" // 이미지 요청대로 "마이살래"
+
             )
         }
     ) { paddingValues ->
@@ -66,7 +67,14 @@ fun ShopScreen(
                 .padding(paddingValues)
         ) {
             // 광고 배너
-            ShopAdBanner(totalPages = 3) // 3개 광고로 설정
+            ShopAdBanner(
+                adImages = listOf(
+                    R.drawable.test_ad_img1,
+                    R.drawable.test_ad_img2,
+                    R.drawable.test_ad_img3,
+                    R.drawable.test_ad_img4
+                )
+            )
 
             // 내 포인트 섹션
             Row(

@@ -5,22 +5,17 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import android.util.Log
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.navigation.compose.rememberNavController
 import com.luckydut97.feature_home_shop.ui.ShopDetailScreen
 import com.luckydut97.feature_home_shop.data.model.ShopItem
@@ -91,8 +86,22 @@ fun AppNavigation(
             MainScreenWithBottomNav(navController)
         }
 
-        // 멤버십 등록 화면
-        composable("membership") {
+        // 멤버십 등록 화면 (오른쪽에서 왼쪽으로 슬라이드)
+        composable(
+            "membership",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            }
+        ) {
             com.luckydut97.tennispark.feature_auth.membership.ui.MembershipRegistrationScreen(
                 onBackClick = {
                     navController.popBackStack()
@@ -101,6 +110,32 @@ fun AppNavigation(
                     navController.navigate("main") {
                         popUpTo("membership") { inclusive = true }
                     }
+                },
+                onRefundPolicyClick = {
+                    navController.navigate("refund_policy")
+                }
+            )
+        }
+
+        // 환불규정 화면 (오른쪽에서 왼쪽으로 슬라이드)
+        composable(
+            "refund_policy",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            }
+        ) {
+            com.luckydut97.tennispark.feature_auth.membership.ui.RefundPolicyScreen(
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -167,43 +202,7 @@ fun MainScreenWithBottomNav(
             modifier = Modifier.padding(paddingValues)
         ) {
             // 홈 화면
-            composable(
-                BottomNavigationItem.HOME.route,
-                enterTransition = {
-                    val targetOrder = getTabOrder(BottomNavigationItem.HOME.route)
-                    val initialOrder = getTabOrder(initialState.destination.route ?: "")
-                    if (targetOrder > initialOrder) {
-                        // 오른쪽에서 들어옴
-                        slideInHorizontally(
-                            initialOffsetX = { it },
-                            animationSpec = tween(300)
-                        )
-                    } else {
-                        // 왼쪽에서 들어옴
-                        slideInHorizontally(
-                            initialOffsetX = { -it },
-                            animationSpec = tween(300)
-                        )
-                    }
-                },
-                exitTransition = {
-                    val currentOrder = getTabOrder(BottomNavigationItem.HOME.route)
-                    val targetOrder = getTabOrder(targetState.destination.route ?: "")
-                    if (currentOrder > targetOrder) {
-                        // 오른쪽으로 나감
-                        slideOutHorizontally(
-                            targetOffsetX = { it },
-                            animationSpec = tween(300)
-                        )
-                    } else {
-                        // 왼쪽으로 나감
-                        slideOutHorizontally(
-                            targetOffsetX = { -it },
-                            animationSpec = tween(300)
-                        )
-                    }
-                }
-            ) {
+            composable(BottomNavigationItem.HOME.route) {
                 HomeScreen(
                     onMembershipClick = {
                         mainNavController.navigate("membership")
@@ -215,43 +214,7 @@ fun MainScreenWithBottomNav(
             }
 
             // 상품 구매 화면
-            composable(
-                BottomNavigationItem.SHOP.route,
-                enterTransition = {
-                    val targetOrder = getTabOrder(BottomNavigationItem.SHOP.route)
-                    val initialOrder = getTabOrder(initialState.destination.route ?: "")
-                    if (targetOrder > initialOrder) {
-                        // 오른쪽에서 들어옴
-                        slideInHorizontally(
-                            initialOffsetX = { it },
-                            animationSpec = tween(300)
-                        )
-                    } else {
-                        // 왼쪽에서 들어옴
-                        slideInHorizontally(
-                            initialOffsetX = { -it },
-                            animationSpec = tween(300)
-                        )
-                    }
-                },
-                exitTransition = {
-                    val currentOrder = getTabOrder(BottomNavigationItem.SHOP.route)
-                    val targetOrder = getTabOrder(targetState.destination.route ?: "")
-                    if (currentOrder > targetOrder) {
-                        // 오른쪽으로 나감
-                        slideOutHorizontally(
-                            targetOffsetX = { it },
-                            animationSpec = tween(300)
-                        )
-                    } else {
-                        // 왼쪽으로 나감
-                        slideOutHorizontally(
-                            targetOffsetX = { -it },
-                            animationSpec = tween(300)
-                        )
-                    }
-                }
-            ) {
+            composable(BottomNavigationItem.SHOP.route) {
                 ShopScreen(
                     onBackClick = {
                         navController.navigate(BottomNavigationItem.HOME.route) {
@@ -299,43 +262,7 @@ fun MainScreenWithBottomNav(
             }
 
             // 내 정보 화면
-            composable(
-                BottomNavigationItem.PROFILE.route,
-                enterTransition = {
-                    val targetOrder = getTabOrder(BottomNavigationItem.PROFILE.route)
-                    val initialOrder = getTabOrder(initialState.destination.route ?: "")
-                    if (targetOrder > initialOrder) {
-                        // 오른쪽에서 들어옴
-                        slideInHorizontally(
-                            initialOffsetX = { it },
-                            animationSpec = tween(300)
-                        )
-                    } else {
-                        // 왼쪽에서 들어옴
-                        slideInHorizontally(
-                            initialOffsetX = { -it },
-                            animationSpec = tween(300)
-                        )
-                    }
-                },
-                exitTransition = {
-                    val currentOrder = getTabOrder(BottomNavigationItem.PROFILE.route)
-                    val targetOrder = getTabOrder(targetState.destination.route ?: "")
-                    if (currentOrder > targetOrder) {
-                        // 오른쪽으로 나감
-                        slideOutHorizontally(
-                            targetOffsetX = { it },
-                            animationSpec = tween(300)
-                        )
-                    } else {
-                        // 왼쪽으로 나감
-                        slideOutHorizontally(
-                            targetOffsetX = { -it },
-                            animationSpec = tween(300)
-                        )
-                    }
-                }
-            ) {
+            composable(BottomNavigationItem.PROFILE.route) {
                 MyInfoNavigation(
                     onBackClick = {
                         navController.navigate(BottomNavigationItem.HOME.route) {

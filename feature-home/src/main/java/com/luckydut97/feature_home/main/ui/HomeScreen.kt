@@ -114,8 +114,8 @@ fun HomeScreen(
                 }
             )
 
-            // 이번주 활동 사진 섹션
-            WeeklyPhotoSection()
+            /*// 이번주 활동 사진 섹션
+            WeeklyPhotoSection()*/
         }
     }
 

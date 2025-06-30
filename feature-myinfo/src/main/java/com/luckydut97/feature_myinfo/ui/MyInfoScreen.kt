@@ -41,8 +41,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
-import com.luckydut97.tennispark.core.data.model.PointHistoryItem
 import com.luckydut97.feature_myinfo.viewmodel.MyInfoViewModel
+import com.luckydut97.tennispark.core.data.model.PointHistoryItem
+import com.luckydut97.tennispark.core.ui.components.navigation.NoArrowTopBar
+import com.luckydut97.tennispark.core.ui.components.shop.ShopAdBanner
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -78,32 +80,12 @@ fun MyInfoScreen(
         viewModel.refreshAllData()
     }
 
-    // 광고 배너 관련
-    val adBannerPages = 3
-    val pagerState = rememberPagerState(pageCount = { adBannerPages })
-    
-    // 5초마다 자동 스크롤
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(5000)
-            if (pagerState.currentPage < adBannerPages - 1) {
-                coroutineScope.launch {
-                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                }
-            } else {
-                coroutineScope.launch {
-                    pagerState.animateScrollToPage(0)
-                }
-            }
-        }
-    }
-    
     Scaffold(
         containerColor = Color.White,
         topBar = {
-            TopBar(
-                title = "회원 정보",
-                onBackClick = onBackClick
+            NoArrowTopBar(
+                title = "회원 정보" // 이미지 요청대로 "마이살래"
+
             )
         }
     ) { paddingValues ->
@@ -289,63 +271,18 @@ fun MyInfoScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // 광고 배너 (스와이프 가능, 자동 스크롤)
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(67.dp)
-                            .background(
-                                color = Color(0xFFF5F5F5),
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                    ) {
-                        // 자동 스크롤 및 스와이프 기능 추가
-                        HorizontalPager(
-                            state = pagerState,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(67.dp)
-                        ) { page ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(
-                                        color = Color(0xFFF5F5F5),
-                                        shape = RoundedCornerShape(8.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "광고 배너 ${page + 1}",
-                                    fontSize = 14.sp,
-                                    fontFamily = Pretendard,
-                                    color = Color.Gray
-                                )
-                            }
-                        }
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                        // 인디케이터
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(bottom = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            repeat(adBannerPages) { index ->
-                                Box(
-                                    modifier = Modifier
-                                        .size(6.dp)
-                                        .background(
-                                            color = if (pagerState.currentPage == index) Color.Black else Color.Gray,
-                                            shape = CircleShape
-                                        )
-                                )
-                            }
-                        }
-                    }
-
+                    // 광고 배너 (메인화면 및 ShopScreen과 동일)
+                    ShopAdBanner(
+                        adImages = listOf(
+                            com.luckydut97.feature_myinfo.R.drawable.test_ad_img1,
+                            com.luckydut97.feature_myinfo.R.drawable.test_ad_img2,
+                            com.luckydut97.feature_myinfo.R.drawable.test_ad_img3,
+                            com.luckydut97.feature_myinfo.R.drawable.test_ad_img4
+                        )
+                    )
                     Spacer(modifier = Modifier.height(36.dp))
-
                     // 구분선
                     Box(
                         modifier = Modifier
@@ -365,10 +302,11 @@ fun MyInfoScreen(
                         color = Color.Black
                     )
 
+
                     Spacer(modifier = Modifier.height(36.dp))
                 }
 
-                // 포인트 내역 리스트 (실제 API 데이터 사용)
+                // 포인트 내역 리스트 (실际 API 데이터 사용)
                 if (histories.isEmpty() && !isLoading) {
                     item {
                         Box(
@@ -394,31 +332,6 @@ fun MyInfoScreen(
 
                 item {
                     Spacer(modifier = Modifier.height(40.dp))
-                }
-            }
-
-            // 로딩 인디케이터 (주석 처리 - 사용자가 API 호출을 알 필요 없음)
-            /*
-            if (isLoading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.3f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        color = Color(0xFF145F44)
-                    )
-                }
-            }
-            */
-
-            // 에러 메시지 표시 (필요시)
-            errorMessage?.let { message ->
-                LaunchedEffect(message) {
-                    // 에러 처리 (예: Toast, SnackBar 등)
-                    // 임시로 로그만 출력
-                    Log.e("MyInfoScreen", "Error: $message")
                 }
             }
         }
@@ -458,9 +371,9 @@ fun ApiPointHistoryItem(
                 color = Color(0xFF959595),
                 modifier = Modifier.width(45.dp)
             )
-            
+
             Spacer(modifier = Modifier.width(17.dp))
-            
+
             Text(
                 text = history.title,
                 fontSize = 18.sp,
@@ -469,7 +382,7 @@ fun ApiPointHistoryItem(
                 color = Color.Black
             )
         }
-        
+
         Text(
             text = if (history.type == "EARNED") {
                 "+${String.format("%,d", history.point)}P"

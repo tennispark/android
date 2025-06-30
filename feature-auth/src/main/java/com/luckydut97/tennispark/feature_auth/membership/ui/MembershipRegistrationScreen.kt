@@ -1,6 +1,7 @@
 package com.luckydut97.tennispark.feature_auth.membership.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,10 +46,141 @@ import com.luckydut97.tennispark.feature_auth.membership.viewmodel.MembershipReg
 import com.luckydut97.tennispark.feature_auth.signup.ui.components.JoinPathButton
 
 @Composable
+fun RefundPolicyScreen(
+    onBackClick: () -> Unit
+) {
+    Scaffold(
+        containerColor = Color.White,
+        modifier = Modifier.statusBarsPadding(),
+        topBar = {
+            TopBar(
+                title = "환불규정",
+                onBackClick = onBackClick
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 20.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = "1. 우천 및 설천에 따른 취소 시 쿠폰 차감 없음",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF262626),
+                fontFamily = Pretendard,
+                lineHeight = 20.sp
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "2. 우천 또는 설천에 따라 진행이 중단될 시",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF262626),
+                fontFamily = Pretendard,
+                lineHeight = 20.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "- 진행타임 50% 초과 이용시 쿠폰 100% 차감",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF262626),
+                fontFamily = Pretendard,
+                lineHeight = 20.sp,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "- 진행타임 50% 미만 이용시 쿠폰 50% 차감",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF262626),
+                fontFamily = Pretendard,
+                lineHeight = 20.sp,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "3. 정회원 참석 확정 후 취소 시 쿠폰 100% 차감",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF262626),
+                fontFamily = Pretendard,
+                lineHeight = 20.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "- 개인사정 (출장, 부고, 교통사고, 코로나 확진 등) 으로 인한 취소 및 환불불가",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF262626),
+                fontFamily = Pretendard,
+                lineHeight = 20.sp,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "- 타인 양도불가",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF262626),
+                fontFamily = Pretendard,
+                lineHeight = 20.sp,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "- 쿠폰 환불 불가",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF262626),
+                fontFamily = Pretendard,
+                lineHeight = 20.sp,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "4. 당일 불참 시 쿠폰 200% 차감",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF262626),
+                fontFamily = Pretendard,
+                lineHeight = 20.sp
+            )
+
+            Spacer(modifier = Modifier.height(40.dp))
+        }
+    }
+}
+
+@Composable
 fun MembershipRegistrationScreen(
     viewModel: MembershipRegistrationViewModel = viewModel(),
     onBackClick: () -> Unit,
-    onMembershipComplete: () -> Unit
+    onMembershipComplete: () -> Unit,
+    onRefundPolicyClick: () -> Unit = {}
 ) {
     val membershipType by viewModel.membershipType.collectAsState()
     val joinReason by viewModel.joinReason.collectAsState()
@@ -147,7 +280,11 @@ fun MembershipRegistrationScreen(
             // 멤버십 가입 이유
             InputField(
                 value = joinReason,
-                onValueChange = { viewModel.updateJoinReason(it) },
+                onValueChange = {
+                    if (it.length <= 100) {
+                        viewModel.updateJoinReason(it)
+                    }
+                },
                 label = "멤버십 가입 이유",
                 isRequired = true,
                 placeholder = "내용을 입력해주세요 (최대 100자)",
@@ -177,11 +314,12 @@ fun MembershipRegistrationScreen(
             Spacer(modifier = Modifier.height(2.dp))
 
             Text(
-                text = "선택하신 코트에 따라 멤버십 비용이 상이합니다.",
+                text = "멤버십 비용은 오프라인 테니스 활동에 실제로 사용되는 실비용입니다.\n(코트 대관료, 물, 볼, 운영비 등 실제 활동에 필요한 비용이며, 코트별로 상이할 수 있습니다.)",
                 fontSize = 12.sp,
                 color = AppColors.TextSecondary26,
                 fontFamily = Pretendard,
-                letterSpacing = (-1).sp
+                letterSpacing = (-1).sp,
+                lineHeight = 15.sp
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -314,14 +452,14 @@ fun MembershipRegistrationScreen(
                     ) {
                         append("* 친구 추천 혜택")
                     }
-                    append("\n추천인(멤버십 회원만 접수) : 쿠폰 5장 추가\n추천으로 멤버십 가입 시 : 쿠폰 1장 추가")
+                    append("\n추천인 (멤버십 회원만 접수) : 쿠폰 5장 추가\n추천으로 멤버십 가입 시 : 쿠폰 1장 추가")
                 },
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color(0xFF262626),
                 fontFamily = Pretendard,
-                lineHeight = 23.sp,
-                letterSpacing = 0.5.sp
+                lineHeight = 20.sp,
+                letterSpacing = (-1).sp
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -332,12 +470,25 @@ fun MembershipRegistrationScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "멤버십 활동규정에 동의",
-                    fontSize = 13.sp,
+                    text = "멤버십 환불규정에 동의",
+                    fontSize = 14.sp,
                     fontFamily = Pretendard,
                     fontWeight = FontWeight.Normal,
                     color = AppColors.CaptionColor,
-                    letterSpacing = 0.5.sp
+                    letterSpacing = (-1).sp
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = "환불규정",
+                    fontSize = 14.sp,
+                    color = Color(0xFFC4C4C4),
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = Pretendard,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable { onRefundPolicyClick() },
+                    letterSpacing = (-1).sp
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -388,11 +539,12 @@ fun MembershipRegistrationScreen(
             // 사진/영상 활용 동의
             Text(
                 text = "본인이 촬영된 사진 및 영상은 테니스파크 컨텐츠로 제작되어 인스타그램 @tennispark_official / 네이버 블로그 '테니스파크매거진'에 노출되고 홍보 목적으로 이용될 수 있습니다. 동의하십니까?",
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 fontFamily = Pretendard,
                 fontWeight = FontWeight.Normal,
                 color = AppColors.CaptionColor,
-                lineHeight = 16.sp
+                lineHeight = 23.sp,
+                letterSpacing = (-1).sp
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -441,6 +593,29 @@ fun MembershipRegistrationScreen(
                     }
                 )
             }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // 친구 추천 혜택
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+                    ) {
+                        append("* 멤버십 가입 신청 후, 운영자의 안내에 따라 계좌이체로 비용을 납부해 주세요.")
+                    }
+                    append("\n본 비용은 오프라인 활동을 위한 실비로, 앱 내에서 결제되거나 디지털 콘텐츠 구매에 사용되지 않습니다.")
+                },
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF262626),
+                fontFamily = Pretendard,
+                lineHeight = 20.sp,
+                letterSpacing = (-1).sp
+            )
 
             Spacer(modifier = Modifier.height(40.dp))
 

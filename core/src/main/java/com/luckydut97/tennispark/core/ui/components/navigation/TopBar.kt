@@ -59,3 +59,27 @@ fun TopBar(
         )
     }
 }
+
+@Composable
+fun NoArrowTopBar(
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(55.dp) //임의 변경
+            .background(Color.White)
+    ) {
+        // 타이틀
+        Text(
+            text = title,
+            fontSize = 19.sp,
+
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = Pretendard,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
