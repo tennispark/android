@@ -44,7 +44,7 @@ fun ShopAdBanner(
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp)
+                .padding(horizontal = 17.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -75,7 +75,7 @@ fun ShopAdBanner(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 18.dp) // 좌우 여백 18dp 유지
+            .padding(horizontal = 17.dp)
     ) {
         // 광고 페이저를 감싸는 Box에 clip 적용
         Box(

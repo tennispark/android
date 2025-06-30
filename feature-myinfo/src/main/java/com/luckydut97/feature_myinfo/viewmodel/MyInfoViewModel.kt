@@ -90,8 +90,10 @@ class MyInfoViewModel(
                 if (historiesResponse.success) {
                     val responseData = historiesResponse.response
                     if (responseData != null) {
-                        _histories.value = responseData.histories
-                        Log.d(tag, "✅ 포인트 내역 조회 성공: ${responseData.histories.size}개")
+                        // 날짜 기준으로 최신순 정렬 (내림차순)
+                        val sortedHistories = responseData.histories.sortedByDescending { it.date }
+                        _histories.value = sortedHistories
+                        Log.d(tag, "✅ 포인트 내역 조회 성공: ${sortedHistories.size}개 (최신순 정렬)")
                     } else {
                         Log.e(tag, "❌ 포인트 내역 조회 실패: 응답 데이터가 null")
                         _errorMessage.value = "포인트 내역 조회 실패: 응답 데이터가 없습니다"

@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -89,17 +90,16 @@ fun MyInfoScreen(
             )
         }
     ) { paddingValues ->
-        Box(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 17.dp)
-            ) {
-                item {
+            // 상단 고정 영역
+            item {
+                Column(
+                    modifier = Modifier.padding(horizontal = 17.dp)
+                ) {
                     // 회원명
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -269,31 +269,42 @@ fun MyInfoScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
                     Spacer(modifier = Modifier.height(24.dp))
+                }
+            }
 
-                    // 광고 배너 (메인화면 및 ShopScreen과 동일)
-                    ShopAdBanner(
-                        adImages = listOf(
-                            com.luckydut97.feature_myinfo.R.drawable.test_ad_img1,
-                            com.luckydut97.feature_myinfo.R.drawable.test_ad_img2,
-                            com.luckydut97.feature_myinfo.R.drawable.test_ad_img3,
-                            com.luckydut97.feature_myinfo.R.drawable.test_ad_img4
-                        )
+            // 광고 배너
+            item {
+                ShopAdBanner(
+                    adImages = listOf(
+                        com.luckydut97.feature_myinfo.R.drawable.test_ad_img1,
+                        com.luckydut97.feature_myinfo.R.drawable.test_ad_img2,
+                        com.luckydut97.feature_myinfo.R.drawable.test_ad_img3,
+                        com.luckydut97.feature_myinfo.R.drawable.test_ad_img4
                     )
-                    Spacer(modifier = Modifier.height(36.dp))
-                    // 구분선
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(12.dp)
-                            .background(Color(0xFFF5F5F5))
-                    )
+                )
+            }
 
+            // 여백 및 구분선
+            item {
+                Spacer(modifier = Modifier.height(36.dp))
+
+                // 구분선 (좌우 여백 없이)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(12.dp)
+                        .background(Color(0xFFF5F5F5))
+                )
+            }
+
+            // 포인트 내역 타이틀
+            item {
+                Column(
+                    modifier = Modifier.padding(horizontal = 17.dp)
+                ) {
                     Spacer(modifier = Modifier.height(36.dp))
 
-                    // 나의 포인트 내역 제목
                     Text(
                         text = "나의 포인트 내역",
                         fontSize = 20.sp,
@@ -302,36 +313,65 @@ fun MyInfoScreen(
                         color = Color.Black
                     )
 
-
                     Spacer(modifier = Modifier.height(36.dp))
                 }
+            }
 
-                // 포인트 내역 리스트 (실际 API 데이터 사용)
-                if (histories.isEmpty() && !isLoading) {
-                    item {
+            // 포인트 내역 영역 (동적 높이)
+            item {
+                // 포인트 내역 개수에 따른 동적 높이 계산
+                val dynamicHeight = if (histories.isEmpty() && !isLoading) {
+                    101.dp // 빈 상태일 때 최소 높이
+                } else {
+                    // 내역이 있을 때: 각 아이템 21dp + 간격 21dp = 42dp per item
+                    // 최대 350dp, 최소 150dp
+                    val calculatedHeight = (histories.size * 42 + 100).dp
+                    minOf(calculatedHeight, 350.dp).coerceAtLeast(150.dp)
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dynamicHeight)
+                        .padding(horizontal = 17.dp)
+                ) {
+                    if (histories.isEmpty() && !isLoading) {
+                        // 포인트 내역이 없을 때: 스크롤 없이 단순 표시
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(100.dp),
+                                .height(65.dp)
+                                .padding(horizontal = 26.dp)
+                                .background(
+                                    color = Color(0xFFF5F5F5),
+                                    shape = RoundedCornerShape(10.dp)
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "포인트 내역이 없습니다.",
-                                fontSize = 16.sp,
+                                text = "현재 보유 중인 포인트가 없습니다.",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Normal,
                                 fontFamily = Pretendard,
-                                color = Color.Gray
+                                color = Color.Black
                             )
                         }
-                    }
-                } else {
-                    items(histories) { history ->
-                        ApiPointHistoryItem(history = history)
-                        Spacer(modifier = Modifier.height(21.dp))
-                    }
-                }
+                    } else {
+                        // 포인트 내역이 있을 때: 스크롤 가능
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            items(histories) { history ->
+                                ApiPointHistoryItem(history = history)
+                                Spacer(modifier = Modifier.height(21.dp))
+                            }
 
-                item {
-                    Spacer(modifier = Modifier.height(40.dp))
+                            // 하단 여백
+                            item {
+                                Spacer(modifier = Modifier.height(40.dp))
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -354,6 +394,7 @@ fun ApiPointHistoryItem(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
+            modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 날짜를 "YYYY.MM.DD"에서 "MM.DD" 형식으로 변환
@@ -379,9 +420,14 @@ fun ApiPointHistoryItem(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 fontFamily = Pretendard,
-                color = Color.Black
+                color = Color.Black,
+                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
+
+        Spacer(modifier = Modifier.width(8.dp))
 
         Text(
             text = if (history.type == "EARNED") {

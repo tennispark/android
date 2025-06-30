@@ -42,7 +42,6 @@ fun MyInfoNavigation(
         // 내 정보 메인 화면
         composable("myinfo") {
             MyInfoScreen(
-                onBackClick = onBackClick,
                 onSettingsClick = {
                     navController.navigate("settings")
                 },

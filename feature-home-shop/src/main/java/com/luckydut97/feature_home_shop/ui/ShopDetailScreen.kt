@@ -61,7 +61,7 @@ import kotlinx.coroutines.launch
 fun ShopDetailScreen(
     item: ShopItem,
     onBackClick: () -> Unit = {},
-    onConfirmClick: () -> Unit = {}
+
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
