@@ -232,7 +232,47 @@ fun MainScreenWithBottomNav(
             modifier = Modifier.padding(paddingValues)
         ) {
             // 홈 화면
-            composable(BottomNavigationItem.HOME.route) {
+            composable(
+                BottomNavigationItem.HOME.route,
+                enterTransition = {
+                    val initialRoute = initialState.destination.route ?: ""
+                    val initialOrder = getTabOrder(initialRoute)
+                    val targetOrder = getTabOrder(BottomNavigationItem.HOME.route)
+
+                    if (initialOrder > targetOrder) {
+                        // 오른쪽에서 왼쪽으로 (상품구매/내정보 -> 홈)
+                        slideInHorizontally(
+                            initialOffsetX = { -it },
+                            animationSpec = tween(300)
+                        )
+                    } else {
+                        // 왼쪽에서 오른쪽으로 (처음 진입)
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(300)
+                        )
+                    }
+                },
+                exitTransition = {
+                    val targetRoute = targetState.destination.route ?: ""
+                    val initialOrder = getTabOrder(BottomNavigationItem.HOME.route)
+                    val targetOrder = getTabOrder(targetRoute)
+
+                    if (targetOrder > initialOrder) {
+                        // 왼쪽으로 나가기 (홈 -> 상품구매/내정보)
+                        slideOutHorizontally(
+                            targetOffsetX = { -it },
+                            animationSpec = tween(300)
+                        )
+                    } else {
+                        // 오른쪽으로 나가기
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(300)
+                        )
+                    }
+                }
+            ) {
                 HomeScreen(
                     onMembershipClick = {
                         android.util.Log.d(
@@ -257,7 +297,47 @@ fun MainScreenWithBottomNav(
             }
 
             // 상품 구매 화면
-            composable(BottomNavigationItem.SHOP.route) {
+            composable(
+                BottomNavigationItem.SHOP.route,
+                enterTransition = {
+                    val initialRoute = initialState.destination.route ?: ""
+                    val initialOrder = getTabOrder(initialRoute)
+                    val targetOrder = getTabOrder(BottomNavigationItem.SHOP.route)
+
+                    if (initialOrder > targetOrder) {
+                        // 오른쪽에서 왼쪽으로 (내정보 -> 상품구매)
+                        slideInHorizontally(
+                            initialOffsetX = { -it },
+                            animationSpec = tween(300)
+                        )
+                    } else {
+                        // 왼쪽에서 오른쪽으로 (홈 -> 상품구매)
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(300)
+                        )
+                    }
+                },
+                exitTransition = {
+                    val targetRoute = targetState.destination.route ?: ""
+                    val initialOrder = getTabOrder(BottomNavigationItem.SHOP.route)
+                    val targetOrder = getTabOrder(targetRoute)
+
+                    if (targetOrder > initialOrder) {
+                        // 왼쪽으로 나가기 (상품구매 -> 내정보)
+                        slideOutHorizontally(
+                            targetOffsetX = { -it },
+                            animationSpec = tween(300)
+                        )
+                    } else {
+                        // 오른쪽으로 나가기 (상품구매 -> 홈)
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(300)
+                        )
+                    }
+                }
+            ) {
                 ShopScreen(
                     onBackClick = {
                         navController.navigate(BottomNavigationItem.HOME.route) {
@@ -279,7 +359,33 @@ fun MainScreenWithBottomNav(
             }
 
             // 상품 상세 화면
-            composable("shop_detail/{productId}/{brandName}/{productName}/{price}/{imageUrl}") { backStackEntry ->
+            composable(
+                "shop_detail/{productId}/{brandName}/{productName}/{price}/{imageUrl}",
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { it },
+                        animationSpec = tween(300)
+                    )
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(300)
+                    )
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { -it },
+                        animationSpec = tween(300)
+                    )
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(300)
+                    )
+                }
+            ) { backStackEntry ->
                 val productId = backStackEntry.arguments?.getString("productId") ?: ""
                 val brandName = backStackEntry.arguments?.getString("brandName") ?: ""
                 val productName = backStackEntry.arguments?.getString("productName") ?: ""
@@ -305,7 +411,47 @@ fun MainScreenWithBottomNav(
             }
 
             // 내 정보 화면
-            composable(BottomNavigationItem.PROFILE.route) {
+            composable(
+                BottomNavigationItem.PROFILE.route,
+                enterTransition = {
+                    val initialRoute = initialState.destination.route ?: ""
+                    val initialOrder = getTabOrder(initialRoute)
+                    val targetOrder = getTabOrder(BottomNavigationItem.PROFILE.route)
+
+                    if (initialOrder < targetOrder) {
+                        // 왼쪽에서 오른쪽으로 (홈/상품구매 -> 내정보)
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(300)
+                        )
+                    } else {
+                        // 오른쪽에서 왼쪽으로 (처음 진입)
+                        slideInHorizontally(
+                            initialOffsetX = { -it },
+                            animationSpec = tween(300)
+                        )
+                    }
+                },
+                exitTransition = {
+                    val targetRoute = targetState.destination.route ?: ""
+                    val initialOrder = getTabOrder(BottomNavigationItem.PROFILE.route)
+                    val targetOrder = getTabOrder(targetRoute)
+
+                    if (targetOrder < initialOrder) {
+                        // 오른쪽으로 나가기 (내정보 -> 홈/상품구매)
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(300)
+                        )
+                    } else {
+                        // 왼쪽으로 나가기
+                        slideOutHorizontally(
+                            targetOffsetX = { -it },
+                            animationSpec = tween(300)
+                        )
+                    }
+                }
+            ) {
                 MyInfoNavigation(
                     onBackClick = {
                         navController.navigate(BottomNavigationItem.HOME.route) {
