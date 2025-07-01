@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -23,7 +26,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.Box
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
@@ -44,6 +46,7 @@ fun BottomNavigationBar(
         modifier = modifier
             .fillMaxWidth()
             .background(Color.White)
+            .windowInsetsPadding(WindowInsets.navigationBars)
     ) {
         Divider(
             color = Color(0xFFEEEEEE),
@@ -82,14 +85,6 @@ fun BottomNavigationBar(
                 modifier = Modifier.weight(1f)
             )
         }
-
-        // 하단 여백용 박스 (갤럭시 S25 등을 위한 추가 공간)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(14.dp)
-                .background(Color.White)
-        )
     }
 }
 

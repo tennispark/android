@@ -1,21 +1,9 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# 멀티모듈 관련 keep 규칙들
+-keep class com.luckydut97.** { *; }
+-keep class com.luckydut97.tennispark.** { *; }
+-keep class com.luckydut97.feature.** { *; }
+-keep class com.luckydut97.feature_** { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
-
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Compose 관련
+-keep class androidx.compose.** { *; }
+-keep class kotlin.Metadata { *; }

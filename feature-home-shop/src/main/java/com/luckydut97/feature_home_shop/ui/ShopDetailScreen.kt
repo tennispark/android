@@ -356,7 +356,7 @@ fun ShopDetailScreen(
                 Column {
                     // 제목
                     Text(
-                        text = "상품 상세 설명 및 유의사항",
+                        text = "유의사항",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = Pretendard,
@@ -368,13 +368,11 @@ fun ShopDetailScreen(
 
                     // 설명 텍스트
                     Text(
-                        text = """상품 설명이 필요한 경우 이 영역을 이용하여 주의사항 또는 상품에 대한 자세한 설명을 작성할 수 있습니다.
-
-현금 교환불가 또는 유의사항도 활용 가능합니다. 상품 설명이 필요한 경우 이 영역을 이용하여 주의사항 또는 상품에 대한 자세한 설명을 작성할 수 있습니다.
-
-현금 교환불가 또는 유의사항도 활용 가능합니다. 상품 설명이 필요한 경우 이 영역을 이용하여 주의사항 또는 상품에 대한 자세한 설명을 작성할 수 있습니다.
-
-현금 교환불가 또는 유의사항도 활용 가능합니다.""",
+                        text = """1. 포인트는 현금이 아닌 앱 전용 적립 수단입니다.
+                             - 포인트는 환불, 현금 교환, 타인에게 양도할 수 없습니다.
+                            2. 포인트로만 상품 구매가 가능합니다.
+                             - 일부 상품은 포인트 전액 결제로만 구매할 수 있으며, 현금 또는 기타 결제수단과의 혼합 결제는 지원되지 않습니다.
+                        """.trimMargin(),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         fontFamily = Pretendard,

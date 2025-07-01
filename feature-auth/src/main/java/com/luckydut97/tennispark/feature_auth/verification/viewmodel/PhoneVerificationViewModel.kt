@@ -12,6 +12,7 @@ import com.luckydut97.tennispark.core.data.repository.PhoneVerificationRepositor
 import com.luckydut97.tennispark.core.data.storage.TokenManager
 import com.luckydut97.tennispark.core.data.storage.TokenManagerImpl
 import com.luckydut97.tennispark.core.data.network.NetworkModule
+import com.luckydut97.tennispark.core.config.AppConfig
 
 class PhoneVerificationViewModel : ViewModel() {
 
@@ -93,6 +94,20 @@ class PhoneVerificationViewModel : ViewModel() {
 
     fun requestVerification() {
         if (_phoneNumber.value.isNotEmpty()) {
+            // 리뷰어/테스트 예외 - 이 부분 배포 후 주석처리
+            if (_phoneNumber.value == "00000000") {
+                viewModelScope.launch {
+                    _isLoading.value = true
+                    tokenManager.saveTokens(
+                        AppConfig.DEV_ACCESS_TOKEN,
+                        AppConfig.DEV_REFRESH_TOKEN
+                    )
+                    _isLoading.value = false
+                    _isVerified.value = true
+                    _navigateToMain.value = true
+                }
+                return
+            }
             Log.d(tag, "=== 인증번호 요청 버튼 클릭 ===")
             Log.d(tag, "입력된 전화번호: ${_phoneNumber.value}")
 

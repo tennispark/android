@@ -15,3 +15,11 @@
 local.properties
 .idea/ChatHistory_schema_v2.xml
 .idea/
+
+# Keystore files (보안상 중요!)
+*.keystore
+*.jks
+release.keystore
+
+# Gradle properties with sensitive info
+gradle.properties

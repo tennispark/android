@@ -52,8 +52,7 @@ fun MainActionButtons(
         ActionButton(
             text = "활동인증",
             onClick = {
-                Log.d("카메라 디버깅:", "활동인증 button clicked")
-                onActivityVerificationClick()
+                /*onActivityVerificationClick()*/
             },
             modifier = Modifier.weight(1f)
         )

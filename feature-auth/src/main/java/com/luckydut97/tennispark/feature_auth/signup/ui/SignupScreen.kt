@@ -337,7 +337,9 @@ fun SignupScreen(
             InputField(
                 value = instagramId,
                 onValueChange = {
-                    val filtered = it.filter { ch -> ch.isLetterOrDigit() }
+                    val filtered = it.filter { ch ->
+                        ch.isLetterOrDigit() || !ch.isWhitespace()
+                    }
                     viewModel.updateInstagramId(filtered)
                 },
                 label = "인스타그램 ID",
