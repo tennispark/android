@@ -10,7 +10,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.luckydut97.feature_myinfo.ui.MyInfoScreen
+import com.luckydut97.feature_myinfo.ui.NoticeScreen
+import com.luckydut97.feature_myinfo.ui.FaqScreen
 import com.luckydut97.feature_myinfo.ui.SettingsScreen
+import com.luckydut97.feature_myinfo.ui.AppSettingsScreen
 import com.luckydut97.feature_myinfo.viewmodel.MyInfoViewModel
 
 /**
@@ -80,27 +83,23 @@ fun MyInfoNavigation(
             )
         }
 
-        // 공지사항 화면 (TODO: 향후 구현)
+        // 공지사항 화면
         composable("notice") {
-            // NoticeScreen()
-            // 임시 화면
-            SettingsScreen(
+            NoticeScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
 
-        // 앱 설정 화면 (TODO: 향후 구현)
+        // 앱 설정 화면 
         composable("app_settings") {
-            // AppSettingsScreen()
-            SettingsScreen(
+            AppSettingsScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
 
-        // FAQ 화면 (TODO: 향후 구현)
+        // FAQ 화면
         composable("faq") {
-            // FaqScreen()
-            SettingsScreen(
+            FaqScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
