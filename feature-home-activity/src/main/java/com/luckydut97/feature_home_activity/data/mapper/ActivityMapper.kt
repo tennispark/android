@@ -3,6 +3,7 @@ package com.luckydut97.feature_home_activity.data.mapper
 import com.luckydut97.tennispark.core.data.model.ActivityResponse
 import com.luckydut97.feature_home_activity.domain.model.WeeklyActivity
 import com.luckydut97.feature_home_activity.domain.model.ActivityStatus
+import com.luckydut97.tennispark.core.utils.toKoreanCourtType
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -41,7 +42,7 @@ fun ActivityResponse.toWeeklyActivity(): WeeklyActivity {
         date = localDate,
         startTime = startTime,
         endTime = endTime,
-        gameCode = courtType,
+        gameCode = courtType.toKoreanCourtType(),
         location = place.name,
         court = courtName,
         currentParticipants = participantCount,

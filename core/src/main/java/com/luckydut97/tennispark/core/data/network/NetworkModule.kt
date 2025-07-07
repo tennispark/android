@@ -11,7 +11,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object NetworkModule {
+object  NetworkModule {
     private const val BASE_URL = "https://tennis-park.store/"
     private val tag = "🔍 디버깅: NetworkModule"
 
@@ -19,16 +19,7 @@ object NetworkModule {
 
     fun initialize(context: Context) {
         appContext = context.applicationContext
-        Log.d(tag, "=== NetworkModule 초기화 시작 ===")
-        Log.d(tag, "디버깅: BASE_URL = $BASE_URL")
-        Log.d(tag, "🔧 AuthInterceptor 초기화 시작...")
-
-        // AuthInterceptor 초기화 확인
-        val tokenManager = TokenManagerImpl(appContext!!)
-        val authInterceptor = AuthInterceptor(tokenManager)
-        Log.d(tag, "✅ AuthInterceptor 생성 완료")
-
-        Log.d(tag, "=== NetworkModule 초기화 완료 ===")
+        Log.d(tag, "✅ NetworkModule 초기화 완료")
     }
 
     fun getContext(): Context? {
@@ -43,12 +34,11 @@ object NetworkModule {
 
     private val okHttpClient: OkHttpClient by lazy {
         Log.d(tag, "🔧 OkHttpClient 초기화 시작...")
-        Log.d(tag, "  appContext 상태: ${appContext != null}")
 
         val builder = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
 
-        // 🔥 AuthInterceptor 추가 (Context 확인 후)
+        // AuthInterceptor 추가
         if (appContext != null) {
             val tokenManager = TokenManagerImpl(appContext!!)
             val authInterceptor = AuthInterceptor(tokenManager)
@@ -64,7 +54,7 @@ object NetworkModule {
             .writeTimeout(60, TimeUnit.SECONDS)
             .build()
 
-        Log.d(tag, "✅ OkHttpClient 초기화 완료 (Interceptor 개수: ${client.interceptors.size})")
+        Log.d(tag, "✅ OkHttpClient 초기화 완료")
         client
     }
 
