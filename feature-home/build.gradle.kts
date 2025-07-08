@@ -59,6 +59,12 @@ dependencies {
     // ViewModel for Compose (바텀시트용)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
+    // Activity Result API for Compose
+    implementation("androidx.activity:activity-compose:1.8.2")
+
+    // 이미지 로딩 라이브러리
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

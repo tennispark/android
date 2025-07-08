@@ -15,11 +15,14 @@ import com.luckydut97.tennispark.core.data.model.PointHistoryListResponse
 import com.luckydut97.tennispark.core.data.model.MembershipRegistrationRequest
 import com.luckydut97.tennispark.core.data.model.QrPurchaseResponse
 import com.luckydut97.tennispark.core.data.model.ShopProductListResponse
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.GET
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Url
 
@@ -75,6 +78,13 @@ interface ApiService {
 
     @POST("api/members/points/products/{productId}/purchases/qr")
     suspend fun purchaseProductWithQr(@Path("productId") productId: Long): Response<ApiResponse<QrPurchaseResponse>>
+
+    // 활동 인증 API (Activity Certification)
+    @Multipart
+    @POST("api/members/activities/certifications")
+    suspend fun certifyActivity(
+        @Part image: MultipartBody.Part
+    ): Response<ApiResponse<Any>>
 
     // 로그아웃 API
     @POST("api/members/auth/logout")

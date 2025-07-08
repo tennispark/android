@@ -52,6 +52,14 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.6"
     }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/baseline.prof"
+            excludes += "META-INF/baseline.profm"
+        }
+    }
 }
 
 dependencies {

@@ -17,7 +17,7 @@ package com.luckydut97.tennispark.core.config
 object AppConfig {
 
     // 🔥 개발할 때는 true, 배포할 때는 false로 변경
-    const val IS_DEV_MODE = false
+    const val IS_DEV_MODE = true
 
     // 🎯 Google Play 리뷰어용 특별 인증 (배포 후 주석 처리)
     const val ENABLE_REVIEWER_MODE = true  // 배포 후 false로 변경 또는 주석 처리

@@ -36,9 +36,13 @@ import com.luckydut97.feature_home.main.ui.components.AdBanner
 import com.luckydut97.feature_home.main.ui.components.EventSection
 import com.luckydut97.feature_home.main.ui.components.HomeTopAppBar
 import com.luckydut97.feature_home.main.ui.components.MainActionButtons
+import com.luckydut97.feature_home.main.ui.components.PhotoUploadBottomSheet
+import com.luckydut97.feature_home.main.ui.components.SuccessDialog
 import com.luckydut97.feature_home.main.ui.components.WeeklyApplicationSection
 import com.luckydut97.feature_home.main.ui.components.WeeklyPhotoSection
 import com.luckydut97.feature_home.main.viewmodel.HomeViewModel
+import com.luckydut97.feature_home.main.viewmodel.PhotoUploadViewModel
+import com.luckydut97.tennispark.core.data.repository.ActivityCertificationRepositoryImpl
 
 @Composable
 fun HomeScreen(
@@ -61,6 +65,15 @@ fun HomeScreen(
         AppliedActivityViewModel(MockAppliedActivityRepository())
     }
     val showAppliedActivityBottomSheet by appliedActivityViewModel.showBottomSheet.collectAsState()
+
+    // PhotoUpload ViewModel 생성 (신규)
+    val photoUploadViewModel: PhotoUploadViewModel = viewModel {
+        PhotoUploadViewModel(
+            ActivityCertificationRepositoryImpl(NetworkModule.apiService)
+        )
+    }
+    val showPhotoUploadBottomSheet by photoUploadViewModel.showBottomSheet.collectAsState()
+    val showPhotoUploadSuccessDialog by photoUploadViewModel.showSuccessDialog.collectAsState()
 
     // Academy ViewModel 생성 (실제 API 연동)
     val academyApplicationViewModel: AcademyApplicationViewModel = viewModel {
@@ -99,8 +112,8 @@ fun HomeScreen(
             MainActionButtons(
                 onAttendanceClick = onAttendanceClick,
                 onActivityVerificationClick = {
-                    // 활동인증 바텀시트 표시
-                    appliedActivityViewModel.showAppliedActivitiesSheet()
+                    // 사진 업로드 바텀시트 표시
+                    photoUploadViewModel.showPhotoUploadSheet()
                 }
             )
 
@@ -144,5 +157,20 @@ fun HomeScreen(
         onDismiss = {
             academyApplicationViewModel.hideAcademyApplicationSheet()
         }
+    )
+
+    // 사진 업로드 바텀시트 (신규)
+    PhotoUploadBottomSheet(
+        viewModel = photoUploadViewModel,
+        isVisible = showPhotoUploadBottomSheet,
+        onDismiss = {
+            photoUploadViewModel.hidePhotoUploadSheet()
+        }
+    )
+
+    // 성공 다이얼로그
+    SuccessDialog(
+        showDialog = showPhotoUploadSuccessDialog,
+        onDismiss = { photoUploadViewModel.onCloseSuccessDialog() }
     )
 }

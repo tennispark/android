@@ -63,6 +63,12 @@ dependencies {
     // DataStore (토큰 저장용)
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
+    // 이미지 로딩 라이브러리
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Activity Result Contracts
+    implementation("androidx.activity:activity-compose:1.8.2")
+
     // 테스트 의존성
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

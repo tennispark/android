@@ -52,7 +52,7 @@ fun MainActionButtons(
         ActionButton(
             text = "활동인증",
             onClick = {
-                /*onActivityVerificationClick()*/
+                onActivityVerificationClick()
             },
             modifier = Modifier.weight(1f)
         )
