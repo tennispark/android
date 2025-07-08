@@ -15,6 +15,7 @@ import com.luckydut97.tennispark.core.data.model.PointHistoryListResponse
 import com.luckydut97.tennispark.core.data.model.MembershipRegistrationRequest
 import com.luckydut97.tennispark.core.data.model.QrPurchaseResponse
 import com.luckydut97.tennispark.core.data.model.ShopProductListResponse
+import com.luckydut97.tennispark.core.data.model.UpdateFcmTokenRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -85,6 +86,10 @@ interface ApiService {
     suspend fun certifyActivity(
         @Part image: MultipartBody.Part
     ): Response<ApiResponse<Any>>
+
+    // FCM 토큰 업데이트 API
+    @POST("api/members/fcm-token")
+    suspend fun updateFcmToken(@Body request: UpdateFcmTokenRequest): Response<ApiResponse<Any>>
 
     // 로그아웃 API
     @POST("api/members/auth/logout")

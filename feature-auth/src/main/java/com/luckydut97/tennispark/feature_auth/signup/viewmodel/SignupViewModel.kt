@@ -14,11 +14,13 @@ import com.luckydut97.tennispark.core.data.model.ErrorResponse
 import com.luckydut97.tennispark.core.data.storage.TokenManager
 import com.luckydut97.tennispark.core.data.storage.TokenManagerImpl
 import com.luckydut97.tennispark.core.data.network.NetworkModule
+import com.luckydut97.tennispark.core.fcm.FcmTokenManager
 
 class SignupViewModel : ViewModel() {
 
     private val tag = "🔍 디버깅: SignupViewModel"
     private val membershipRepository = MembershipRepository()
+    private val fcmTokenManager = FcmTokenManager()
 
     // TokenManager 인스턴스 생성
     private val tokenManager: TokenManager by lazy {
@@ -178,6 +180,17 @@ class SignupViewModel : ViewModel() {
                     _isLoading.value = true
                     _errorMessage.value = null
 
+                    // FCM 토큰 가져오기
+                    Log.d(tag, "🔥 FCM 토큰 발급 시작...")
+                    val fcmToken = fcmTokenManager.getFcmToken()
+                    Log.d(tag, "🔥 FCM 토큰 결과: $fcmToken")
+
+                    if (fcmToken != null) {
+                        Log.d(tag, "✅ FCM 토큰 발급 성공! 길이: ${fcmToken.length}")
+                    } else {
+                        Log.w(tag, "⚠️ FCM 토큰 발급 실패 - null 반환")
+                    }
+
                     val registrationSource = when (_joinPath.value) {
                         0 -> "INSTAGRAM"
                         1 -> "NAVER_SEARCH"
@@ -193,7 +206,8 @@ class SignupViewModel : ViewModel() {
                         year = _birthYear.value.toIntOrNull() ?: 2000,
                         registrationSource = registrationSource,
                         recommender = if (_joinPath.value == 2 && _referrer.value.isNotEmpty()) _referrer.value else null,
-                        instagramId = _instagramId.value
+                        instagramId = _instagramId.value,
+                        fcmToken = fcmToken // FCM 토큰 추가
                     )
 
                     Log.d(tag, "🚀 회원가입 API 호출 시작...")

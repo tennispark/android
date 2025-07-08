@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "576561036397",
+    "project_id": "tennispark-3f9ec",
+    "storage_bucket": "tennispark-3f9ec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576561036397:android:e7bca849bf9e2ae40dd364",
+        "android_client_info": {
+          "package_name": "com.luckydut97.tennispark"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0v3s24w3T6-1u2osoO6taFXs44JQPRQY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

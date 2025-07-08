@@ -4,6 +4,7 @@ import android.util.Log
 import com.luckydut97.tennispark.core.data.model.ApiResponse
 import com.luckydut97.tennispark.core.data.model.TokenResponse
 import com.luckydut97.tennispark.core.data.model.ErrorResponse
+import com.luckydut97.tennispark.core.data.model.UpdateFcmTokenRequest
 import com.luckydut97.tennispark.core.data.network.ApiService
 import com.luckydut97.tennispark.core.data.storage.TokenManager
 
@@ -11,6 +12,7 @@ interface AuthRepository {
     suspend fun refreshTokens(): ApiResponse<TokenResponse>
     suspend fun isLoggedIn(): Boolean
     suspend fun logout(): ApiResponse<Any>
+    suspend fun updateFcmToken(fcmToken: String): ApiResponse<Any>
 }
 
 class AuthRepositoryImpl(
@@ -121,6 +123,41 @@ class AuthRepositoryImpl(
             )
         } finally {
             Log.d(tag, "=== 로그아웃 처리 완료 ===")
+        }
+    }
+
+    override suspend fun updateFcmToken(fcmToken: String): ApiResponse<Any> {
+        Log.d(tag, "=== FCM 토큰 업데이트 시작 ===")
+        Log.d(tag, "FCM 토큰: $fcmToken")
+
+        return try {
+            val request = UpdateFcmTokenRequest(fcmToken)
+            val response = apiService.updateFcmToken(request)
+
+            if (response.isSuccessful && response.body()?.success == true) {
+                Log.d(tag, "✅ FCM 토큰 업데이트 성공")
+                response.body()!!
+            } else {
+                Log.e(tag, "❌ FCM 토큰 업데이트 실패: ${response.code()}")
+                ApiResponse(
+                    success = false,
+                    error = ErrorResponse(
+                        status = response.code(),
+                        message = "FCM 토큰 업데이트 실패"
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(tag, "🔥 FCM 토큰 업데이트 예외: ${e.message}", e)
+            ApiResponse(
+                success = false,
+                error = ErrorResponse(
+                    status = 0,
+                    message = "네트워크 오류가 발생했습니다."
+                )
+            )
+        } finally {
+            Log.d(tag, "=== FCM 토큰 업데이트 완료 ===")
         }
     }
 }

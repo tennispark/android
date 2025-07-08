@@ -10,8 +10,9 @@ data class MemberRegistrationRequest(
     val tennisCareer: String,
     val year: Int,
     val registrationSource: String, // "INSTAGRAM", "NAVER_SEARCH", "FRIEND_RECOMMENDATION"
-    val recommender: String? = null, // 친구 추천 시에만수
-    val instagramId: String
+    val recommender: String? = null, // 친구 추천 시에만
+    val instagramId: String,
+    val fcmToken: String? = null // FCM 토큰 (알림 수신용)
 )
 
 /**
