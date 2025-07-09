@@ -19,6 +19,8 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <!-- Android 13+ 알림 권한 -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -53,12 +55,14 @@
         <!-- Firebase Cloud Messaging 서비스 -->
         <service
             android:name="com.luckydut97.tennispark.core.fcm.MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
+            android:exported="false"
+            android:enabled="true"
+            android:stopWithTask="false"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+            <intent-filter android:priority="1000">
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <!-- FCM 기본 알림 아이콘 설정 -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -66,6 +70,13 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/ic_launcher_background" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="tennis_park_notifications" />
+        <!-- Samsung 백그라운드 최적화 예외(Meta-data 추천) -->
+        <meta-data
+            android:name="com.samsung.android.activity.aware.ENABLED"
+            android:value="true" />
 
     </application>
 

@@ -127,18 +127,21 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun updateFcmToken(fcmToken: String): ApiResponse<Any> {
-        Log.d(tag, "=== FCM 토큰 업데이트 시작 ===")
-        Log.d(tag, "FCM 토큰: $fcmToken")
+        Log.d(tag, "디버깅: === FCM 토큰 업데이트 시작 ===")
+        Log.d(tag, "디버깅: 서버 전송용 FCM 토큰: $fcmToken (길이: ${fcmToken.length})")
 
         return try {
             val request = UpdateFcmTokenRequest(fcmToken)
+            Log.d(tag, "디버깅: API 호출 준비 완료. Request Body: $request")
             val response = apiService.updateFcmToken(request)
 
+            Log.d(tag, "디버깅: 서버 응답 코드: ${response.code()}")
+            Log.d(tag, "디버깅: 서버 응답 바디: ${response.body()}")
+
             if (response.isSuccessful && response.body()?.success == true) {
-                Log.d(tag, "✅ FCM 토큰 업데이트 성공")
-                response.body()!!
+                Log.d(tag, "✅ 디버깅: FCM 토큰 업데이트 성공"); response.body()!!
             } else {
-                Log.e(tag, "❌ FCM 토큰 업데이트 실패: ${response.code()}")
+                Log.e(tag, "❌ 디버깅: FCM 토큰 업데이트 실패, 코드: ${response.code()}")
                 ApiResponse(
                     success = false,
                     error = ErrorResponse(
@@ -148,16 +151,16 @@ class AuthRepositoryImpl(
                 )
             }
         } catch (e: Exception) {
-            Log.e(tag, "🔥 FCM 토큰 업데이트 예외: ${e.message}", e)
+            Log.e(tag, "🔥 디버깅: FCM 토큰 업데이트 예외: ${e.message}", e)
             ApiResponse(
                 success = false,
                 error = ErrorResponse(
                     status = 0,
-                    message = "네트워크 오류가 발생했습니다."
+                    message = "네트워크 오류가 발생했습니다. (${e.message})"
                 )
             )
         } finally {
-            Log.d(tag, "=== FCM 토큰 업데이트 완료 ===")
+            Log.d(tag, "디버깅: === FCM 토큰 업데이트 완료 ===")
         }
     }
 }

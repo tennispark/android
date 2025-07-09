@@ -14,6 +14,10 @@ fun AcademyResponse.toAcademy(): Academy {
     // 디버깅을 위한 로그
     android.util.Log.d("AcademyMapper", "변환 중: academyId=$id, date=$date")
 
+    // 날짜 형식 변환: "2025년 06월 24일 (화)" -> "06.24(화)"
+    val formattedDate = formatDateString(date)
+    android.util.Log.d("AcademyMapper", "날짜 변환: $date -> $formattedDate")
+
     // 시간 파싱: "10:00" -> LocalTime
     val startTime = LocalTime.parse(startAt, DateTimeFormatter.ofPattern("HH:mm"))
     val endTime = LocalTime.parse(endAt, DateTimeFormatter.ofPattern("HH:mm"))
@@ -23,8 +27,9 @@ fun AcademyResponse.toAcademy(): Academy {
 
     // lessonType을 activityType으로 매핑
     val activityType = when (lessonType) {
-        "FOREHAND_BACKHAND" -> "포핸드/백핸드"
-        "VOLLEY_SERVE" -> "발리/서브"
+        "LEVEL1" -> "레벨1"
+        "LEVEL2" -> "레벨2"
+        "LEVEL3" -> "레벨3"
         else -> lessonType // 기본값으로 원래 값 사용
     }
 
@@ -38,7 +43,7 @@ fun AcademyResponse.toAcademy(): Academy {
 
     return Academy(
         id = id.toString(),
-        date = date, // "05.13(화)" 형식 그대로 사용
+        date = formattedDate,
         time = timeRange,
         court = courtName,
         location = place.name,
@@ -47,4 +52,34 @@ fun AcademyResponse.toAcademy(): Academy {
         maxParticipants = capacity,
         status = status
     )
+}
+
+/**
+ * 날짜 문자열을 "2025년 06월 24일 (화)" 형식에서 "06.24(화)" 형식으로 변환
+ */
+private fun formatDateString(dateString: String): String {
+    return try {
+        // 이미 "05.13(화)" 형식이면 그대로 반환
+        if (dateString.matches(Regex("\\d{2}\\.\\d{2}\\([가-힣]\\)"))) {
+            return dateString
+        }
+
+        // "2025년 06월 24일 (화)" 또는 "2025년 06월 24일(화)" 형식 파싱
+        val regex = Regex("(\\d{4})년\\s*(\\d{1,2})월\\s*(\\d{1,2})일\\s*\\(?([가-힣])\\)?")
+        val matchResult = regex.find(dateString)
+
+        if (matchResult != null) {
+            val (_, month, day, dayOfWeek) = matchResult.destructured
+            val formattedMonth = month.padStart(2, '0')
+            val formattedDay = day.padStart(2, '0')
+            "$formattedMonth.$formattedDay($dayOfWeek)"
+        } else {
+            // 파싱 실패 시 원본 반환
+            android.util.Log.w("AcademyMapper", "날짜 파싱 실패: $dateString")
+            dateString
+        }
+    } catch (e: Exception) {
+        android.util.Log.e("AcademyMapper", "날짜 변환 오류: $dateString", e)
+        dateString
+    }
 }

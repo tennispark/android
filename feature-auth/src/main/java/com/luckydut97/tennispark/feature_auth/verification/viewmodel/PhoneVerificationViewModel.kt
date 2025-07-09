@@ -176,6 +176,48 @@ class PhoneVerificationViewModel : ViewModel() {
                             if (accessToken != null && refreshToken != null) {
                                 tokenManager.saveTokens(accessToken, refreshToken)
                                 Log.d(tag, "💾 기존 회원 토큰 저장 완료")
+
+                                // FCM 토큰 서버 전송 추가 (기존 회원 로그인 성공 후)
+                                val fcmTokenManager =
+                                    com.luckydut97.tennispark.core.fcm.FcmTokenManager()
+                                val context = NetworkModule.getContext()
+                                if (context != null) {
+                                    val tokenManagerForRepo =
+                                        com.luckydut97.tennispark.core.data.storage.TokenManagerImpl(
+                                            context
+                                        )
+                                    val authRepository =
+                                        com.luckydut97.tennispark.core.data.repository.AuthRepositoryImpl(
+                                            apiService = com.luckydut97.tennispark.core.data.network.NetworkModule.apiService,
+                                            tokenManager = tokenManagerForRepo
+                                        )
+                                    viewModelScope.launch {
+                                        val fcmToken = fcmTokenManager.getFcmToken()
+                                        Log.d(
+                                            tag,
+                                            "디버깅: 로그인 후 FCM 토큰 가져옴: $fcmToken, 길이: ${fcmToken?.length}"
+                                        )
+                                        if (!fcmToken.isNullOrBlank()) {
+                                            if (fcmTokenManager.isValidFcmToken(fcmToken)) {
+                                                Log.d(tag, "디버깅: FCM 토큰 유효성 통과. 서버로 전송 시작")
+                                                val response =
+                                                    authRepository.updateFcmToken(fcmToken)
+                                                if (response.success) {
+                                                    Log.d(tag, "✅ 디버깅: FCM 토큰 서버 전송 성공!")
+                                                } else {
+                                                    Log.e(
+                                                        tag,
+                                                        "❌ 디버깅: FCM 토큰 서버 전송 실패: ${response.error}"
+                                                    )
+                                                }
+                                            } else {
+                                                Log.w(tag, "⚠️ 디버깅: FCM 토큰이 유효하지 않다!")
+                                            }
+                                        } else {
+                                            Log.w(tag, "⚠️ 디버깅: FCM 토큰 없음 또는 가져오기 실패")
+                                        }
+                                    }
+                                }
                             } else {
                                 Log.e(tag, "⚠️ 토큰이 null입니다")
                             }

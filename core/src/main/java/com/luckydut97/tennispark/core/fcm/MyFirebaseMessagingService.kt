@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
-        private const val TAG = "MyFirebaseMessaging"
+        private const val TAG = "MyFirebaseMessaging 디버깅"
     }
 
     private val authRepository: AuthRepository by lazy {
@@ -47,18 +47,59 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        Log.d(TAG, "푸시 메시지 수신: ${remoteMessage.from}")
+        Log.d(TAG, "🔍 디버깅: === FCM 메시지 수신 시작 ===")
+        Log.d(TAG, "🔍 디버깅: 발신자: ${remoteMessage.from}")
+        Log.d(TAG, "🔍 디버깅: 메시지 ID: ${remoteMessage.messageId}")
+        Log.d(TAG, "🔍 디버깅: 메시지 타입: ${remoteMessage.messageType}")
+        Log.d(TAG, "🔍 디버깅: 전송 시간: ${remoteMessage.sentTime}")
 
-        // 알림 데이터 처리
+        // 알림 데이터 추출
+        val title = remoteMessage.notification?.title
+        val body = remoteMessage.notification?.body
+        val data = remoteMessage.data
+
+        Log.d(TAG, "🔍 디버깅: 알림 데이터 추출 완료")
+        Log.d(TAG, "🔍 디버깅: - 제목: $title")
+        Log.d(TAG, "🔍 디버깅: - 내용: $body")
+        Log.d(TAG, "🔍 디버깅: - 데이터 개수: ${data.size}")
+
+        // 알림 데이터 로그 (기존 유지)
         remoteMessage.notification?.let {
             Log.d(TAG, "알림 제목: ${it.title}")
             Log.d(TAG, "알림 내용: ${it.body}")
         }
 
-        // 데이터 메시지 처리
+        // 데이터 메시지 처리 (기존 유지)
         if (remoteMessage.data.isNotEmpty()) {
             Log.d(TAG, "데이터 메시지: ${remoteMessage.data}")
+            // 상세 데이터 로그
+            Log.d(TAG, "🔍 디버깅: 데이터 메시지 상세:")
+            for ((key, value) in remoteMessage.data) {
+                Log.d(TAG, "🔍 디버깅: - $key: $value")
+            }
+        } else {
+            Log.d(TAG, "🔍 디버깅: 데이터 메시지 없음")
         }
+
+        // 실제 알림 표시
+        Log.d(TAG, "🔍 디버깅: 알림 표시 프로세스 시작")
+        try {
+            Log.d(TAG, "🔍 디버깅: NotificationHelper 생성 시작")
+            val notificationHelper = NotificationHelper(applicationContext)
+            Log.d(TAG, "🔍 디버깅: NotificationHelper 생성 완료")
+
+            Log.d(TAG, "🔍 디버깅: showNotification 호출 시작")
+            notificationHelper.showNotification(title, body, data)
+            Log.d(TAG, "✅ 디버깅: 알림 표시 요청 완료")
+
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ 디버깅: 알림 표시 실패: ${e.message}", e)
+            Log.e(TAG, "❌ 디버깅: 예외 타입: ${e.javaClass.simpleName}")
+            Log.e(TAG, "❌ 디버깅: 스택 트레이스:")
+            e.printStackTrace()
+        }
+
+        Log.d(TAG, "🔍 디버깅: === FCM 메시지 수신 완료 ===")
     }
 
     /**

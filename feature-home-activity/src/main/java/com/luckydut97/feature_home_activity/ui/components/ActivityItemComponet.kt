@@ -98,7 +98,8 @@ fun ActivityItemComponent(
                         fontSize = 17.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.SemiBold,
-                        color = textColor
+                        color = textColor,
+                        letterSpacing = (-0.5).sp
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -118,7 +119,8 @@ fun ActivityItemComponent(
                         fontSize = 17.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.Normal,
-                        color = textColor
+                        color = textColor,
+                        letterSpacing = (-1).sp
                     )
                 }
 
@@ -130,7 +132,8 @@ fun ActivityItemComponent(
                     fontSize = 15.sp,
                     fontFamily = Pretendard,
                     fontWeight = FontWeight.SemiBold,
-                    color = textColor
+                    color = textColor,
+
                 )
 
                 Spacer(modifier = Modifier.height(2.dp))
@@ -154,7 +157,8 @@ fun ActivityItemComponent(
                         fontSize = 12.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF8B9096)
+                        color = Color(0xFF8B9096),
+
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -174,7 +178,8 @@ fun ActivityItemComponent(
                         fontSize = 12.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.Normal,
-                        color = Color(0xFF8B9096)
+                        color = Color(0xFF8B9096),
+
                     )
                 }
             }
