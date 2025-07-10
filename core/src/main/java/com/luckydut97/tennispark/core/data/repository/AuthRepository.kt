@@ -12,6 +12,7 @@ interface AuthRepository {
     suspend fun refreshTokens(): ApiResponse<TokenResponse>
     suspend fun isLoggedIn(): Boolean
     suspend fun logout(): ApiResponse<Any>
+    suspend fun withdraw(): ApiResponse<Any>
     suspend fun updateFcmToken(fcmToken: String): ApiResponse<Any>
 }
 
@@ -123,6 +124,73 @@ class AuthRepositoryImpl(
             )
         } finally {
             Log.d(tag, "=== 로그아웃 처리 완료 ===")
+        }
+    }
+
+    override suspend fun withdraw(): ApiResponse<Any> {
+        Log.d(tag, "🔍 디버깅: === 회원 탈퇴 API 호출 시작 ===")
+        Log.d(tag, "🔍 디버깅: Base URL: https://tennis-park.store/")
+        Log.d(tag, "🔍 디버깅: Endpoint: DELETE /api/members/me")
+        Log.d(tag, "🔍 디버깅: HTTP Method: DELETE")
+
+        return try {
+            Log.d(tag, "🔍 디버깅: 🚀 Retrofit API 호출 시작...")
+            val response = apiService.withdraw()
+
+            Log.d(tag, "🔍 디버깅: 📊 HTTP Status Code: ${response.code()}")
+            Log.d(tag, "🔍 디버깅: 📝 HTTP Status Message: ${response.message()}")
+            Log.d(tag, "🔍 디버깅: 📋 Response Headers: ${response.headers()}")
+
+            if (response.isSuccessful) {
+                Log.d(tag, "🔍 디버깅: ✅ 회원 탈퇴 API 호출 성공")
+                // 로컬 토큰 삭제
+                tokenManager.clearTokens()
+                Log.d(tag, "🔍 디버깅: 💾 로컬 토큰 삭제 완료")
+
+                response.body() ?: ApiResponse(
+                    success = true,
+                    response = null,
+                    error = null
+                )
+            } else {
+                val errorBody = response.errorBody()?.string()
+                Log.e(tag, "🔍 디버깅: ❌ 회원 탈퇴 API 호출 실패: ${response.code()}")
+                Log.e(tag, "🔍 디버깅: 🔥 Error Message: ${response.message()}")
+                Log.e(tag, "🔍 디버깅: 🔥 Error Body: $errorBody")
+
+                // API 실패해도 로컬 토큰은 삭제
+                tokenManager.clearTokens()
+                Log.d(tag, "🔍 디버깅: 💾 로컬 토큰 삭제 완료 (API 실패했지만)")
+
+                ApiResponse(
+                    success = false,
+                    error = ErrorResponse(
+                        status = response.code(),
+                        message = when (response.code()) {
+                            401 -> "인증이 되지 않았습니다."
+                            404 -> "회원 정보를 찾을 수 없습니다."
+                            else -> "회원 탈퇴 처리 중 오류가 발생했습니다."
+                        }
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(tag, "🔍 디버깅: 🔥 회원 탈퇴 예외: ${e.message}", e)
+            Log.e(tag, "🔍 디버깅: 예외 타입: ${e.javaClass.simpleName}")
+
+            // 예외 발생해도 로컬 토큰은 삭제
+            tokenManager.clearTokens()
+            Log.d(tag, "🔍 디버깅: 💾 로컬 토큰 삭제 완료 (예외 발생했지만)")
+
+            ApiResponse(
+                success = false,
+                error = ErrorResponse(
+                    status = 0,
+                    message = "네트워크 오류가 발생했습니다."
+                )
+            )
+        } finally {
+            Log.d(tag, "🔍 디버깅: === 회원 탈퇴 처리 완료 ===")
         }
     }
 

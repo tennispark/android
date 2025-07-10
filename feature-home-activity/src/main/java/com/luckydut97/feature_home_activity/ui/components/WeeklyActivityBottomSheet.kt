@@ -61,19 +61,19 @@ fun WeeklyActivityBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(591.dp)
+                    .height(if (activities.isEmpty() && !isLoading && error == null) 178.dp else 591.dp)
             ) {
                 // 메인 컨텐츠 박스
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(575.dp)
+                        .height(if (activities.isEmpty() && !isLoading && error == null) 142.dp else 575.dp)
                         .padding(horizontal = 24.dp)
                 ) {
                     Column {
-                        // Header Column
+                        // Header Column - 조건부 높이
                         Column(
-                            modifier = Modifier.height(73.dp),
+                            modifier = Modifier.height(if (activities.isEmpty() && !isLoading && error == null) 39.dp else 73.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             // 제목과 닫기 버튼 Row
@@ -107,33 +107,38 @@ fun WeeklyActivityBottomSheet(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            // 부제목 - 목록이 있을 때만 표시
+                            if (!(activities.isEmpty() && !isLoading && error == null)) {
+                                Spacer(modifier = Modifier.height(8.dp))
 
-                            // 부제목
-                            Text(
-                                text = "원하는 활동을 선택해 주세요.",
-                                fontSize = 16.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.Normal,
-                                textAlign = TextAlign.Center,
-                                color = Color(0xFF8B9096)
-                            )
+                                Text(
+                                    text = "원하는 활동을 선택해 주세요.",
+                                    fontSize = 16.sp,
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.Normal,
+                                    textAlign = TextAlign.Center,
+                                    color = Color(0xFF8B9096)
+                                )
+                            }
                         }
 
-                        Spacer(modifier = Modifier.height(18.dp))
+                        // 목록이 있을 때만 여백 추가
+                        if (!(activities.isEmpty() && !isLoading && error == null)) {
+                            Spacer(modifier = Modifier.height(18.dp))
+                        }
 
-                        // 활동 목록 LazyColumn으로 변경
+                        // 활동 목록 영역
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(442.dp)
+                                .height(if (activities.isEmpty() && !isLoading && error == null) 85.dp else 442.dp)
                         ) {
                             if (isLoading) {
                                 // 로딩 상태 표시
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(442.dp),
+                                        .height(if (activities.isEmpty() && !isLoading && error == null) 85.dp else 442.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
@@ -148,7 +153,7 @@ fun WeeklyActivityBottomSheet(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(422.dp),
+                                        .height(if (activities.isEmpty() && !isLoading && error == null) 85.dp else 422.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
@@ -164,7 +169,7 @@ fun WeeklyActivityBottomSheet(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(422.dp),
+                                        .height(if (activities.isEmpty() && !isLoading && error == null) 85.dp else 422.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
@@ -199,7 +204,9 @@ fun WeeklyActivityBottomSheet(
                 }
 
                 // 하단 빈 박스 (36dp 높이)
-                Spacer(modifier = Modifier.height(36.dp))
+                if (!(activities.isEmpty() && !isLoading && error == null)) {
+                    Spacer(modifier = Modifier.height(36.dp))
+                }
             }
         }
     }

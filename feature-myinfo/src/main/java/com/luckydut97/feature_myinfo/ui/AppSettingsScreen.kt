@@ -53,7 +53,8 @@ fun AppSettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "광고성 푸시 알림 수신 설정",
+                    /*text = "광고성 푸시 알림 수신 설정",*/
+                    text = "푸시 알림 수신 설정",
                     fontSize = 16.sp,
                     fontFamily = Pretendard,
                     color = Color(0xFF222222)
@@ -64,7 +65,7 @@ fun AppSettingsScreen(
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Row(
+            /*Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -81,7 +82,7 @@ fun AppSettingsScreen(
                     checked = infoPushEnabled,
                     onCheckedChange = viewModel::setInfoPushEnabled
                 )
-            }
+            }*/
         }
     }
 }

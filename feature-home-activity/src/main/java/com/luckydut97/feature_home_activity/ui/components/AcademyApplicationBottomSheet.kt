@@ -62,19 +62,19 @@ fun AcademyApplicationBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(651.dp)
+                    .height(if (academies.isEmpty() && !isLoading && error == null) 178.dp else 575.dp)
             ) {
                 // 메인 컨텐츠 박스
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(615.dp)
+                        .height(if (academies.isEmpty() && !isLoading && error == null) 142.dp else 575.dp)
                         .padding(horizontal = 24.dp)
                 ) {
                     Column {
-                        // Header Column
+                        // Header Column - 조건부 높이
                         Column(
-                            modifier = Modifier.height(133.dp),
+                            modifier = Modifier.height(if (academies.isEmpty() && !isLoading && error == null) 39.dp else 133.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             // 제목과 닫기 버튼 Row
@@ -108,56 +108,59 @@ fun AcademyApplicationBottomSheet(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            // 부제목 및 안내문 - 목록이 있을 때만 표시
+                            if (!(academies.isEmpty() && !isLoading && error == null)) {
+                                Spacer(modifier = Modifier.height(8.dp))
 
-                            // 부제목 및 안내문
-                            val captionColor = Color(0xFF555555)
-                            Text(
-                                text = "원하는 활동을 선택해 주세요.",
-                                fontSize = 14.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.Normal,
-                                textAlign = TextAlign.Center,
-                                color = captionColor
-                            )
+                                val captionColor = Color(0xFF555555)
+                                Text(
+                                    text = "원하는 활동을 선택해 주세요.",
+                                    fontSize = 14.sp,
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.Normal,
+                                    textAlign = TextAlign.Center,
+                                    color = captionColor
+                                )
 
-                            Spacer(modifier = Modifier.height(5.dp))
+                                Spacer(modifier = Modifier.height(5.dp))
 
-                            // 비용 안내(Bold + Caption Color)
-                            Text(
-                                text = buildAnnotatedString {
-                                    append("비용은 ")
-                                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                        append("총 240,000원")
-                                    }
-                                    append("입니다.")
-                                },
-                                fontSize = 14.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.Normal,
-                                textAlign = TextAlign.Center,
-                                color = captionColor
-                            )
+                                // 비용 안내(Bold + Caption Color)
+                                Text(
+                                    text = buildAnnotatedString {
+                                        append("비용은 ")
+                                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                            append("총 240,000원")
+                                        }
+                                        append("입니다.")
+                                    },
+                                    fontSize = 14.sp,
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.Normal,
+                                    textAlign = TextAlign.Center,
+                                    color = captionColor
+                                )
 
-                            
-
-                            Text(
-                                text = "신청 후 입금계좌 정보를 안내 드리겠습니다.",
-                                fontSize = 14.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.Normal,
-                                textAlign = TextAlign.Center,
-                                color = captionColor
-                            )
+                                Text(
+                                    text = "신청 후 입금계좌 정보를 안내 드리겠습니다.",
+                                    fontSize = 14.sp,
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.Normal,
+                                    textAlign = TextAlign.Center,
+                                    color = captionColor
+                                )
+                            }
                         }
 
-                        Spacer(modifier = Modifier.height(18.dp))
+                        // 목록이 있을 때만 여백 추가
+                        if (!(academies.isEmpty() && !isLoading && error == null)) {
+                            Spacer(modifier = Modifier.height(18.dp))
+                        }
 
-                        // 아카데미 목록 Column
+                        // 아카데미 목록 영역
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(442.dp),
+                                .height(if (academies.isEmpty() && !isLoading && error == null) 85.dp else 442.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             if (isLoading) {
@@ -196,7 +199,7 @@ fun AcademyApplicationBottomSheet(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(422.dp),
+                                        .height(85.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
@@ -230,7 +233,9 @@ fun AcademyApplicationBottomSheet(
                 }
 
                 // 하단 빈 박스 (36dp 높이)
-                Spacer(modifier = Modifier.height(36.dp))
+                if (!(academies.isEmpty() && !isLoading && error == null)) {
+                    Spacer(modifier = Modifier.height(36.dp))
+                }
             }
         }
     }

@@ -83,7 +83,7 @@ fun ActionButton(
             Text(
                 text = text,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Medium,
                 fontFamily = Pretendard,
                 color = Color.Black
             )

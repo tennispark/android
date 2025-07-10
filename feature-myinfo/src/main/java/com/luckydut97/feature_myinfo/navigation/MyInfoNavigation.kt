@@ -1,5 +1,8 @@
 package com.luckydut97.feature_myinfo.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -15,6 +18,8 @@ import com.luckydut97.feature_myinfo.ui.FaqScreen
 import com.luckydut97.feature_myinfo.ui.SettingsScreen
 import com.luckydut97.feature_myinfo.ui.AppSettingsScreen
 import com.luckydut97.feature_myinfo.viewmodel.MyInfoViewModel
+import android.util.Log
+import kotlinx.coroutines.delay
 
 /**
  * feature-myinfo 모듈 내부 네비게이션
@@ -27,14 +32,58 @@ fun MyInfoNavigation(
     navController: NavHostController = rememberNavController(),
     viewModel: MyInfoViewModel = viewModel()
 ) {
+    val tag = "🔍 MyInfoNavigation"
+
     // 로그아웃 상태 감지
     val isLoggedOut by viewModel.isLoggedOut.collectAsState()
+    val isWithdrawn by viewModel.isWithdrawn.collectAsState()
+
+    Log.d(
+        tag,
+        "🔍 디버깅: MyInfoNavigation 리컴포지션 - isLoggedOut: $isLoggedOut, isWithdrawn: $isWithdrawn"
+    )
 
     // 로그아웃 완료 시 인증 화면으로 이동
     LaunchedEffect(isLoggedOut) {
+        Log.d(tag, "🔍 디버깅: LaunchedEffect(isLoggedOut) 트리거됨 - isLoggedOut: $isLoggedOut")
         if (isLoggedOut) {
+            Log.d(tag, "🔍 디버깅: ✅ 로그아웃 완료 감지 - onLogoutComplete() 호출 예정")
+            try {
+                onLogoutComplete()
+                Log.d(tag, "🔍 디버깅: onLogoutComplete() 호출 완료")
+            } catch (e: Exception) {
+                Log.e(tag, "🔍 디버깅: onLogoutComplete() 호출 실패: ${e.message}", e)
+            }
+            // 네비게이션 완료 후 상태 초기화
+            Log.d(tag, "🔍 디버깅: 200ms 대기 시작")
+            delay(200) // 네비게이션 완료 대기 (좀 더 길게)
+            Log.d(tag, "🔍 디버깅: 200ms 대기 완료, resetLogoutState() 호출")
             viewModel.resetLogoutState()
-            onLogoutComplete()
+            Log.d(tag, "🔍 디버깅: ✅ 로그아웃 상태 초기화 완료")
+        } else {
+            Log.d(tag, "🔍 디버깅: isLoggedOut이 false여서 onLogoutComplete() 호출하지 않음")
+        }
+    }
+
+    // 회원 탈퇴 완료 시 인증 화면으로 이동
+    LaunchedEffect(isWithdrawn) {
+        Log.d(tag, "🔍 디버깅: LaunchedEffect(isWithdrawn) 트리거됨 - isWithdrawn: $isWithdrawn")
+        if (isWithdrawn) {
+            Log.d(tag, "🔍 디버깅: ✅ 회원 탈퇴 완료 감지 - onLogoutComplete() 호출 예정")
+            try {
+                onLogoutComplete()
+                Log.d(tag, "🔍 디버깅: onLogoutComplete() 호출 완료")
+            } catch (e: Exception) {
+                Log.e(tag, "🔍 디버깅: onLogoutComplete() 호출 실패: ${e.message}", e)
+            }
+            // 네비게이션 완료 후 상태 초기화
+            Log.d(tag, "🔍 디버깅: 200ms 대기 시작")
+            delay(200) // 네비게이션 완료 대기 (좀 더 길게)
+            Log.d(tag, "🔍 디버깅: 200ms 대기 완료, resetWithdrawState() 호출")
+            viewModel.resetWithdrawState()
+            Log.d(tag, "🔍 디버깅: ✅ 회원 탈퇴 상태 초기화 완료")
+        } else {
+            Log.d(tag, "🔍 디버깅: isWithdrawn이 false여서 onLogoutComplete() 호출하지 않음")
         }
     }
 
@@ -53,7 +102,21 @@ fun MyInfoNavigation(
         }
 
         // 설정 화면
-        composable("settings") {
+        composable(
+            "settings",
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
+            }
+        ) {
             SettingsScreen(
                 onBackClick = {
                     navController.popBackStack()
@@ -73,56 +136,110 @@ fun MyInfoNavigation(
                 onVersionInfoClick = {
                     navController.navigate("version_info")
                 },
-                onLogoutClick = {
-                    // 로그아웃 API 호출
-                    viewModel.logout()
-                },
-                onWithdrawalClick = {
-                    navController.navigate("withdrawal")
-                }
+                viewModel = viewModel // 🔍 디버깅: 동일한 ViewModel 인스턴스 전달
             )
         }
 
         // 공지사항 화면
-        composable("notice") {
+        composable(
+            "notice",
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
+            }
+        ) {
             NoticeScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
 
         // 앱 설정 화면 
-        composable("app_settings") {
+        composable(
+            "app_settings",
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
+            }
+        ) {
             AppSettingsScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
 
         // FAQ 화면
-        composable("faq") {
+        composable(
+            "faq",
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
+            }
+        ) {
             FaqScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
 
         // 이용약관 화면 (TODO: 향후 구현)
-        composable("terms") {
-            // TermsScreen()
+        composable(
+            "terms",
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
+            }
+        ) {
             SettingsScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
 
         // 버전 정보 화면 (TODO: 향후 구현)
-        composable("version_info") {
-            // VersionInfoScreen()
-            SettingsScreen(
-                onBackClick = { navController.popBackStack() }
-            )
-        }
-
-        // 회원 탈퇴 화면 (TODO: 향후 구현)
-        composable("withdrawal") {
-            // WithdrawalScreen()
+        composable(
+            "version_info",
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
+            }
+        ) {
             SettingsScreen(
                 onBackClick = { navController.popBackStack() }
             )

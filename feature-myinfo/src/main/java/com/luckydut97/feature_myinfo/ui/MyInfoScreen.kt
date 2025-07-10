@@ -45,7 +45,8 @@ import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.feature_myinfo.viewmodel.MyInfoViewModel
 import com.luckydut97.tennispark.core.data.model.PointHistoryItem
 import com.luckydut97.tennispark.core.ui.components.navigation.NoArrowTopBar
-import com.luckydut97.tennispark.core.ui.components.shop.ShopAdBanner
+import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBanner
+import com.luckydut97.tennispark.core.data.model.unifiedAdBannerList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -275,13 +276,8 @@ fun MyInfoScreen(
 
             // 광고 배너
             item {
-                ShopAdBanner(
-                    adImages = listOf(
-                        com.luckydut97.feature_myinfo.R.drawable.test_ad_img1,
-                        com.luckydut97.feature_myinfo.R.drawable.test_ad_img2,
-                        com.luckydut97.feature_myinfo.R.drawable.test_ad_img3,
-                        com.luckydut97.feature_myinfo.R.drawable.test_ad_img4
-                    )
+                UnifiedAdBanner(
+                    bannerList = unifiedAdBannerList
                 )
             }
 

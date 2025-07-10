@@ -52,6 +52,10 @@ class MyInfoViewModel(
     private val _isLoggedOut = MutableStateFlow(false)
     val isLoggedOut: StateFlow<Boolean> = _isLoggedOut.asStateFlow()
 
+    // 회원 탈퇴 성공 상태
+    private val _isWithdrawn = MutableStateFlow(false)
+    val isWithdrawn: StateFlow<Boolean> = _isWithdrawn.asStateFlow()
+
     init {
         Log.d(tag, "MyInfoViewModel 초기화")
         refreshAllData()
@@ -164,28 +168,74 @@ class MyInfoViewModel(
      * 로그아웃 처리
      */
     fun logout() {
-        Log.d(tag, "=== 로그아웃 시작 ===")
+        Log.d(tag, "🔍 디버깅: === 로그아웃 시작 ===")
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
+            Log.d(tag, "🔍 디버깅: 로딩 상태 true로 설정")
 
             try {
+                Log.d(tag, "🔍 디버깅: AuthRepository.logout() 호출")
                 val response = authRepository.logout()
+                Log.d(tag, "🔍 디버깅: 서버 응답 수신: success=${response.success}")
+
                 if (response.success) {
-                    Log.d(tag, "✅ 로그아웃 성공!")
+                    Log.d(tag, "🔍 디버깅: ✅ 로그아웃 성공!")
                     _isLoggedOut.value = true
+                    Log.d(tag, "🔍 디버깅: isLoggedOut 상태 true로 설정")
                 } else {
-                    Log.e(tag, "❌ 로그아웃 실패: ${response.error?.message}")
+                    Log.e(tag, "🔍 디버깅: ❌ 로그아웃 실패: ${response.error?.message}")
                     // API 실패해도 로컬에서는 토큰이 삭제되었으므로 로그아웃 성공으로 처리
                     _isLoggedOut.value = true
+                    Log.d(tag, "🔍 디버깅: API 실패했지만 isLoggedOut 상태 true로 설정")
                 }
             } catch (e: Exception) {
-                Log.e(tag, "🔥 로그아웃 예외: ${e.message}", e)
+                Log.e(tag, "🔍 디버깅: 🔥 로그아웃 예외: ${e.message}", e)
+                Log.e(tag, "🔍 디버깅: 예외 타입: ${e.javaClass.simpleName}")
                 // 예외 발생해도 로컬에서는 토큰이 삭제되었으므로 로그아웃 성공으로 처리
                 _isLoggedOut.value = true
+                Log.d(tag, "🔍 디버깅: 예외 발생했지만 isLoggedOut 상태 true로 설정")
             } finally {
                 _isLoading.value = false
-                Log.d(tag, "=== 로그아웃 완료 ===")
+                Log.d(tag, "🔍 디버깅: 로딩 상태 false로 설정")
+                Log.d(tag, "🔍 디버깅: === 로그아웃 완료 ===")
+            }
+        }
+    }
+
+    /**
+     * 회원 탈퇴 처리
+     */
+    fun withdraw() {
+        Log.d(tag, "🔍 디버깅: === 회원 탈퇴 시작 ===")
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+            Log.d(tag, "🔍 디버깅: 로딩 상태 true로 설정")
+
+            try {
+                Log.d(tag, "🔍 디버깅: AuthRepository.withdraw() 호출")
+                val response = authRepository.withdraw()
+                Log.d(tag, "🔍 디버깅: 서버 응답 수신: success=${response.success}")
+
+                if (response.success) {
+                    Log.d(tag, "🔍 디버깅: ✅ 회원 탈퇴 성공!")
+                    _isWithdrawn.value = true
+                    Log.d(tag, "🔍 디버깅: isWithdrawn 상태 true로 설정")
+                } else {
+                    Log.e(tag, "🔍 디버깅: ❌ 회원 탈퇴 실패: ${response.error?.message}")
+                    _errorMessage.value = response.error?.message ?: "회원 탈퇴 실패"
+                    Log.d(tag, "🔍 디버깅: 에러 메시지 설정: ${_errorMessage.value}")
+                }
+            } catch (e: Exception) {
+                Log.e(tag, "🔍 디버깅: 🔥 회원 탈퇴 예외: ${e.message}", e)
+                Log.e(tag, "🔍 디버깅: 예외 타입: ${e.javaClass.simpleName}")
+                _errorMessage.value = "회원 탈퇴 중 오류가 발생했습니다."
+                Log.d(tag, "🔍 디버깅: 예외 에러 메시지 설정: ${_errorMessage.value}")
+            } finally {
+                _isLoading.value = false
+                Log.d(tag, "🔍 디버깅: 로딩 상태 false로 설정")
+                Log.d(tag, "🔍 디버깅: === 회원 탈퇴 완료 ===")
             }
         }
     }
@@ -194,7 +244,16 @@ class MyInfoViewModel(
      * 로그아웃 상태 초기화 (화면 이동 후)
      */
     fun resetLogoutState() {
+        Log.d(tag, "🔍 디버깅: resetLogoutState() 호출 - isLoggedOut: false로 설정")
         _isLoggedOut.value = false
+    }
+
+    /**
+     * 회원 탈퇴 상태 초기화 (화면 이동 후)
+     */
+    fun resetWithdrawState() {
+        Log.d(tag, "🔍 디버깅: resetWithdrawState() 호출 - isWithdrawn: false로 설정")
+        _isWithdrawn.value = false
     }
 
     /**

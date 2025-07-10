@@ -1,5 +1,8 @@
 package com.luckydut97.tennispark.feature_auth.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,7 +27,21 @@ fun AuthNavigation(
         startDestination = AuthRoute.PHONE_VERIFICATION
     ) {
         // 휴대폰 인증 화면
-        composable(AuthRoute.PHONE_VERIFICATION) {
+        composable(
+            AuthRoute.PHONE_VERIFICATION,
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
+            }
+        ) {
             PhoneVerificationScreen(
                 onBackClick = {
                     // 뒤로 가기 시 앱 종료 또는 다른 처리
@@ -40,7 +57,21 @@ fun AuthNavigation(
         }
 
         // 회원가입 화면 (전화번호 파라미터 추가)
-        composable("${AuthRoute.SIGNUP}/{phoneNumber}") { backStackEntry ->
+        composable(
+            "${AuthRoute.SIGNUP}/{phoneNumber}",
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
+            }
+        ) { backStackEntry ->
             val phoneNumber = backStackEntry.arguments?.getString("phoneNumber") ?: ""
             SignupScreen(
                 phoneNumber = phoneNumber,

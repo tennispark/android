@@ -21,7 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -40,12 +42,16 @@ import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.tennispark.feature_auth.signup.ui.components.GenderSelectionButton
 import com.luckydut97.tennispark.feature_auth.signup.viewmodel.SignupViewModel
+import com.luckydut97.tennispark.feature_auth.signup.ui.TermsDetailDialog
+import com.luckydut97.tennispark.feature_auth.signup.ui.PrivacyPolicyDialog
 
 @Composable
 fun SignupScreen(
     phoneNumber: String = "", // 전화번호 파라미터 추가
     onBackClick: () -> Unit,
-    onSignupComplete: () -> Unit
+    onSignupComplete: () -> Unit,
+    onShowTermsDetail: () -> Unit = {},
+    onShowPrivacyPolicy: () -> Unit = {}
 ) {
     val viewModel: SignupViewModel = viewModel()
 
@@ -74,6 +80,9 @@ fun SignupScreen(
     if (isSignupComplete) {
         onSignupComplete()
     }
+
+    var showTermsDialog by remember { mutableStateOf(false) }
+    var showPrivacyDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -420,7 +429,7 @@ fun SignupScreen(
                     fontWeight = FontWeight.Normal,
                     fontFamily = Pretendard,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable { /* TODO: 상세 팝업 */ },
+                    modifier = Modifier.clickable { showTermsDialog = true },
                     letterSpacing = (-1).sp
                 )
             }
@@ -454,7 +463,7 @@ fun SignupScreen(
                     fontWeight = FontWeight.Normal,
                     fontFamily = Pretendard,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable { /* TODO: 상세 팝업 */ },
+                    modifier = Modifier.clickable { showPrivacyDialog = true },
                     letterSpacing = (-1).sp
                 )
             }
@@ -572,5 +581,11 @@ fun SignupScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
         }
+    }
+    if (showTermsDialog) {
+        TermsDetailDialog(onDismiss = { showTermsDialog = false })
+    }
+    if (showPrivacyDialog) {
+        PrivacyPolicyDialog(onDismiss = { showPrivacyDialog = false })
     }
 }

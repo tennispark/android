@@ -19,6 +19,7 @@ import com.luckydut97.tennispark.core.data.model.UpdateFcmTokenRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -94,4 +95,8 @@ interface ApiService {
     // 로그아웃 API
     @POST("api/members/auth/logout")
     suspend fun logout(): Response<ApiResponse<Any>>
+
+    // 회원 탈퇴 API
+    @DELETE("api/members/me")
+    suspend fun withdraw(): Response<ApiResponse<Any>>
 }

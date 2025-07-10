@@ -33,7 +33,8 @@ import com.luckydut97.feature_home_shop.viewmodel.ShopViewModel
 import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.feature_home_shop.data.repository.ShopRepositoryImpl
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
-import com.luckydut97.tennispark.core.ui.components.shop.ShopAdBanner
+import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBanner
+import com.luckydut97.tennispark.core.data.model.unifiedAdBannerList
 import com.luckydut97.feature_home_shop.ui.components.ShopItemComponent
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.feature_home_shop.R
@@ -67,14 +68,7 @@ fun ShopScreen(
                 .padding(paddingValues)
         ) {
             // 광고 배너
-            ShopAdBanner(
-                adImages = listOf(
-                    R.drawable.test_ad_img1,
-                    R.drawable.test_ad_img2,
-                    R.drawable.test_ad_img3,
-                    R.drawable.test_ad_img4
-                )
-            )
+            UnifiedAdBanner(bannerList = unifiedAdBannerList)
 
             // 내 포인트 섹션
             Row(

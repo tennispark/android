@@ -37,6 +37,7 @@ import com.luckydut97.tennispark.core.ui.components.input.InputField
 import com.luckydut97.tennispark.core.ui.components.button.SmallActionButton
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.components.input.VerificationCodeFieldWithTimer
+import com.luckydut97.tennispark.core.ui.components.navigation.NoArrowTopBar
 import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.tennispark.feature_auth.verification.viewmodel.PhoneVerificationViewModel
@@ -79,10 +80,13 @@ fun PhoneVerificationScreen(
             .background(Color.White)
             .systemBarsPadding()
     ) {
-        TopBar(
+        NoArrowTopBar(
+            title = "휴대폰 본인인증"
+        )
+        /*TopBar(
             title = "휴대폰 본인인증",
             onBackClick = onBackClick
-        )
+        )*/
 
         Box(
             modifier = Modifier
@@ -98,7 +102,11 @@ fun PhoneVerificationScreen(
 
                 // 안내 메시지
                 Text(
-                    text = "문자로 전송된\n인증번호를 입력해 주세요.",
+                    text = if (isVerificationRequested) {
+                        "문자로 전송된\n인증번호를 입력해 주세요."
+                    } else {
+                        "본인인증을 위해\n휴대폰 번호를 입력해 주세요."
+                    },
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
