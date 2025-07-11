@@ -1,7 +1,6 @@
 package com.luckydut97.feature_home_shop.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +29,7 @@ import coil.compose.AsyncImage
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 
 /**
  * 상품 아이템 컴포넌트
@@ -41,90 +41,98 @@ fun ShopItemComponent(
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit = {}
 ) {
-    Row(
+    PressableComponent(
+        onClick = onItemClick,
         modifier = modifier
             .fillMaxWidth()
             .height(100.dp)
-            .clickable { onItemClick() },
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        // 왼쪽 이미지 박스
-        Box(
+        Row(
             modifier = Modifier
-                .size(100.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFFF5F5F5))
+                .fillMaxWidth()
+                .height(100.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = item.imageUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        Spacer(modifier = Modifier.width(20.dp))
-
-        // 오른쪽 상품 정보
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Center
-        ) {
-            // 브랜드명
-            Text(
-                text = item.brandName,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Normal,
-                fontFamily = Pretendard,
-                color = Color(0xFF959595)
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // 제품명
-            Text(
-                text = item.productName,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Normal,
-                fontFamily = Pretendard,
-                color = Color.Black,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // 가격 정보
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            // 왼쪽 이미지 박스
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFFF5F5F5))
             ) {
-                // 코인 아이콘 (임시로 원형 박스)
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_coin_green),
+                AsyncImage(
+                    model = item.imageUrl,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = Color.Unspecified // 원본 색상 유지
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
+            }
 
-                Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(20.dp))
 
-                // 가격 숫자
+            // 오른쪽 상품 정보
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                // 브랜드명
                 Text(
-                    text = String.format("%,d", item.price),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    text = item.brandName,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Normal,
                     fontFamily = Pretendard,
-                    color = Color(0xFF145F44)
+                    color = Color(0xFF959595)
                 )
 
-                // P 단위
+                /*Spacer(modifier = Modifier.height(4.dp))*/
+
+                // 제품명
                 Text(
-                    text = "P",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    text = item.productName,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
                     fontFamily = Pretendard,
-                    color = Color(0xFF145F44)
+                    color = Color.Black,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 20.sp
+
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // 가격 정보
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 코인 아이콘 (임시로 원형 박스)
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_coin_green),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = Color.Unspecified // 원본 색상 유지
+                    )
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    // 가격 숫자
+                    Text(
+                        text = String.format("%,d", item.price),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = Pretendard,
+                        color = Color(0xFF145F44)
+                    )
+
+                    // P 단위
+                    Text(
+                        text = "P",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = Pretendard,
+                        color = Color(0xFF145F44)
+                    )
+                }
             }
         }
     }

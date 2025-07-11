@@ -52,6 +52,7 @@ import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.tennispark.core.data.repository.PointRepository
+import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 import kotlinx.coroutines.launch
 
 /**
@@ -175,7 +176,7 @@ fun ShopDetailScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     
                     // 구매취소 버튼
-                    OutlinedButton(
+                    PressableComponent(
                         onClick = { 
                             showConfirmDialog = false
                             qrCodeUrl = null
@@ -183,23 +184,30 @@ fun ShopDetailScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(45.dp),
-                        border = androidx.compose.foundation.BorderStroke(
-                            width = 1.dp,
-                            color = Color(0xFF145F44)
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color(0xFF145F44)
-                        )
+                            .height(45.dp)
                     ) {
-                        Text(
-                            text = "구매취소",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = Pretendard,
-                            color = Color(0xFF145F44)
-                        )
+                        OutlinedButton(
+                            onClick = { }, // 클릭은 PressableComponent에서 처리
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(45.dp),
+                            border = androidx.compose.foundation.BorderStroke(
+                                width = 1.dp,
+                                color = Color(0xFF145F44)
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = Color(0xFF145F44)
+                            )
+                        ) {
+                            Text(
+                                text = "구매취소",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = Pretendard,
+                                color = Color(0xFF145F44)
+                            )
+                        }
                     }
                 }
             }
@@ -223,24 +231,31 @@ fun ShopDetailScreen(
                     .background(Color.White),
                 contentAlignment = Alignment.Center
             ) {
-                Button(
+                PressableComponent(
                     onClick = { showConfirmDialog = true },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(47.dp)
-                        .padding(horizontal = 17.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF145F44)
-                    ),
-                    shape = RoundedCornerShape(8.dp)
+                        .padding(horizontal = 17.dp)
                 ) {
-                    Text(
-                        text = "확인",
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = Pretendard
-                    )
+                    Button(
+                        onClick = { }, // 클릭은 PressableComponent에서 처리
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(47.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF145F44)
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = "확인",
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = Pretendard
+                        )
+                    }
                 }
             }
         }
@@ -346,7 +361,7 @@ fun ShopDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 26.dp) // 좌우 26dp 여백
-                    .height(278.dp)
+                    .wrapContentHeight()
                     .background(
                         color = Color(0xFFF5F5F5),
                         shape = RoundedCornerShape(8.dp)
@@ -367,12 +382,20 @@ fun ShopDetailScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     // 설명 텍스트
+                    // 설명 텍스트
                     Text(
-                        text = """1. 포인트는 현금이 아닌 앱 전용 적립 수단입니다.
-                             - 포인트는 환불, 현금 교환, 타인에게 양도할 수 없습니다.
-                            2. 포인트로만 상품 구매가 가능합니다.
-                             - 일부 상품은 포인트 전액 결제로만 구매할 수 있으며, 현금 또는 기타 결제수단과의 혼합 결제는 지원되지 않습니다.
-                        """.trimMargin(),
+                        text = "1.포인트는 현금이 아닌 앱 전용 적립 수단입니다.\n" +
+                                " -포인트는 환불, 현금 교환, 타인에게 양도할 수 없습니다.\n\n" +
+                                "2.포인트로만 상품 구매가 가능합니다.\n" +
+                                " - 일부 상품은 포인트 전액 결제로만 구매할 수 있으며, 현금 또는 기타 결제수단과의 혼합 결제는 지원되지 않습니다.\n\n" +
+                                "3.상품 수량은 한정되어 있으며, 조기 소진될 수 있습니다.\n" +
+                                " - 실시간 재고 변동에 따라 구매가 제한될 수 있으니 참고해 주세요.\n\n" +
+                                "4.상품은 지정된 오프라인 현장에서만 교환 가능합니다.\n" +
+                                " - 택배 배송은 제공되지 않으며, 현장에서 포인트로 직접 상품을 교환하셔야 합니다.\n\n" +
+                                "5.QR코드 인식 후에는 취소 및 교환이 불가합니다.\n" +
+                                " - 포인트 상품의 특성상 단순 변심에 의한 환불 및 교환은 불가하며, 상품 불량 시에만 동일 상품으로 교환이 가능합니다.\n\n" +
+                                "6.이벤트 또는 프로모션으로 지급된 포인트는 일부 상품에 사용이 제한될 수 있습니다.\n" +
+                                " - 각 상품의 사용 가능 조건을 반드시 확인해 주세요.",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         fontFamily = Pretendard,

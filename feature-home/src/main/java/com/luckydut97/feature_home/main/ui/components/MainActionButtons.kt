@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.feature.home.R
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 
 @Composable
 fun MainActionButtons(
@@ -65,34 +66,37 @@ fun ActionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier
-            .height(61.dp),
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        onClick = onClick
+    PressableComponent(
+        onClick = onClick,
+        modifier = modifier.height(61.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+        Card(
+            modifier = Modifier.height(61.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
-            Text(
-                text = text,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                fontFamily = Pretendard,
-                color = Color.Black
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = text,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = Pretendard,
+                    color = Color.Black
+                )
 
-            Image(
-                painter = painterResource(id = R.drawable.ic_arrow_right),
-                contentDescription = "Arrow Right",
-                modifier = Modifier.size(width = 7.dp, height = 14.dp)
-            )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_arrow_right),
+                    contentDescription = "Arrow Right",
+                    modifier = Modifier.size(width = 7.dp, height = 14.dp)
+                )
+            }
         }
     }
 }

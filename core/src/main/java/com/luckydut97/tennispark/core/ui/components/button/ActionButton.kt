@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.theme.AppColors
+import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 
 @Composable
 fun ActionButton(
@@ -26,27 +27,33 @@ fun ActionButton(
     backgroundColor: Color = AppColors.ButtonGreen,
     contentColor: Color = Color.White
 ) {
-    Button(
+    PressableComponent(
         onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(47.dp),
-        enabled = enabled,
-        shape = RoundedCornerShape(6.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (enabled) backgroundColor else AppColors.DisabledButton,
-            contentColor = contentColor,
-            disabledContainerColor = AppColors.DisabledButton,
-            disabledContentColor = Color.White
-        ),
-        contentPadding = PaddingValues(vertical = 12.dp)
+        modifier = modifier,
+        enabled = enabled
     ) {
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            color = if (enabled) Color.White else AppColors.UnselectedText,
-            fontWeight = FontWeight.SemiBold,
-        )
+        Button(
+            onClick = { }, // 클릭은 PressableComponent에서 처리
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(47.dp),
+            enabled = enabled,
+            shape = RoundedCornerShape(6.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (enabled) backgroundColor else AppColors.DisabledButton,
+                contentColor = contentColor,
+                disabledContainerColor = AppColors.DisabledButton,
+                disabledContentColor = Color.White
+            ),
+            contentPadding = PaddingValues(vertical = 12.dp)
+        ) {
+            Text(
+                text = text,
+                fontSize = 16.sp,
+                color = if (enabled) Color.White else AppColors.UnselectedText,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
     }
 }
 
@@ -69,48 +76,54 @@ fun SmallActionButton(
         AppColors.UnselectedText
     }
 
-    if (borderColor != null && backgroundColor == Color.White) {
-        OutlinedButton(
-            onClick = onClick,
-            modifier = modifier.height(47.dp),
-            enabled = enabled,
-            shape = RoundedCornerShape(6.dp),
-            border = BorderStroke(1.dp, borderColor),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = backgroundColor,
-                contentColor = contentColor
-            ),
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = text,
-                fontSize = fontSize.sp,
-                color = finalTextColor,
-                fontWeight = fontWeight,
-                maxLines = 1
-            )
-        }
-    } else {
-        Button(
-            onClick = onClick,
-            modifier = modifier.height(47.dp),
-            enabled = enabled,
-            shape = RoundedCornerShape(6.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (enabled) backgroundColor else AppColors.DisabledButton,
-                contentColor = contentColor,
-                disabledContainerColor = AppColors.DisabledButton,
-                disabledContentColor = Color.White
-            ),
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = text,
-                fontSize = fontSize.sp,
-                color = finalTextColor,
-                fontWeight = fontWeight,
-                maxLines = 1
-            )
+    PressableComponent(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled
+    ) {
+        if (borderColor != null && backgroundColor == Color.White) {
+            OutlinedButton(
+                onClick = { }, // 클릭은 PressableComponent에서 처리
+                modifier = Modifier.height(47.dp),
+                enabled = enabled,
+                shape = RoundedCornerShape(6.dp),
+                border = BorderStroke(1.dp, borderColor),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = backgroundColor,
+                    contentColor = contentColor
+                ),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = text,
+                    fontSize = fontSize.sp,
+                    color = finalTextColor,
+                    fontWeight = fontWeight,
+                    maxLines = 1
+                )
+            }
+        } else {
+            Button(
+                onClick = { }, // 클릭은 PressableComponent에서 처리
+                modifier = Modifier.height(47.dp),
+                enabled = enabled,
+                shape = RoundedCornerShape(6.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (enabled) backgroundColor else AppColors.DisabledButton,
+                    contentColor = contentColor,
+                    disabledContainerColor = AppColors.DisabledButton,
+                    disabledContentColor = Color.White
+                ),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = text,
+                    fontSize = fontSize.sp,
+                    color = finalTextColor,
+                    fontWeight = fontWeight,
+                    maxLines = 1
+                )
+            }
         }
     }
 }

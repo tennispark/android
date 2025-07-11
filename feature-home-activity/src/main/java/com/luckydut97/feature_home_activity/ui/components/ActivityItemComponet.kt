@@ -2,7 +2,6 @@ package com.luckydut97.feature_home_activity.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,8 +27,8 @@ import androidx.compose.ui.unit.sp
 import com.luckydut97.feature_home_activity.R
 import com.luckydut97.feature_home_activity.domain.model.ActivityStatus
 import com.luckydut97.feature_home_activity.domain.model.WeeklyActivity
-// import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 
 /**
  * 활동 아이템 컴포넌트 (반응형)
@@ -63,160 +62,165 @@ fun ActivityItemComponent(
         else -> Color(0xFF145F44)
     }
 
-    Box(
+    PressableComponent(
+        onClick = { onActivityClick(activity) },
         modifier = modifier
             .fillMaxWidth()
-            .height(113.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(backgroundColor)
-            .border(
-                width = 1.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .clickable(enabled = !isDisabled) {
-                onActivityClick(activity)
-            }
-            .padding(horizontal = 20.dp, vertical = 18.dp)
+            .height(113.dp),
+        enabled = !isDisabled
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(113.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(backgroundColor)
+                .border(
+                    width = 1.dp,
+                    color = borderColor,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(horizontal = 20.dp, vertical = 18.dp)
         ) {
-            // 왼쪽: 활동 정보
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.SpaceBetween
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // 날짜/시간 정보
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                // 왼쪽: 활동 정보
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
+                    // 날짜/시간 정보
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = activity.formattedDate,
+                            fontSize = 17.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.SemiBold,
+                            color = textColor,
+                            letterSpacing = (-0.5).sp
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // 세로 구분선
+                        Box(
+                            modifier = Modifier
+                                .width(1.dp)
+                                .height(16.5.dp)
+                                .background(Color(0xFFDDDDDD))
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text(
+                            text = activity.formattedTime,
+                            fontSize = 17.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = textColor,
+                            letterSpacing = (-1).sp
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    // 게임코트
                     Text(
-                        text = activity.formattedDate,
-                        fontSize = 17.sp,
+                        text = activity.gameCode,
+                        fontSize = 15.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.SemiBold,
                         color = textColor,
-                        letterSpacing = (-0.5).sp
+
                     )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.height(2.dp))
 
-                    // 세로 구분선
-                    Box(
-                        modifier = Modifier
-                            .width(1.dp)
-                            .height(16.5.dp)
-                            .background(Color(0xFFDDDDDD))
-                    )
+                    // 장소 정보
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // 위치 아이콘
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_location),
+                            contentDescription = "위치",
+                            modifier = Modifier.size(10.dp),
+                            tint = Color(0xFF8B9096)
+                        )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
 
-                    Text(
-                        text = activity.formattedTime,
-                        fontSize = 17.sp,
-                        fontFamily = Pretendard,
-                        fontWeight = FontWeight.Normal,
-                        color = textColor,
-                        letterSpacing = (-1).sp
-                    )
+                        Text(
+                            text = activity.location,
+                            fontSize = 12.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF8B9096),
+
+                            )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // 세로 구분선
+                        Box(
+                            modifier = Modifier
+                                .width(1.dp)
+                                .height(12.dp)
+                                .background(Color(0xFFDDDDDD))
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text(
+                            text = activity.court,
+                            fontSize = 12.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color(0xFF8B9096),
+
+                            )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(2.dp))
-
-                // 게임코트
-                Text(
-                    text = activity.gameCode,
-                    fontSize = 15.sp,
-                    fontFamily = Pretendard,
-                    fontWeight = FontWeight.SemiBold,
-                    color = textColor,
-
-                )
-
-                Spacer(modifier = Modifier.height(2.dp))
-
-                // 장소 정보
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                // 오른쪽: 인원/상태 정보
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    // 위치 아이콘
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_location),
-                        contentDescription = "위치",
-                        modifier = Modifier.size(10.dp),
-                        tint = Color(0xFF8B9096)
-                    )
+                    // 인원 표시 박스
+                    Box(
+                        modifier = Modifier
+                            .width(59.dp)
+                            .height(29.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(participantBoxColor),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = activity.participantInfo,
+                            fontSize = 17.43.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White
+                        )
+                    }
 
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
+                    // 상태 텍스트
                     Text(
-                        text = activity.location,
+                        text = statusText,
                         fontSize = 12.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF8B9096),
-
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    // 세로 구분선
-                    Box(
-                        modifier = Modifier
-                            .width(1.dp)
-                            .height(12.dp)
-                            .background(Color(0xFFDDDDDD))
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = activity.court,
-                        fontSize = 12.sp,
-                        fontFamily = Pretendard,
-                        fontWeight = FontWeight.Normal,
-                        color = Color(0xFF8B9096),
-
+                        color = statusTextColor
                     )
                 }
-            }
-
-            // 오른쪽: 인원/상태 정보
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                // 인원 표시 박스
-                Box(
-                    modifier = Modifier
-                        .width(59.dp)
-                        .height(29.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(participantBoxColor),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = activity.participantInfo,
-                        fontSize = 17.43.sp,
-                        fontFamily = Pretendard,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.White
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // 상태 텍스트
-                Text(
-                    text = statusText,
-                    fontSize = 12.sp,
-                    fontFamily = Pretendard,
-                    fontWeight = FontWeight.SemiBold,
-                    color = statusTextColor
-                )
             }
         }
     }

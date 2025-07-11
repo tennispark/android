@@ -6,6 +6,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.luckydut97.tennispark.core.data.repository.AuthRepository
 import com.luckydut97.tennispark.core.data.repository.AuthRepositoryImpl
 import com.luckydut97.tennispark.core.data.storage.TokenManagerImpl
+import com.luckydut97.tennispark.core.data.storage.NotificationPreferenceManager
 import com.luckydut97.tennispark.core.data.network.NetworkModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +28,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             apiService = NetworkModule.apiService,
             tokenManager = tokenManager
         )
+    }
+
+    private val notificationPreferenceManager: NotificationPreferenceManager by lazy {
+        NotificationPreferenceManager(applicationContext)
     }
 
     /**
@@ -52,6 +57,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         Log.d(TAG, "🔍 디버깅: 메시지 ID: ${remoteMessage.messageId}")
         Log.d(TAG, "🔍 디버깅: 메시지 타입: ${remoteMessage.messageType}")
         Log.d(TAG, "🔍 디버깅: 전송 시간: ${remoteMessage.sentTime}")
+
+        // 푸시 알림 설정 확인
+        val isPushEnabled = notificationPreferenceManager.isPushNotificationEnabled()
+        Log.d(TAG, "🔍 디버깅: 푸시 알림 설정 상태: $isPushEnabled")
+
+        if (!isPushEnabled) {
+            Log.d(TAG, "🔍 디버깅: 푸시 알림이 비활성화되어 있어 알림을 표시하지 않습니다.")
+            Log.d(TAG, "🔍 디버깅: === FCM 메시지 수신 완료 (알림 표시 안함) ===")
+            return
+        }
 
         // 알림 데이터 추출
         val title = remoteMessage.notification?.title
@@ -107,27 +122,59 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      * AuthRepository를 통해 실제 API 호출
      */
     private fun sendTokenToServer(token: String) {
-        Log.d(TAG, "서버로 FCM 토큰 전송 시작: $token")
+        Log.d(TAG, "=== 서버로 FCM 토큰 전송 시작 ===")
+        Log.d(TAG, "새로운 FCM 토큰: $token")
+        Log.d(TAG, "토큰 길이: ${token.length}")
 
         // 코루틴 스코프에서 비동기 처리
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                // 푸시 알림 설정 확인
+                val isPushEnabled = notificationPreferenceManager.isPushNotificationEnabled()
+                Log.d(TAG, "현재 푸시 알림 설정: $isPushEnabled")
+
                 // 로그인 상태 확인
-                if (authRepository.isLoggedIn()) {
+                val isLoggedIn = authRepository.isLoggedIn()
+                Log.d(TAG, "로그인 상태: $isLoggedIn")
+
+                if (isLoggedIn) {
                     Log.d(TAG, "로그인 상태 확인됨 - FCM 토큰 업데이트 진행")
-                    val response = authRepository.updateFcmToken(token)
+
+                    // 푸시 알림 설정에 따라 토큰 결정
+                    val tokenToSend = if (isPushEnabled) {
+                        Log.d(TAG, "푸시 알림 활성화됨 - 실제 FCM 토큰 사용")
+                        token
+                    } else {
+                        Log.d(TAG, "푸시 알림 비활성화됨 - 빈 문자열 사용")
+                        ""
+                    }
+
+                    Log.d(
+                        TAG,
+                        "서버로 전송할 토큰: ${if (tokenToSend.isEmpty()) "빈 문자열 (알림 비활성화)" else "실제 토큰 (${tokenToSend.length}자)"}"
+                    )
+
+                    val response = authRepository.updateFcmToken(tokenToSend)
 
                     if (response.success) {
-                        Log.d(TAG, "✅ FCM 토큰 서버 업데이트 성공")
+                        Log.d(TAG, "✅ FCM 토큰 서버 업데이트 성공!")
+                        Log.d(TAG, "응답 데이터: ${response.response}")
                     } else {
-                        Log.e(TAG, "❌ FCM 토큰 서버 업데이트 실패: ${response.error?.message}")
+                        Log.e(TAG, "❌ FCM 토큰 서버 업데이트 실패")
+                        Log.e(TAG, "오류 메시지: ${response.error?.message}")
+                        Log.e(TAG, "오류 상태: ${response.error?.status}")
                     }
                 } else {
                     Log.d(TAG, "로그인 상태가 아님 - FCM 토큰 업데이트 생략")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "🔥 FCM 토큰 서버 전송 예외: ${e.message}", e)
+                Log.e(TAG, "🔥 FCM 토큰 서버 전송 예외 발생")
+                Log.e(TAG, "예외 메시지: ${e.message}")
+                Log.e(TAG, "예외 타입: ${e.javaClass.simpleName}")
+                e.printStackTrace()
             }
+
+            Log.d(TAG, "=== 서버로 FCM 토큰 전송 완료 ===")
         }
     }
 }

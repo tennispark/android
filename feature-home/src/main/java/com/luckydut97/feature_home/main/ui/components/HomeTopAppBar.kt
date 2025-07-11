@@ -46,13 +46,13 @@ fun HomeTopAppBar(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
+            /*Image(
                 painter = painterResource(id = R.drawable.ic_alarm),
                 contentDescription = "Notifications",
                 modifier = Modifier
                     .size(27.dp)
                     .clickable(onClick = onNotificationClick)
-            )
+            )*/
 
             /*Spacer(modifier = Modifier.width(9.dp))
 

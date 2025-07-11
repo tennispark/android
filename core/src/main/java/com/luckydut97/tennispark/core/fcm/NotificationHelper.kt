@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import android.util.Log
 import com.luckydut97.tennispark.core.R
+import com.luckydut97.tennispark.core.data.storage.NotificationPreferenceManager
 
 /**
  * FCM 푸시 알림 생성 및 표시 헬퍼 클래스
@@ -23,6 +24,8 @@ class NotificationHelper(private val context: Context) {
         private const val CHANNEL_DESCRIPTION = "테니스파크 앱의 중요한 알림을 받습니다"
         private const val NOTIFICATION_ID = 1001
     }
+
+    private val notificationPreferenceManager = NotificationPreferenceManager(context)
 
     init {
         createNotificationChannel()
@@ -89,6 +92,16 @@ class NotificationHelper(private val context: Context) {
         Log.d(TAG, "🔍 디버깅: 내용: $body")
         Log.d(TAG, "🔍 디버깅: 데이터: $data")
         Log.d(TAG, "🔍 디버깅: Android 버전: ${Build.VERSION.SDK_INT}")
+
+        // 푸시 알림 설정 확인 (이중 체크)
+        val isPushEnabled = notificationPreferenceManager.isPushNotificationEnabled()
+        Log.d(TAG, "🔍 디버깅: 푸시 알림 설정 상태: $isPushEnabled")
+
+        if (!isPushEnabled) {
+            Log.d(TAG, "🔍 디버깅: 푸시 알림이 비활성화되어 있어 알림을 표시하지 않습니다.")
+            Log.d(TAG, "🔍 디버깅: === 알림 생성 완료 (표시 안함) ===")
+            return
+        }
 
         // 알림 권한 확인 (Android 13+)
         Log.d(TAG, "🔍 디버깅: 알림 권한 확인 시작")

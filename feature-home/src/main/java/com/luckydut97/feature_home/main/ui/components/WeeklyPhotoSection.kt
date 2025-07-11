@@ -71,7 +71,7 @@ fun WeeklyPhotoSection() {
                 .aspectRatio(1f) // 정사각형 비율
                 .clip(RoundedCornerShape(10.dp)) // 컨테이너 전체에 clip 적용
         ) {
-            // HorizontalPager로 이미지 슬라이드
+            /*// HorizontalPager로 이미지 슬라이드
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize()
@@ -83,7 +83,7 @@ fun WeeklyPhotoSection() {
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-            }
+            }*/
 
             // 페이지 인디케이터
             Box(

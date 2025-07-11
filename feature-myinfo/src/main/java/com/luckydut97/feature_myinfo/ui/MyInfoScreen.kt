@@ -47,6 +47,7 @@ import com.luckydut97.tennispark.core.data.model.PointHistoryItem
 import com.luckydut97.tennispark.core.ui.components.navigation.NoArrowTopBar
 import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBanner
 import com.luckydut97.tennispark.core.data.model.unifiedAdBannerList
+import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -119,152 +120,159 @@ fun MyInfoScreen(
                             color = Color.Black
                         )
 
-                        Icon(
-                            painter = painterResource(id = com.luckydut97.feature_myinfo.R.drawable.ic_setting),
-                            contentDescription = "설정",
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable { onSettingsClick() },
-                            tint = Color.Unspecified
-                        )
+                        PressableComponent(
+                            onClick = onSettingsClick,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = com.luckydut97.feature_myinfo.R.drawable.ic_setting),
+                                contentDescription = "설정",
+                                modifier = Modifier.size(24.dp),
+                                tint = Color.Unspecified
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // 포인트 및 경기 기록 박스
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(110.dp)
-                            .background(
-                                color = Color(0xFFF2FAF4),
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(horizontal = 24.dp)
-                            .clickable { refreshPoints() }, // 포인트 박스 클릭 시 새로고침
-                        contentAlignment = Alignment.Center // 중앙 정렬
+                    PressableComponent(
+                        onClick = refreshPoints,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(
-                            verticalArrangement = Arrangement.Center // 수직 중앙 정렬
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(110.dp)
+                                .background(
+                                    color = Color(0xFFF2FAF4),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 24.dp),
+                            contentAlignment = Alignment.Center // 중앙 정렬
                         ) {
-                            // 내 포인트 Row (실제 API 데이터 사용)
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                            Column(
+                                verticalArrangement = Arrangement.Center // 수직 중앙 정렬
                             ) {
-                                Text(
-                                    text = "내 포인트",
-                                    fontSize = 15.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    fontFamily = Pretendard,
-                                    color = Color.Black
-                                )
-
+                                // 내 포인트 Row (실제 API 데이터 사용)
                                 Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_coin_black),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(14.dp),
-                                        tint = Color.Unspecified
-                                    )
-
-                                    Spacer(modifier = Modifier.width(4.dp))
-
                                     Text(
-                                        text = String.format(
-                                            "%,d",
-                                            points
-                                        ), // ViewModel에서 받은 실제 포인트
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.SemiBold,
+                                        text = "내 포인트",
+                                        fontSize = 15.sp,
+                                        fontWeight = FontWeight.Medium,
                                         fontFamily = Pretendard,
                                         color = Color.Black
                                     )
 
-                                    Text(
-                                        text = "P",
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = Pretendard,
-                                        color = Color.Black
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_coin_black),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(14.dp),
+                                            tint = Color.Unspecified
+                                        )
+
+                                        Spacer(modifier = Modifier.width(4.dp))
+
+                                        Text(
+                                            text = String.format(
+                                                "%,d",
+                                                points
+                                            ), // ViewModel에서 받은 실제 포인트
+                                            fontSize = 18.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = Pretendard,
+                                            color = Color.Black
+                                        )
+
+                                        Text(
+                                            text = "P",
+                                            fontSize = 18.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = Pretendard,
+                                            color = Color.Black
+                                        )
+                                    }
                                 }
-                            }
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
 
-                            // 경기 기록 Row
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "경기 기록",
-                                    fontSize = 15.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    fontFamily = Pretendard,
-                                    color = Color.Black
-                                )
-
+                                // 경기 기록 Row
                                 Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "${gameRecord.wins}",
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = Pretendard,
-                                        color = Color(0xFF145F44)
-                                    )
-                                    Text(
-                                        text = "승 ",
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = Pretendard,
-                                        color = Color(0xFF145F44)
-                                    )
-
-                                    Text(
-                                        text = "${gameRecord.draws}",
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = Pretendard,
-                                        color = Color(0xFFCBA439)
-                                    )
-                                    Text(
-                                        text = "무 ",
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = Pretendard,
-                                        color = Color(0xFFCBA439)
-                                    )
-
-                                    Text(
-                                        text = "${gameRecord.losses}",
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = Pretendard,
-                                        color = Color(0xFFEF3629)
-                                    )
-                                    Text(
-                                        text = "패 ",
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = Pretendard,
-                                        color = Color(0xFFEF3629)
-                                    )
-
-                                    Text(
-                                        text = "(${gameRecord.score}점/${gameRecord.ranking}위)",
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Normal,
+                                        text = "경기 기록",
+                                        fontSize = 15.sp,
+                                        fontWeight = FontWeight.Medium,
                                         fontFamily = Pretendard,
                                         color = Color.Black
                                     )
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "${gameRecord.wins}",
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = Pretendard,
+                                            color = Color(0xFF145F44)
+                                        )
+                                        Text(
+                                            text = "승 ",
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = Pretendard,
+                                            color = Color(0xFF145F44)
+                                        )
+
+                                        Text(
+                                            text = "${gameRecord.draws}",
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = Pretendard,
+                                            color = Color(0xFFCBA439)
+                                        )
+                                        Text(
+                                            text = "무 ",
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = Pretendard,
+                                            color = Color(0xFFCBA439)
+                                        )
+
+                                        Text(
+                                            text = "${gameRecord.losses}",
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = Pretendard,
+                                            color = Color(0xFFEF3629)
+                                        )
+                                        Text(
+                                            text = "패 ",
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = Pretendard,
+                                            color = Color(0xFFEF3629)
+                                        )
+
+                                        Text(
+                                            text = "(${gameRecord.score}점/${gameRecord.ranking}위)",
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            fontFamily = Pretendard,
+                                            color = Color.Black
+                                        )
+                                    }
                                 }
                             }
                         }

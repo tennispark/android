@@ -1,6 +1,5 @@
 package com.luckydut97.tennispark.core.ui.components.selection
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -17,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.theme.AppColors
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 
 @Composable
 fun CheckBox(
@@ -28,29 +28,33 @@ fun CheckBox(
     fontWeight: FontWeight = FontWeight.SemiBold,
     letterSpacing: Int = -1
 ) {
-    Row(
-        modifier = modifier.clickable { onCheckedChange(!isChecked) },
-        verticalAlignment = Alignment.CenterVertically
+    PressableComponent(
+        onClick = { onCheckedChange(!isChecked) },
+        modifier = modifier
     ) {
-        Icon(
-            painter = painterResource(
-                id = if (isChecked) R.drawable.ic_checkbox_checked 
-                     else R.drawable.ic_checkbox_unchecked
-            ),
-            contentDescription = null,
-            modifier = Modifier.size(20.dp),
-            tint = androidx.compose.ui.graphics.Color.Unspecified
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(
+                    id = if (isChecked) R.drawable.ic_checkbox_checked
+                    else R.drawable.ic_checkbox_unchecked
+                ),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = androidx.compose.ui.graphics.Color.Unspecified
+            )
 
-        Spacer(modifier = Modifier.width(2.dp))
+            Spacer(modifier = Modifier.width(2.dp))
 
-        Text(
-            text = text,
-            fontSize = fontSize.sp,
-            fontWeight = if (isChecked) FontWeight.Bold else fontWeight,
-            color = if (isChecked) AppColors.Primary else AppColors.TextPrimary,
-            fontFamily = Pretendard,
-            letterSpacing = letterSpacing.sp
-        )
+            Text(
+                text = text,
+                fontSize = fontSize.sp,
+                fontWeight = if (isChecked) FontWeight.Bold else fontWeight,
+                color = if (isChecked) AppColors.Primary else AppColors.TextPrimary,
+                fontFamily = Pretendard,
+                letterSpacing = letterSpacing.sp
+            )
+        }
     }
 }

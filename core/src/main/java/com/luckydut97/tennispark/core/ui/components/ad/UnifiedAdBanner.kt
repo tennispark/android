@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.luckydut97.tennispark.core.data.model.AdBannerData
+import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.luckydut97.tennispark.core.utils.launchUrl
@@ -71,16 +72,19 @@ fun UnifiedAdBanner(
                 modifier = Modifier.fillMaxWidth()
             ) { page ->
                 val banner = bannerList[page]
-                Image(
-                    painter = painterResource(id = banner.imageRes),
-                    contentDescription = "광고배너_${page + 1}",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            context.launchUrl(banner.url)
-                        },
-                    contentScale = ContentScale.FillWidth
-                )
+                PressableComponent(
+                    onClick = {
+                        context.launchUrl(banner.url)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(id = banner.imageRes),
+                        contentDescription = "광고배너_${page + 1}",
+                        modifier = Modifier.fillMaxWidth(),
+                        contentScale = ContentScale.FillWidth
+                    )
+                }
             }
             // 인디케이터
             Row(
