@@ -52,7 +52,6 @@ import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.tennispark.core.data.repository.PointRepository
-import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 import kotlinx.coroutines.launch
 
 /**
@@ -176,7 +175,7 @@ fun ShopDetailScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     
                     // 구매취소 버튼
-                    PressableComponent(
+                    OutlinedButton(
                         onClick = { 
                             showConfirmDialog = false
                             qrCodeUrl = null
@@ -184,30 +183,23 @@ fun ShopDetailScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(45.dp)
+                            .height(45.dp),
+                        border = androidx.compose.foundation.BorderStroke(
+                            width = 1.dp,
+                            color = Color(0xFF145F44)
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color(0xFF145F44)
+                        )
                     ) {
-                        OutlinedButton(
-                            onClick = { }, // 클릭은 PressableComponent에서 처리
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(45.dp),
-                            border = androidx.compose.foundation.BorderStroke(
-                                width = 1.dp,
-                                color = Color(0xFF145F44)
-                            ),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = Color(0xFF145F44)
-                            )
-                        ) {
-                            Text(
-                                text = "구매취소",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = Pretendard,
-                                color = Color(0xFF145F44)
-                            )
-                        }
+                        Text(
+                            text = "구매취소",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = Pretendard,
+                            color = Color(0xFF145F44)
+                        )
                     }
                 }
             }
@@ -231,31 +223,24 @@ fun ShopDetailScreen(
                     .background(Color.White),
                 contentAlignment = Alignment.Center
             ) {
-                PressableComponent(
+                Button(
                     onClick = { showConfirmDialog = true },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(47.dp)
-                        .padding(horizontal = 17.dp)
+                        .padding(horizontal = 17.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF145F44)
+                    ),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    Button(
-                        onClick = { }, // 클릭은 PressableComponent에서 처리
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(47.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF145F44)
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = "확인",
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            fontFamily = Pretendard
-                        )
-                    }
+                    Text(
+                        text = "확인",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = Pretendard
+                    )
                 }
             }
         }

@@ -71,59 +71,53 @@ fun SmallActionButton(
     fontWeight: FontWeight = FontWeight.SemiBold
 ) {
     val finalTextColor = textColor ?: if (enabled) {
-        if (backgroundColor == Color.White) contentColor else Color.White
+        contentColor
     } else {
         AppColors.UnselectedText
     }
 
-    PressableComponent(
-        onClick = onClick,
-        modifier = modifier,
-        enabled = enabled
-    ) {
-        if (borderColor != null && backgroundColor == Color.White) {
-            OutlinedButton(
-                onClick = { }, // 클릭은 PressableComponent에서 처리
-                modifier = Modifier.height(47.dp),
-                enabled = enabled,
-                shape = RoundedCornerShape(6.dp),
-                border = BorderStroke(1.dp, borderColor),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = backgroundColor,
-                    contentColor = contentColor
-                ),
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = text,
-                    fontSize = fontSize.sp,
-                    color = finalTextColor,
-                    fontWeight = fontWeight,
-                    maxLines = 1
-                )
-            }
-        } else {
-            Button(
-                onClick = { }, // 클릭은 PressableComponent에서 처리
-                modifier = Modifier.height(47.dp),
-                enabled = enabled,
-                shape = RoundedCornerShape(6.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (enabled) backgroundColor else AppColors.DisabledButton,
-                    contentColor = contentColor,
-                    disabledContainerColor = AppColors.DisabledButton,
-                    disabledContentColor = Color.White
-                ),
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = text,
-                    fontSize = fontSize.sp,
-                    color = finalTextColor,
-                    fontWeight = fontWeight,
-                    maxLines = 1
-                )
-            }
+    if (borderColor != null && backgroundColor == Color.White) {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = modifier.height(47.dp),
+            enabled = enabled,
+            shape = RoundedCornerShape(6.dp),
+            border = BorderStroke(1.dp, borderColor),
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = backgroundColor,
+                contentColor = contentColor
+            ),
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = text,
+                fontSize = fontSize.sp,
+                color = finalTextColor,
+                fontWeight = fontWeight,
+                maxLines = 1
+            )
+        }
+    } else {
+        Button(
+            onClick = onClick,
+            modifier = modifier.height(47.dp),
+            enabled = enabled,
+            shape = RoundedCornerShape(6.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (enabled) backgroundColor else AppColors.DisabledButton,
+                contentColor = contentColor,
+                disabledContainerColor = AppColors.DisabledButton,
+                disabledContentColor = Color.White
+            ),
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = text,
+                fontSize = fontSize.sp,
+                color = finalTextColor,
+                fontWeight = fontWeight,
+                maxLines = 1
+            )
         }
     }
 }
