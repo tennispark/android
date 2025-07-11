@@ -27,33 +27,27 @@ fun ActionButton(
     backgroundColor: Color = AppColors.ButtonGreen,
     contentColor: Color = Color.White
 ) {
-    PressableComponent(
+    Button(
         onClick = onClick,
-        modifier = modifier,
-        enabled = enabled
+        modifier = modifier
+            .fillMaxWidth()
+            .height(47.dp),
+        enabled = enabled,
+        shape = RoundedCornerShape(6.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (enabled) backgroundColor else AppColors.DisabledButton,
+            contentColor = contentColor,
+            disabledContainerColor = AppColors.DisabledButton,
+            disabledContentColor = Color.White
+        ),
+        contentPadding = PaddingValues(vertical = 12.dp)
     ) {
-        Button(
-            onClick = { }, // 클릭은 PressableComponent에서 처리
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(47.dp),
-            enabled = enabled,
-            shape = RoundedCornerShape(6.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (enabled) backgroundColor else AppColors.DisabledButton,
-                contentColor = contentColor,
-                disabledContainerColor = AppColors.DisabledButton,
-                disabledContentColor = Color.White
-            ),
-            contentPadding = PaddingValues(vertical = 12.dp)
-        ) {
-            Text(
-                text = text,
-                fontSize = 16.sp,
-                color = if (enabled) Color.White else AppColors.UnselectedText,
-                fontWeight = FontWeight.SemiBold,
-            )
-        }
+        Text(
+            text = text,
+            fontSize = 16.sp,
+            color = if (enabled) Color.White else AppColors.UnselectedText,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
 
