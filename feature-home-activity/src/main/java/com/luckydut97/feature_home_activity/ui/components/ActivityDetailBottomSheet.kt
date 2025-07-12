@@ -54,7 +54,7 @@ fun ActivityDetailBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(444.dp)
+                    .height(400.dp)
                     .padding(horizontal = 24.dp)
             ) {
                 // 헤더 영역

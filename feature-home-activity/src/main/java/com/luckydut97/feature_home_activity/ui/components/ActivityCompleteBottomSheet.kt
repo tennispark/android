@@ -21,15 +21,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBanner
+import com.luckydut97.tennispark.core.data.model.unifiedAdBannerList
 
 /**
- * 활동 완료 Bottom Sheet
- * 크기: fillMaxWidth × 253dp
+ * 활동 신청 완료 Bottom Sheet
+ * 크기: fillMaxWidth × 383dp (광고 배너 추가로 높이 증가)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActivityCompleteBottomSheet(
     isVisible: Boolean,
+    isDuplicateError: Boolean = false, // 중복 신청 에러 여부
     onConfirm: () -> Unit
 ) {
     if (isVisible) {
@@ -42,15 +45,15 @@ fun ActivityCompleteBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(253.dp)
+                    .height(333.dp)
                     .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(2.dp))
 
                 // 제목
                 Text(
-                    text = "신청 완료",
+                    text = if (isDuplicateError) "신청 실패" else "신청 완료",
                     fontSize = 20.sp,
                     fontFamily = Pretendard,
                     fontWeight = FontWeight.SemiBold,
@@ -65,7 +68,7 @@ fun ActivityCompleteBottomSheet(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "활동 신청이 완료되었습니다.",
+                        text = if (isDuplicateError) "이미 신청한 활동입니다." else "활동 신청이 완료되었습니다.",
                         fontSize = 16.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.Normal,
@@ -73,30 +76,49 @@ fun ActivityCompleteBottomSheet(
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    if (!isDuplicateError) {
+                        Spacer(modifier = Modifier.height(4.dp))
 
-                    Text(
-                        text = "신청자의 실력에 따라 신청한 코트가",
-                        fontSize = 16.sp,
-                        fontFamily = Pretendard,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Black,
-                        textAlign = TextAlign.Center
-                    )
+                        Text(
+                            text = "신청자의 실력에 따라 신청한 코트가",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
 
-                    Text(
-                        text = "변경 될 수 있습니다.",
-                        fontSize = 16.sp,
-                        fontFamily = Pretendard,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Black,
-                        textAlign = TextAlign.Center
-                    )
+                        Text(
+                            text = "변경 될 수 있습니다.",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = "추가로 활동 하시려면 다른 코트로 신청해주세요.",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
+                Spacer(modifier = Modifier.height(20.dp))
+                // 광고 배너 추가
+                UnifiedAdBanner(
+                    bannerList = unifiedAdBannerList
+                )
 
                 Spacer(modifier = Modifier.weight(1f))
+
 
                 // 확인 버튼
                 Button(
@@ -118,7 +140,7 @@ fun ActivityCompleteBottomSheet(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }

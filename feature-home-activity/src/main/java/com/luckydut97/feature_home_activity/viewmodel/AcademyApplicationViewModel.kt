@@ -43,6 +43,10 @@ class AcademyApplicationViewModel(
     private val _showCompleteDialog = MutableStateFlow(false)
     val showCompleteDialog: StateFlow<Boolean> = _showCompleteDialog.asStateFlow()
 
+    // 중복 신청 에러 상태
+    private val _isDuplicateError = MutableStateFlow(false)
+    val isDuplicateError: StateFlow<Boolean> = _isDuplicateError.asStateFlow()
+
     // 선택된 아카데미
     private val _selectedAcademy = MutableStateFlow<Academy?>(null)
     val selectedAcademy: StateFlow<Academy?> = _selectedAcademy.asStateFlow()
@@ -127,14 +131,30 @@ class AcademyApplicationViewModel(
                     },
                     onFailure = { exception ->
                         Log.e(tag, "❌ 아카데미 신청 실패: ${exception.message}")
-                        _error.value = exception.message ?: "신청 중 오류가 발생했습니다."
-                        _showDetailDialog.value = false
+                        val errorMessage = exception.message ?: "신청 중 오류가 발생했습니다."
+                        if (errorMessage.contains("500") || errorMessage.contains("알 수 없는 오류")) {
+                            Log.d(tag, "🔄 500 에러 감지 - 중복 신청으로 처리")
+                            _isDuplicateError.value = true
+                            _showDetailDialog.value = false
+                            _showCompleteDialog.value = true
+                        } else {
+                            _error.value = errorMessage
+                            _showDetailDialog.value = false
+                        }
                     }
                 )
             } catch (e: Exception) {
                 Log.e(tag, "❌ 아카데미 신청 예외: ${e.message}", e)
-                _error.value = e.message ?: "신청 중 오류가 발생했습니다."
-                _showDetailDialog.value = false
+                val errorMessage = e.message ?: "신청 중 오류가 발생했습니다."
+                if (errorMessage.contains("500") || errorMessage.contains("알 수 없는 오류")) {
+                    Log.d(tag, "🔄 500 에러 감지 - 중복 신청으로 처리")
+                    _isDuplicateError.value = true
+                    _showDetailDialog.value = false
+                    _showCompleteDialog.value = true
+                } else {
+                    _error.value = errorMessage
+                    _showDetailDialog.value = false
+                }
             }
         }
     }
@@ -145,6 +165,7 @@ class AcademyApplicationViewModel(
     fun hideCompleteDialog() {
         Log.d(tag, "완료 다이얼로그 숨기기")
         _showCompleteDialog.value = false
+        _isDuplicateError.value = false // 중복 에러 상태 초기화
     }
 
     /**

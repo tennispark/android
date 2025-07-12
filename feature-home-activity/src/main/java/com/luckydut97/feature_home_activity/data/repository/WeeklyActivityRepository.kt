@@ -122,13 +122,16 @@ class WeeklyActivityRepositoryImpl : WeeklyActivityRepository {
                 Result.success(Unit)
             } else {
                 val errorMessage = response.error?.message ?: "활동 신청에 실패했습니다."
+                val statusCode = response.error?.status
                 Log.e(tag, "❌ 실제 ID 기반 활동 신청 실패: $errorMessage")
+                Log.e(tag, "❌ HTTP 상태 코드: $statusCode")
 
-                // 서버 에러 코드에 따른 구체적인 메시지
-                val specificErrorMessage = when (response.error?.status) {
+                // 500 에러인 경우 상태 코드를 포함한 에러 메시지 생성
+                val specificErrorMessage = when (statusCode) {
                     400 -> "신청 인원이 초과되었습니다."
                     401 -> "인증이 필요합니다. 다시 로그인해주세요."
                     404 -> "해당 활동을 찾을 수 없습니다."
+                    500 -> "HTTP_500: $errorMessage" // 500 에러임을 명시
                     else -> errorMessage
                 }
 

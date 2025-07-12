@@ -2,7 +2,9 @@ package com.luckydut97.tennispark
 
 import android.Manifest
 import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -49,6 +51,13 @@ class MainActivity : ComponentActivity() {
             // 권한이 거부되면 푸시 알림 설정을 false로 업데이트
             notificationPreferenceManager.setPushNotificationEnabled(false)
         }
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        val configuration = Configuration(newBase?.resources?.configuration)
+        // 최대 폰트 스케일 1.3배로 제한
+        configuration.fontScale = minOf(configuration.fontScale ?: 1.0f, 1.1f)
+        super.attachBaseContext(newBase?.createConfigurationContext(configuration))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

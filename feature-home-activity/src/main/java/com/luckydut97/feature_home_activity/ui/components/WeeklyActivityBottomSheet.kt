@@ -50,6 +50,7 @@ fun WeeklyActivityBottomSheet(
     val showDetailDialog by viewModel.showDetailDialog.collectAsState()
     val selectedActivity by viewModel.selectedActivity.collectAsState()
     val showCompleteDialog by viewModel.showCompleteDialog.collectAsState()
+    val isDuplicateError by viewModel.isDuplicateError.collectAsState()
 
     if (isVisible) {
         ModalBottomSheet(
@@ -233,6 +234,7 @@ fun WeeklyActivityBottomSheet(
     if (showCompleteDialog) {
         ActivityCompleteBottomSheet(
             isVisible = showCompleteDialog,
+            isDuplicateError = isDuplicateError,
             onConfirm = {
                 viewModel.hideCompleteDialog()
             }

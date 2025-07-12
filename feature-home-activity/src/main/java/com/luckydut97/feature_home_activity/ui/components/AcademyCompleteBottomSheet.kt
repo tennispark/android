@@ -21,15 +21,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBanner
+import com.luckydut97.tennispark.core.data.model.unifiedAdBannerList
 
 /**
  * 아카데미 신청 완료 Bottom Sheet
- * 크기: fillMaxWidth × 253dp
+ * 크기: fillMaxWidth × 383dp (광고 배너 추가로 높이 증가)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AcademyCompleteBottomSheet(
     isVisible: Boolean,
+    isDuplicateError: Boolean = false, // 중복 신청 에러 여부
     onConfirm: () -> Unit
 ) {
     if (isVisible) {
@@ -42,15 +45,15 @@ fun AcademyCompleteBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(253.dp)
+                    .height(333.dp)
                     .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(2.dp))
 
                 // 제목
                 Text(
-                    text = "신청 완료",
+                    text = if (isDuplicateError) "신청 실패" else "신청 완료",
                     fontSize = 20.sp,
                     fontFamily = Pretendard,
                     fontWeight = FontWeight.SemiBold,
@@ -65,7 +68,7 @@ fun AcademyCompleteBottomSheet(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "아카데미 신청이 완료되었습니다.",
+                        text = if (isDuplicateError) "이미 신청한 아카데미입니다." else "아카데미 신청이 완료되었습니다.",
                         fontSize = 16.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.Normal,
@@ -76,7 +79,7 @@ fun AcademyCompleteBottomSheet(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "입금계좌 정보를 안내드리겠습니다.",
+                        text = if (isDuplicateError) "추가로 아카데미 하시려면 다른 일정으로 신청해주세요." else "입금계좌 정보를 안내드리겠습니다.",
                         fontSize = 16.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.Normal,
@@ -84,6 +87,12 @@ fun AcademyCompleteBottomSheet(
                         textAlign = TextAlign.Center
                     )
                 }
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // 광고 배너 추가
+                UnifiedAdBanner(
+                    bannerList = unifiedAdBannerList
+                )
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -107,7 +116,7 @@ fun AcademyCompleteBottomSheet(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }

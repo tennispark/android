@@ -44,6 +44,10 @@ class WeeklyActivityViewModel(
     private val _showCompleteDialog = MutableStateFlow(false)
     val showCompleteDialog: StateFlow<Boolean> = _showCompleteDialog.asStateFlow()
 
+    // 중복 신청 에러 상태
+    private val _isDuplicateError = MutableStateFlow(false)
+    val isDuplicateError: StateFlow<Boolean> = _isDuplicateError.asStateFlow()
+
     init {
         // 자동 로드 제거 - 사용자가 버튼 클릭할 때만 로드
         // loadWeeklyActivities()
@@ -92,6 +96,7 @@ class WeeklyActivityViewModel(
      */
     fun hideCompleteDialog() {
         _showCompleteDialog.value = false
+        _isDuplicateError.value = false // 중복 에러 상태 초기화
         // 모든 다이얼로그 닫기
         hideDetailDialog()
         hideWeeklyApplicationSheet()
@@ -177,12 +182,27 @@ class WeeklyActivityViewModel(
                 } else {
                     val exception = result.exceptionOrNull()
                     val errorMessage = exception?.message ?: "신청에 실패했습니다."
-                    android.util.Log.e("WeeklyActivityViewModel", "❌ 신청 실패: $errorMessage")
-                    _error.value = errorMessage
+                    if (errorMessage.contains("HTTP_500") || errorMessage.contains("알 수 없는 오류")) {
+                        android.util.Log.d("WeeklyActivityViewModel", "🔄 500 에러 감지 - 중복 신청으로 처리")
+                        _isDuplicateError.value = true
+                        hideDetailDialog() // 상세 다이얼로그 닫기
+                        showCompleteDialog() // 완료 다이얼로그 표시 (중복 에러 상태로)
+                    } else {
+                        android.util.Log.e("WeeklyActivityViewModel", "❌ 신청 실패: $errorMessage")
+                        _error.value = errorMessage
+                    }
                 }
             } catch (e: Exception) {
                 android.util.Log.e("WeeklyActivityViewModel", "💥 예외 발생: ${e.message}", e)
-                _error.value = e.message ?: "신청 중 오류가 발생했습니다."
+                val errorMessage = e.message ?: "신청 중 오류가 발생했습니다."
+                if (errorMessage.contains("HTTP_500") || errorMessage.contains("알 수 없는 오류")) {
+                    android.util.Log.d("WeeklyActivityViewModel", "🔄 500 에러 감지 - 중복 신청으로 처리")
+                    _isDuplicateError.value = true
+                    hideDetailDialog() // 상세 다이얼로그 닫기
+                    showCompleteDialog() // 완료 다이얼로그 표시 (중복 에러 상태로)
+                } else {
+                    _error.value = errorMessage
+                }
             }
         }
     }

@@ -51,6 +51,7 @@ fun AcademyApplicationBottomSheet(
     val showDetailDialog by viewModel.showDetailDialog.collectAsState()
     val selectedAcademy by viewModel.selectedAcademy.collectAsState()
     val showCompleteDialog by viewModel.showCompleteDialog.collectAsState()
+    val isDuplicateError by viewModel.isDuplicateError.collectAsState()
 
     if (isVisible) {
         ModalBottomSheet(
@@ -258,6 +259,7 @@ fun AcademyApplicationBottomSheet(
     if (showCompleteDialog) {
         AcademyCompleteBottomSheet(
             isVisible = showCompleteDialog,
+            isDuplicateError = isDuplicateError,
             onConfirm = {
                 viewModel.hideCompleteDialog()
             }
