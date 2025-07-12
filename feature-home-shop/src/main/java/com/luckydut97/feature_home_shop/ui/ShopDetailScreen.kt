@@ -276,7 +276,8 @@ fun ShopDetailScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(139.dp)
+                    .heightIn(min = 139.dp)
+                    .wrapContentHeight()
                     .border(
                         width = 1.dp,
                         color = Color(0xFFF5F5F5),
