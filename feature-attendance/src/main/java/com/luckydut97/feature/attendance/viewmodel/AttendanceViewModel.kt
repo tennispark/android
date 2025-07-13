@@ -53,7 +53,7 @@ class AttendanceViewModel(
                             if (response.error?.message?.contains("이미 신청한") == true) {
                                 "이미 출석 체크된 이벤트입니다."
                             } else {
-                                "알 수 없는 오류가 발생했습니다."
+                                "이미 출석 체크된 이벤트입니다."
                         }
 
                         _uiState.value = _uiState.value.copy(

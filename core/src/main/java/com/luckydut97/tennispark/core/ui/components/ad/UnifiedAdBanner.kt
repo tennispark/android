@@ -41,21 +41,15 @@ fun UnifiedAdBanner(
     modifier: Modifier = Modifier
 ) {
     if (bannerList.isEmpty()) return
-    val pagerState = rememberPagerState(pageCount = { bannerList.size })
+
+    // 무한 스크롤을 위한 매우 큰 페이지 수 설정
+    val infinitePageCount = Int.MAX_VALUE
+    val pagerState = rememberPagerState(
+        initialPage = infinitePageCount / 2 - (infinitePageCount / 2) % bannerList.size, // 첫 번째 배너부터 시작
+        pageCount = { infinitePageCount }
+    )
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-
-    // 5초마다 자동 넘김
-    LaunchedEffect(key1 = Unit) {
-        while (true) {
-            delay(5000)
-            if (pagerState.currentPage < bannerList.size - 1) {
-                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-            } else {
-                pagerState.animateScrollToPage(0)
-            }
-        }
-    }
 
     Box(
         modifier = modifier
@@ -71,7 +65,8 @@ fun UnifiedAdBanner(
                 state = pagerState,
                 modifier = Modifier.fillMaxWidth()
             ) { page ->
-                val banner = bannerList[page]
+                val bannerIndex = page % bannerList.size
+                val banner = bannerList[bannerIndex]
                 PressableComponent(
                     onClick = {
                         context.launchUrl(banner.url)
@@ -80,7 +75,7 @@ fun UnifiedAdBanner(
                 ) {
                     Image(
                         painter = painterResource(id = banner.imageRes),
-                        contentDescription = "광고배너_${page + 1}",
+                        contentDescription = "광고배너_${bannerIndex + 1}",
                         modifier = Modifier.fillMaxWidth(),
                         contentScale = ContentScale.FillWidth
                     )
@@ -98,10 +93,25 @@ fun UnifiedAdBanner(
                         modifier = Modifier
                             .size(6.dp)
                             .background(
-                                color = if (index == pagerState.currentPage) Color.Black else Color.Gray,
+                                color = if (index == pagerState.currentPage % bannerList.size) Color.Black else Color.Gray,
                                 shape = CircleShape
                             )
                     )
+                }
+            }
+        }
+    }
+
+    // 간단한 자동 스크롤 (5초마다, 사용자 드래그 중에는 건너뛰기)
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(5000)
+            // 스크롤 중이 아닐 때만 자동 넘김
+            if (!pagerState.isScrollInProgress) {
+                try {
+                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                } catch (e: Exception) {
+                    // 애니메이션 충돌 시 무시
                 }
             }
         }

@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +40,7 @@ import com.luckydut97.feature_home_shop.ui.components.ShopItemComponent
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.feature_home_shop.R
 import com.luckydut97.tennispark.core.ui.components.navigation.NoArrowTopBar
+import com.luckydut97.feature_home_shop.ui.ShopPurchaseState
 
 /**
  * 마이살래 화면
@@ -52,6 +54,19 @@ fun ShopScreen(
     val shopItems by viewModel.shopItems.collectAsState()
     val userPoints by viewModel.userPoints.collectAsState()
     // val isLoading by viewModel.isLoading.collectAsState() // 필요시 사용
+
+    // Refresh user points when ShopScreen becomes visible again
+    LaunchedEffect(Unit) {
+        viewModel.refreshUserPoints()
+    }
+
+    // Monitor purchase completion and refresh points
+    LaunchedEffect(ShopPurchaseState.isPurchaseCompleted) {
+        if (ShopPurchaseState.isPurchaseCompleted) {
+            viewModel.refreshUserPoints()
+            ShopPurchaseState.isPurchaseCompleted = false // Reset state
+        }
+    }
 
     Scaffold(
         containerColor = Color.White,

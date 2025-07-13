@@ -53,6 +53,14 @@ import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.tennispark.core.data.repository.PointRepository
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
+// --- Global state for purchase completion ---
+object ShopPurchaseState {
+    var isPurchaseCompleted by mutableStateOf(false)
+}
 
 /**
  * 제품 상세 화면
@@ -83,6 +91,8 @@ fun ShopDetailScreen(
 
                 if (response.success && response.response != null) {
                     qrCodeUrl = response.response?.qrCodeUrl
+                    // 구매 성공 시 전역 상태 업데이트 (포인트 새로고침 요청)
+                    ShopPurchaseState.isPurchaseCompleted = true
                 } else {
                     errorMessage = response.error?.message ?: "구매에 실패했습니다."
                 }

@@ -174,7 +174,7 @@ fun WeeklyActivityBottomSheet(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "현재 신청 가능한 활동이 없습니다.",
+                                        text = "현재 신청할 수 있는 활동이 없습니다.\n매주 금요일에 새로운 활동 모집이 진행됩니다.",
                                         fontSize = 16.sp,
                                         fontFamily = Pretendard,
                                         color = Color(0xFF8B9096),
@@ -184,7 +184,8 @@ fun WeeklyActivityBottomSheet(
                             } else {
                                 // 활동 목록 표시 - LazyColumn으로 스크롤 가능
                                 LazyColumn(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
                                     verticalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
                                     items(activities) { activity ->

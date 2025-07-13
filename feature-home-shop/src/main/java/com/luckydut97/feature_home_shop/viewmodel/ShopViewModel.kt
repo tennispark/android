@@ -88,4 +88,18 @@ class ShopViewModel(
         loadShopData()
         loadUserPoints()
     }
+
+    /**
+     * 사용자 포인트만 새로고침 (구매 완료 후 호출용)
+     */
+    fun refreshUserPoints() {
+        loadUserPoints()
+    }
+
+    /**
+     * 화면 재진입 시 포인트 새로고침
+     */
+    fun onResume() {
+        loadUserPoints()
+    }
 }
