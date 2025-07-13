@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -34,7 +33,7 @@ import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
 /**
  * 아카데미 신청 상세 Bottom Sheet
- * 크기: fillMaxWidth × 444dp - ActivityDetailBottomSheet와 동일한 디자인
+ * 크기: fillMaxWidth × 400dp - ActivityDetailBottomSheet와 동일한 디자인
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +53,7 @@ fun AcademyDetailBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(444.dp)
+                    .height(400.dp)
                     .padding(horizontal = 24.dp)
             ) {
                 // 헤더 영역
@@ -106,159 +105,147 @@ fun AcademyDetailBottomSheet(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // 아카데미 정보 영역 - LazyColumn으로 스크롤 가능
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f), // 남은 공간 차지
+                // 아카데미 정보 영역 
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     // 활동 날짜
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "활동 날짜",
-                                fontSize = 16.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.Normal,
-                                color = Color.Black
-                            )
-                            Text(
-                                text = academy.date,
-                                fontSize = 16.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.Black
-                            )
-                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "활동 날짜",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black
+                        )
+                        Text(
+                            text = academy.date,
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Black
+                        )
                     }
 
                     // 활동 시간
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "활동 시간",
-                                fontSize = 16.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.Normal,
-                                color = Color.Black
-                            )
-                            Text(
-                                text = academy.time,
-                                fontSize = 16.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.Black
-                            )
-                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "활동 시간",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black
+                        )
+                        Text(
+                            text = academy.time,
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Black
+                        )
                     }
 
                     // 운동 장소
-                    item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "운동 장소",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black
+                        )
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.height(20.dp) // 고정 높이로 정렬 보장
                         ) {
-                            Text(
-                                text = "운동 장소",
-                                fontSize = 16.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.Normal,
-                                color = Color.Black
-                            )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.height(20.dp) // 고정 높이로 정렬 보장
+                            Box(
+                                modifier = Modifier
+                                    .size(12.dp)
+                                    .align(Alignment.CenterVertically),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(12.dp)
-                                        .align(Alignment.CenterVertically),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_location),
-                                        contentDescription = "위치",
-                                        modifier = Modifier.size(12.dp),
-                                        tint = Color(0xFF8B9096)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Box(
-                                    modifier = Modifier.align(Alignment.CenterVertically),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = academy.location,
-                                        fontSize = 16.sp,
-                                        fontFamily = Pretendard,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = Color.Black
-                                    )
-                                }
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_location),
+                                    contentDescription = "위치",
+                                    modifier = Modifier.size(12.dp),
+                                    tint = Color(0xFF8B9096)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Box(
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = academy.location,
+                                    fontSize = 16.sp,
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.Black
+                                )
                             }
                         }
                     }
 
                     // 활동 가능 인원
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "활동 가능 인원",
-                                fontSize = 16.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.Normal,
-                                color = Color.Black
-                            )
-                            Text(
-                                text = "${academy.currentParticipants}/${academy.maxParticipants}",
-                                fontSize = 16.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.Black
-                            )
-                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "활동 가능 인원",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black
+                        )
+                        Text(
+                            text = "${academy.currentParticipants}/${academy.maxParticipants}",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Black
+                        )
                     }
 
                     // 강습 레벨
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "강습 레벨",
-                                fontSize = 16.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.Normal,
-                                color = Color.Black
-                            )
-                            Text(
-                                text = "초급/중급",
-                                fontSize = 16.sp,
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.Black
-                            )
-                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "강습 레벨",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black
+                        )
+                        Text(
+                            text = "초급/중급",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Black
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
                 // 신청하기 버튼
                 Button(

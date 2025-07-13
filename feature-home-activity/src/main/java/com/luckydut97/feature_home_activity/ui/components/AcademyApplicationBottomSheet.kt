@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,6 +24,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -54,6 +58,7 @@ fun AcademyApplicationBottomSheet(
     val isDuplicateError by viewModel.isDuplicateError.collectAsState()
 
     if (isVisible) {
+        val nestedScrollConnection = rememberNestedScrollInteropConnection()
         ModalBottomSheet(
             onDismissRequest = onDismiss,
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -64,6 +69,7 @@ fun AcademyApplicationBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(if (academies.isEmpty() && !isLoading && error == null) 178.dp else 575.dp)
+                    .nestedScroll(nestedScrollConnection)
             ) {
                 // 메인 컨텐츠 박스
                 Box(
@@ -158,18 +164,17 @@ fun AcademyApplicationBottomSheet(
                         }
 
                         // 아카데미 목록 영역
-                        Column(
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(if (academies.isEmpty() && !isLoading && error == null) 85.dp else 442.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                .height(if (academies.isEmpty() && !isLoading && error == null) 85.dp else 442.dp)
                         ) {
                             if (isLoading) {
                                 // 로딩 상태 표시
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(442.dp),
+                                        .height(if (academies.isEmpty() && !isLoading && error == null) 85.dp else 442.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
@@ -184,7 +189,7 @@ fun AcademyApplicationBottomSheet(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(422.dp),
+                                        .height(if (academies.isEmpty() && !isLoading && error == null) 85.dp else 422.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
@@ -200,7 +205,7 @@ fun AcademyApplicationBottomSheet(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(85.dp),
+                                        .height(if (academies.isEmpty() && !isLoading && error == null) 85.dp else 422.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
@@ -212,20 +217,20 @@ fun AcademyApplicationBottomSheet(
                                     )
                                 }
                             } else {
-                                // 아카데미 목록 표시 (최대 4개)
-                                academies.take(4).forEach { academy ->
-                                    AcademyItemComponent(
-                                        academy = academy,
-                                        onAcademyClick = { selectedAcademy ->
-                                            viewModel.selectAcademyAndShowDetail(selectedAcademy)
-                                        }
-                                    )
-                                }
-
-                                // 빈 공간 채우기 (4개 미만일 경우)
-                                if (academies.size < 4) {
-                                    repeat(4 - academies.size) {
-                                        Spacer(modifier = Modifier.height(96.5.dp))
+                                // 아카데미 목록 표시 - LazyColumn으로 스크롤 가능
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .nestedScroll(nestedScrollConnection),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    items(academies) { academy ->
+                                        AcademyItemComponent(
+                                            academy = academy,
+                                            onAcademyClick = { selectedAcademy ->
+                                                viewModel.selectAcademyAndShowDetail(selectedAcademy)
+                                            }
+                                        )
                                     }
                                 }
                             }

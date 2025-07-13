@@ -132,8 +132,8 @@ class AcademyApplicationViewModel(
                     onFailure = { exception ->
                         Log.e(tag, "❌ 아카데미 신청 실패: ${exception.message}")
                         val errorMessage = exception.message ?: "신청 중 오류가 발생했습니다."
-                        if (errorMessage.contains("500") || errorMessage.contains("알 수 없는 오류")) {
-                            Log.d(tag, "🔄 500 에러 감지 - 중복 신청으로 처리")
+                        if (errorMessage.contains("서버 오류가 발생했습니다") || errorMessage.contains("알 수 없는 오류")) {
+                            Log.d(tag, "🔄 서버 오류 감지 - 중복 신청으로 처리")
                             _isDuplicateError.value = true
                             _showDetailDialog.value = false
                             _showCompleteDialog.value = true
@@ -146,8 +146,8 @@ class AcademyApplicationViewModel(
             } catch (e: Exception) {
                 Log.e(tag, "❌ 아카데미 신청 예외: ${e.message}", e)
                 val errorMessage = e.message ?: "신청 중 오류가 발생했습니다."
-                if (errorMessage.contains("500") || errorMessage.contains("알 수 없는 오류")) {
-                    Log.d(tag, "🔄 500 에러 감지 - 중복 신청으로 처리")
+                if (errorMessage.contains("서버 오류가 발생했습니다") || errorMessage.contains("알 수 없는 오류")) {
+                    Log.d(tag, "🔄 서버 오류 감지 - 중복 신청으로 처리")
                     _isDuplicateError.value = true
                     _showDetailDialog.value = false
                     _showCompleteDialog.value = true

@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context?) {
         val configuration = Configuration(newBase?.resources?.configuration)
         // 최대 폰트 스케일 1.3배로 제한
-        configuration.fontScale = minOf(configuration.fontScale ?: 1.0f, 1.1f)
+        configuration.fontScale = minOf(configuration.fontScale ?: 1.0f, 1.05f)
         super.attachBaseContext(newBase?.createConfigurationContext(configuration))
     }
 

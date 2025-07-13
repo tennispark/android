@@ -14,7 +14,7 @@ fun AcademyResponse.toAcademy(): Academy {
     // 디버깅을 위한 로그
     android.util.Log.d("AcademyMapper", "변환 중: academyId=$id, date=$date")
 
-    // 날짜 형식 변환: "2025년 06월 24일 (화)" -> "06.24(화)"
+    // 날짜 형식 변환: "2025년 06월 24일 (화)" -> "06월 24일 (화)"
     val formattedDate = formatDateString(date)
     android.util.Log.d("AcademyMapper", "날짜 변환: $date -> $formattedDate")
 
@@ -55,12 +55,12 @@ fun AcademyResponse.toAcademy(): Academy {
 }
 
 /**
- * 날짜 문자열을 "2025년 06월 24일 (화)" 형식에서 "06.24(화)" 형식으로 변환
+ * 날짜 문자열을 "2025년 06월 24일 (화)" 형식에서 "06월 24일 (화)" 형식으로 변환
  */
 private fun formatDateString(dateString: String): String {
     return try {
-        // 이미 "05.13(화)" 형식이면 그대로 반환
-        if (dateString.matches(Regex("\\d{2}\\.\\d{2}\\([가-힣]\\)"))) {
+        // 이미 "05월 13일 (화)" 형식이면 그대로 반환
+        if (dateString.matches(Regex("\\d{2}월\\s*\\d{2}일\\s*\\([가-힣]\\)"))) {
             return dateString
         }
 
@@ -72,7 +72,7 @@ private fun formatDateString(dateString: String): String {
             val (_, month, day, dayOfWeek) = matchResult.destructured
             val formattedMonth = month.padStart(2, '0')
             val formattedDay = day.padStart(2, '0')
-            "$formattedMonth.$formattedDay($dayOfWeek)"
+            "${formattedMonth}월 ${formattedDay}일 ($dayOfWeek)"
         } else {
             // 파싱 실패 시 원본 반환
             android.util.Log.w("AcademyMapper", "날짜 파싱 실패: $dateString")

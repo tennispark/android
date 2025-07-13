@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
-import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBanner
+import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBannerNoPadding
 import com.luckydut97.tennispark.core.data.model.unifiedAdBannerList
 
 /**
@@ -45,7 +45,7 @@ fun AcademyCompleteBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(333.dp)
+                    .height(if (isDuplicateError) 332.dp else 332.dp)
                     .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -76,21 +76,34 @@ fun AcademyCompleteBottomSheet(
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    if (!isDuplicateError) {
+                        Spacer(modifier = Modifier.height(4.dp))
 
-                    Text(
-                        text = if (isDuplicateError) "추가로 아카데미 하시려면 다른 일정으로 신청해주세요." else "입금계좌 정보를 안내드리겠습니다.",
-                        fontSize = 16.sp,
-                        fontFamily = Pretendard,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Black,
-                        textAlign = TextAlign.Center
-                    )
+                        Text(
+                            text = "입금계좌 정보를 안내드리겠습니다.",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = "다른 일정의 아카데미로 추가 신청해주세요.",
+                            fontSize = 16.sp,
+                            fontFamily = Pretendard,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // 광고 배너 추가
-                UnifiedAdBanner(
+                UnifiedAdBannerNoPadding(
                     bannerList = unifiedAdBannerList
                 )
 

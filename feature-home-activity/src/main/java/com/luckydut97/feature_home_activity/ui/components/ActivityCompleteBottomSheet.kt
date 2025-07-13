@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
-import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBanner
+import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBannerNoPadding
 import com.luckydut97.tennispark.core.data.model.unifiedAdBannerList
 
 /**
@@ -45,7 +45,7 @@ fun ActivityCompleteBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(333.dp)
+                    .height(342.dp)
                     .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -113,7 +113,7 @@ fun ActivityCompleteBottomSheet(
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 // 광고 배너 추가
-                UnifiedAdBanner(
+                UnifiedAdBannerNoPadding(
                     bannerList = unifiedAdBannerList
                 )
 
