@@ -6,7 +6,7 @@ package com.luckydut97.tennispark.core.utils
  */
 fun String.toKoreanCourtType(): String {
     return when (this) {
-        "GAME" -> "게임"
+        "GAME" -> "게임코트"
         "CHALLENGE" -> "게임도전"
         "RALLY" -> "랠리코트"
         "STUDY" -> "게임스터디"

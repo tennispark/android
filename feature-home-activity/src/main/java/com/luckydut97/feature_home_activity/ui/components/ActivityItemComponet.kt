@@ -105,7 +105,7 @@ fun ActivityItemComponent(
                             letterSpacing = (-0.5).sp
                         )
 
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
 
                         // 세로 구분선
                         Box(
@@ -115,7 +115,7 @@ fun ActivityItemComponent(
                                 .background(Color(0xFFDDDDDD))
                         )
 
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
 
                         Text(
                             text = activity.formattedTime,

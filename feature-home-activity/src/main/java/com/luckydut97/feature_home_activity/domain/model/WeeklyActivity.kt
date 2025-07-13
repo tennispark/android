@@ -29,7 +29,7 @@ data class WeeklyActivity(
         get() = maxParticipants - currentParticipants == 1 && status == ActivityStatus.RECRUITING
 
     /**
-     * 날짜 포맷팅 (MM.dd (요일))
+     * 날짜 포맷팅 (MM월 dd일 (요일))
      */
     val formattedDate: String
         get() {
@@ -43,7 +43,9 @@ data class WeeklyActivity(
                 7 -> "일"
                 else -> ""
             }
-            return "${date.monthValue.toString().padStart(2, '0')}.${date.dayOfMonth.toString().padStart(2, '0')} ($dayOfWeek)"
+            return "${date.monthValue.toString().padStart(2, '0')}월 ${
+                date.dayOfMonth.toString().padStart(2, '0')
+            }일 ($dayOfWeek)"
         }
 
     /**
