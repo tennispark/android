@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -90,10 +89,7 @@ fun PhotoUploadConfirmDialog(
                             .clip(RoundedCornerShape(8.dp))
                     ) {
                         Image(
-                            painter = rememberAsyncImagePainter(
-                                model = selectedImageUri,
-                                filterQuality = FilterQuality.High
-                            ),
+                            painter = rememberAsyncImagePainter(selectedImageUri),
                             contentDescription = "선택한 사진",
                             modifier = Modifier.size(150.dp),
                             contentScale = ContentScale.Crop
