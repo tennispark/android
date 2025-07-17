@@ -17,7 +17,7 @@ package com.luckydut97.tennispark.core.config
 object AppConfig {
 
     // 🔥 개발할 때는 true, 배포할 때는 false로 변경
-    const val IS_DEV_MODE = true
+    const val IS_DEV_MODE = false
 
     // 🎯 Google Play 리뷰어용 특별 인증 (배포 후 주석 처리)
     const val ENABLE_REVIEWER_MODE = true  // 배포 후 false로 변경 또는 주석 처리
@@ -25,9 +25,9 @@ object AppConfig {
 
     // 개발용 하드코딩된 토큰 (실제 발급받은 토큰)
     const val DEV_ACCESS_TOKEN =
-        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMTA1NTAwMDcxNSIsInJvbGUiOiJVU0VSIiwiZXhwIjoyMTExMjg4OTI0LCJpYXQiOjE3NTEyODg5MjR9.x_HDgzgqVV1UgUTZlYWUzLdp-Vyf7zoWmpS8KxF5dIk"
+        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMTA3MTU2NDg2MyIsInJvbGUiOiJVU0VSIiwiZXhwIjoyMTEyNDE1OTgyLCJpYXQiOjE3NTI0MTU5ODJ9.L939tww5xOk2ebKfZULBryLMAJ1dFNTjgoH01obNa7Q"
     const val DEV_REFRESH_TOKEN =
-        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMTA1NTAwMDcxNSIsInJvbGUiOiJVU0VSIiwiZXhwIjoyMzU2MDg4OTI0LCJpYXQiOjE3NTEyODg5MjR9.MsgsEuiMUAqZ2dpsGHHRpFwxPaIK3jTr7lrIiizX5yw"
+        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMTA3MTU2NDg2MyIsInJvbGUiOiJVU0VSIiwiZXhwIjoyMzU3MjE1OTgyLCJpYXQiOjE3NTI0MTU5ODJ9.YUIkKEuFUKmhpvYqlzKgIJ7iIB-VPJRh0s8e6NFA6VE"
 
     // 개발 모드 설정
     val isDevelopment: Boolean get() = IS_DEV_MODE

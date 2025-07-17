@@ -23,6 +23,9 @@ class PhotoUploadViewModel(
     private val _selectedImageUri = MutableStateFlow<Uri?>(null)
     val selectedImageUri: StateFlow<Uri?> = _selectedImageUri.asStateFlow()
 
+    private val _showConfirmDialog = MutableStateFlow(false)
+    val showConfirmDialog: StateFlow<Boolean> = _showConfirmDialog.asStateFlow()
+
     private val _isUploading = MutableStateFlow(false)
     val isUploading: StateFlow<Boolean> = _isUploading.asStateFlow()
 
@@ -51,6 +54,19 @@ class PhotoUploadViewModel(
     fun onImageSelected(uri: Uri?) {
         _selectedImageUri.value = uri
         _errorMessage.value = null
+        if (uri != null) {
+            _showConfirmDialog.value = true
+        }
+    }
+
+    fun onConfirmDialogDismiss() {
+        _showConfirmDialog.value = false
+        _selectedImageUri.value = null
+    }
+
+    fun onConfirmUpload(context: Context) {
+        _showConfirmDialog.value = false
+        onUploadClick(context)
     }
 
     fun onPermissionGranted() {
@@ -122,6 +138,7 @@ class PhotoUploadViewModel(
 
     private fun resetState() {
         _selectedImageUri.value = null
+        _showConfirmDialog.value = false
         _isUploading.value = false
         _uploadSuccess.value = false
         _showSuccessDialog.value = false

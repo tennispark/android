@@ -31,7 +31,7 @@ class AcademyRepository {
 
             if (accessToken != null) {
                 Log.d(tag, "  AccessToken 앞 20자: ${accessToken.take(20)}...")
-                Log.d(tag, "  AccessToken 전체: ${accessToken}...")
+                Log.d(tag, "  AccessToken 전체: ${accessToken}")
                 Log.d(tag, "  Authorization 헤더: Bearer $accessToken")
                 Log.d(tag, "  RefreshToken Bearer $refreshToken")
             } else {

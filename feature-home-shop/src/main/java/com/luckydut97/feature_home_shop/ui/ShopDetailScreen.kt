@@ -56,6 +56,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.luckydut97.tennispark.core.ui.components.button.BasicButton
 
 // --- Global state for purchase completion ---
 object ShopPurchaseState {
@@ -233,25 +234,10 @@ fun ShopDetailScreen(
                     .background(Color.White),
                 contentAlignment = Alignment.Center
             ) {
-                Button(
-                    onClick = { showConfirmDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(47.dp)
-                        .padding(horizontal = 17.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF145F44)
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = "확인",
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = Pretendard
-                    )
-                }
+                BasicButton(
+                    text = "확인",
+                    onClick = { showConfirmDialog = true }
+                )
             }
         }
     ) { paddingValues ->
