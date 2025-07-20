@@ -203,7 +203,6 @@ fun MembershipRegistrationScreen(
     // 에러 메시지 표시
     errorMessage?.let { message ->
         LaunchedEffect(message) {
-            android.util.Log.e("MembershipRegistrationScreen", "Error: $message")
             // TODO: Toast나 SnackBar로 에러 메시지 표시 가능
         }
     }

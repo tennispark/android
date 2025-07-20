@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import android.util.Log
 
 /**
  * 아카데미 신청을 위한 ViewModel
@@ -52,7 +51,6 @@ class AcademyApplicationViewModel(
     val selectedAcademy: StateFlow<Academy?> = _selectedAcademy.asStateFlow()
 
     init {
-        Log.d(tag, "AcademyApplicationViewModel 초기화")
         loadAcademies()
     }
 
@@ -60,7 +58,6 @@ class AcademyApplicationViewModel(
      * 아카데미 목록 로드
      */
     private fun loadAcademies() {
-        Log.d(tag, "=== 아카데미 목록 로드 시작 ===")
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
@@ -69,12 +66,10 @@ class AcademyApplicationViewModel(
                 repository.getAcademies().collect { academyList ->
                     _academies.value = academyList
                     _isLoading.value = false
-                    Log.d(tag, "✅ 아카데미 목록 로드 성공: ${academyList.size}개")
                 }
             } catch (e: Exception) {
                 _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
                 _isLoading.value = false
-                Log.e(tag, "❌ 아카데미 목록 로드 실패: ${e.message}", e)
             }
         }
     }
@@ -83,7 +78,6 @@ class AcademyApplicationViewModel(
      * 아카데미 신청 바텀시트 표시
      */
     fun showAcademyApplicationSheet() {
-        Log.d(tag, "아카데미 신청 바텀시트 표시")
         _showBottomSheet.value = true
         loadAcademies() // 바텀시트 열 때마다 최신 데이터 로드
     }
@@ -92,7 +86,6 @@ class AcademyApplicationViewModel(
      * 아카데미 신청 바텀시트 숨기기
      */
     fun hideAcademyApplicationSheet() {
-        Log.d(tag, "아카데미 신청 바텀시트 숨기기")
         _showBottomSheet.value = false
     }
 
@@ -100,7 +93,6 @@ class AcademyApplicationViewModel(
      * 아카데미 선택 및 상세 다이얼로그 표시
      */
     fun selectAcademyAndShowDetail(academy: Academy) {
-        Log.d(tag, "아카데미 선택: ${academy.id}")
         _selectedAcademy.value = academy
         _showDetailDialog.value = true
     }
@@ -109,7 +101,6 @@ class AcademyApplicationViewModel(
      * 상세 다이얼로그 숨기기
      */
     fun hideDetailDialog() {
-        Log.d(tag, "상세 다이얼로그 숨기기")
         _showDetailDialog.value = false
         _selectedAcademy.value = null
     }
@@ -118,22 +109,21 @@ class AcademyApplicationViewModel(
      * 아카데미 신청
      */
     fun applyForAcademy(academyId: String) {
-        Log.d(tag, "=== 아카데미 신청 시작: $academyId ===")
         viewModelScope.launch {
             try {
                 val result = repository.applyForAcademy(academyId)
                 result.fold(
                     onSuccess = { message ->
-                        Log.d(tag, "✅ 아카데미 신청 성공: $message")
                         _showDetailDialog.value = false
                         _showCompleteDialog.value = true
                         loadAcademies() // 신청 후 목록 새로고침
                     },
                     onFailure = { exception ->
-                        Log.e(tag, "❌ 아카데미 신청 실패: ${exception.message}")
                         val errorMessage = exception.message ?: "신청 중 오류가 발생했습니다."
-                        if (errorMessage.contains("서버 오류가 발생했습니다") || errorMessage.contains("알 수 없는 오류")) {
-                            Log.d(tag, "🔄 서버 오류 감지 - 중복 신청으로 처리")
+                        if (errorMessage.contains("서버 오류가 발생했습니다") || errorMessage.contains("알 수 없는 오류") || errorMessage.contains(
+                                "이미 신청한 아카데미입니다"
+                            )
+                        ) {
                             _isDuplicateError.value = true
                             _showDetailDialog.value = false
                             _showCompleteDialog.value = true
@@ -144,10 +134,11 @@ class AcademyApplicationViewModel(
                     }
                 )
             } catch (e: Exception) {
-                Log.e(tag, "❌ 아카데미 신청 예외: ${e.message}", e)
                 val errorMessage = e.message ?: "신청 중 오류가 발생했습니다."
-                if (errorMessage.contains("서버 오류가 발생했습니다") || errorMessage.contains("알 수 없는 오류")) {
-                    Log.d(tag, "🔄 서버 오류 감지 - 중복 신청으로 처리")
+                if (errorMessage.contains("서버 오류가 발생했습니다") || errorMessage.contains("알 수 없는 오류") || errorMessage.contains(
+                        "이미 신청한 아카데미입니다"
+                    )
+                ) {
                     _isDuplicateError.value = true
                     _showDetailDialog.value = false
                     _showCompleteDialog.value = true
@@ -163,7 +154,6 @@ class AcademyApplicationViewModel(
      * 완료 다이얼로그 숨기기
      */
     fun hideCompleteDialog() {
-        Log.d(tag, "완료 다이얼로그 숨기기")
         _showCompleteDialog.value = false
         _isDuplicateError.value = false // 중복 에러 상태 초기화
     }

@@ -12,11 +12,9 @@ import java.time.format.DateTimeFormatter
  */
 fun AcademyResponse.toAcademy(): Academy {
     // 디버깅을 위한 로그
-    android.util.Log.d("AcademyMapper", "변환 중: academyId=$id, date=$date")
 
     // 날짜 형식 변환: "2025년 06월 24일 (화)" -> "06월 24일 (화)"
     val formattedDate = formatDateString(date)
-    android.util.Log.d("AcademyMapper", "날짜 변환: $date -> $formattedDate")
 
     // 시간 파싱: "10:00" -> LocalTime
     val startTime = LocalTime.parse(startAt, DateTimeFormatter.ofPattern("HH:mm"))
@@ -39,7 +37,6 @@ fun AcademyResponse.toAcademy(): Academy {
         else -> AcademyStatus.AVAILABLE
     }
 
-    android.util.Log.d("AcademyMapper", "✅ 아카데미 변환 완료: $id")
 
     return Academy(
         id = id.toString(),
@@ -75,11 +72,9 @@ private fun formatDateString(dateString: String): String {
             "${formattedMonth}월 ${formattedDay}일 ($dayOfWeek)"
         } else {
             // 파싱 실패 시 원본 반환
-            android.util.Log.w("AcademyMapper", "날짜 파싱 실패: $dateString")
             dateString
         }
     } catch (e: Exception) {
-        android.util.Log.e("AcademyMapper", "날짜 변환 오류: $dateString", e)
         dateString
     }
 }

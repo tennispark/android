@@ -1,6 +1,5 @@
 package com.luckydut97.feature.attendance.ui.components
 
-import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -22,7 +21,6 @@ fun SimpleCameraView(
     AndroidView(
         factory = { ctx ->
             PreviewView(ctx).apply {
-                Log.d("카메라 디버깅:", "PreviewView created")
             }
         },
         modifier = modifier,
@@ -51,9 +49,7 @@ fun SimpleCameraView(
                         preview
                     )
                     
-                    Log.d("카메라 디버깅:", "Camera bound successfully")
                 } catch (e: Exception) {
-                    Log.e("카메라 디버깅:", "Camera binding failed: ${e.message}")
                 }
             }, ContextCompat.getMainExecutor(context))
         }

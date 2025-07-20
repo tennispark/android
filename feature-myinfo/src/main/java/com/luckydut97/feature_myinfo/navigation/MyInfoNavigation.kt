@@ -18,7 +18,6 @@ import com.luckydut97.feature_myinfo.ui.FaqScreen
 import com.luckydut97.feature_myinfo.ui.SettingsScreen
 import com.luckydut97.feature_myinfo.ui.AppSettingsScreen
 import com.luckydut97.feature_myinfo.viewmodel.MyInfoViewModel
-import android.util.Log
 import kotlinx.coroutines.delay
 
 /**
@@ -38,52 +37,29 @@ fun MyInfoNavigation(
     val isLoggedOut by viewModel.isLoggedOut.collectAsState()
     val isWithdrawn by viewModel.isWithdrawn.collectAsState()
 
-    Log.d(
-        tag,
-        "🔍 디버깅: MyInfoNavigation 리컴포지션 - isLoggedOut: $isLoggedOut, isWithdrawn: $isWithdrawn"
-    )
-
     // 로그아웃 완료 시 인증 화면으로 이동
     LaunchedEffect(isLoggedOut) {
-        Log.d(tag, "🔍 디버깅: LaunchedEffect(isLoggedOut) 트리거됨 - isLoggedOut: $isLoggedOut")
         if (isLoggedOut) {
-            Log.d(tag, "🔍 디버깅: ✅ 로그아웃 완료 감지 - onLogoutComplete() 호출 예정")
             try {
                 onLogoutComplete()
-                Log.d(tag, "🔍 디버깅: onLogoutComplete() 호출 완료")
             } catch (e: Exception) {
-                Log.e(tag, "🔍 디버깅: onLogoutComplete() 호출 실패: ${e.message}", e)
             }
             // 네비게이션 완료 후 상태 초기화
-            Log.d(tag, "🔍 디버깅: 200ms 대기 시작")
             delay(200) // 네비게이션 완료 대기 (좀 더 길게)
-            Log.d(tag, "🔍 디버깅: 200ms 대기 완료, resetLogoutState() 호출")
             viewModel.resetLogoutState()
-            Log.d(tag, "🔍 디버깅: ✅ 로그아웃 상태 초기화 완료")
-        } else {
-            Log.d(tag, "🔍 디버깅: isLoggedOut이 false여서 onLogoutComplete() 호출하지 않음")
         }
     }
 
     // 회원 탈퇴 완료 시 인증 화면으로 이동
     LaunchedEffect(isWithdrawn) {
-        Log.d(tag, "🔍 디버깅: LaunchedEffect(isWithdrawn) 트리거됨 - isWithdrawn: $isWithdrawn")
         if (isWithdrawn) {
-            Log.d(tag, "🔍 디버깅: ✅ 회원 탈퇴 완료 감지 - onLogoutComplete() 호출 예정")
             try {
                 onLogoutComplete()
-                Log.d(tag, "🔍 디버깅: onLogoutComplete() 호출 완료")
             } catch (e: Exception) {
-                Log.e(tag, "🔍 디버깅: onLogoutComplete() 호출 실패: ${e.message}", e)
             }
             // 네비게이션 완료 후 상태 초기화
-            Log.d(tag, "🔍 디버깅: 200ms 대기 시작")
             delay(200) // 네비게이션 완료 대기 (좀 더 길게)
-            Log.d(tag, "🔍 디버깅: 200ms 대기 완료, resetWithdrawState() 호출")
             viewModel.resetWithdrawState()
-            Log.d(tag, "🔍 디버깅: ✅ 회원 탈퇴 상태 초기화 완료")
-        } else {
-            Log.d(tag, "🔍 디버깅: isWithdrawn이 false여서 onLogoutComplete() 호출하지 않음")
         }
     }
 

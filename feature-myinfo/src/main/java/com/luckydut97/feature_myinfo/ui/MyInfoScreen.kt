@@ -1,6 +1,5 @@
 package com.luckydut97.feature_myinfo.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -79,7 +78,6 @@ fun MyInfoScreen(
 
     // 🔥 화면 진입 시마다 자동 새로고침
     LaunchedEffect(Unit) {
-        Log.d("🔍 디버깅: MyInfoScreen", "화면 진입 - 포인트 데이터 자동 새로고침 시작")
         viewModel.refreshAllData()
     }
 

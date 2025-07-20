@@ -13,7 +13,6 @@ import java.time.format.DateTimeFormatter
  */
 fun ActivityResponse.toWeeklyActivity(): WeeklyActivity {
     // 디버깅을 위한 로그
-    android.util.Log.d("ActivityMapper", "변환 중: activityId=$activityId, date=$date")
 
     // 날짜 파싱: "2025년 06월 24일 (화)" -> LocalDate
     val localDate = parseDate(date)
@@ -35,7 +34,6 @@ fun ActivityResponse.toWeeklyActivity(): WeeklyActivity {
     // 표시용 ID도 실제 activityId 사용
     val finalId = activityId.toString()
 
-    android.util.Log.d("ActivityMapper", "✅ 실제 activityId 사용: $activityId")
 
     return WeeklyActivity(
         id = finalId,
@@ -68,7 +66,6 @@ private fun parseDate(dateString: String): LocalDate {
         return LocalDate.parse(formattedDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
     } else {
         // 파싱 실패 시 로그를 남기고 현재 날짜 반환
-        android.util.Log.e("ActivityMapper", "날짜 파싱 실패: $dateString")
         return LocalDate.now()
     }
 }

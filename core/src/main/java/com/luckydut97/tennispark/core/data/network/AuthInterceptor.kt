@@ -1,6 +1,5 @@
 package com.luckydut97.tennispark.core.data.network
 
-import android.util.Log
 import com.luckydut97.tennispark.core.data.storage.TokenManager
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -26,11 +25,6 @@ class AuthInterceptor(
             retryAttempts.set(0)
         }
 
-        Log.d(tag, "🔍 API 요청 인터셉트: ${originalRequest.url}")
-        Log.d(tag, "  요청 URL: ${originalRequest.url}")
-        Log.d(tag, "  요청 Method: ${originalRequest.method}")
-        Log.d(tag, "  요청 Path: ${originalRequest.url.encodedPath}")
-        Log.d(tag, "  현재 재시도 횟수: ${retryCount}/1")
 
         // 토큰이 필요 없는 API들 (인증, 회원가입 등)
         val skipAuthUrls = listOf(
@@ -44,12 +38,8 @@ class AuthInterceptor(
             originalRequest.url.encodedPath == url
         }
 
-        Log.d(tag, "🔍 인증 헤더 필요성 체크:")
-        Log.d(tag, "  Skip Auth URLs: $skipAuthUrls")
-        Log.d(tag, "  Should Skip Auth: $shouldSkipAuth")
 
         if (shouldSkipAuth) {
-            Log.d(tag, "✅ 인증 헤더 생략: ${originalRequest.url}")
             retryAttempts.remove() // ThreadLocal 정리
             return chain.proceed(originalRequest)
         }
@@ -57,43 +47,30 @@ class AuthInterceptor(
         // 액세스 토큰 가져오기
         val accessToken = runBlocking { tokenManager.getAccessToken() }
 
-        Log.d(tag, "🔑 토큰 확인:")
-        Log.d(tag, "  AccessToken 존재: ${accessToken != null}")
-        Log.d(tag, "  AccessToken 길이: ${accessToken?.length ?: 0}")
 
         if (accessToken.isNullOrEmpty()) {
-            Log.e(tag, "❌ 액세스 토큰이 없음 - 헤더 추가 생략")
             retryAttempts.remove() // ThreadLocal 정리
             return chain.proceed(originalRequest)
         }
 
-        Log.d(tag, "  AccessToken 앞 20자: ${accessToken.take(20)}...")
 
         // Authorization 헤더 추가
         val authenticatedRequest = originalRequest.newBuilder()
             .header("Authorization", "Bearer $accessToken")
             .build()
 
-        Log.d(tag, "✅ Authorization 헤더 추가 완료!")
-        Log.d(tag, "  헤더 값: Bearer ${accessToken.take(20)}...")
-        Log.d(tag, "  최종 요청 URL: ${authenticatedRequest.url}")
 
         val response = chain.proceed(authenticatedRequest)
 
-        Log.d(tag, "📡 응답 수신:")
-        Log.d(tag, "  응답 코드: ${response.code}")
-        Log.d(tag, "  응답 메시지: ${response.message}")
 
         // 401 응답 시 토큰 재발급 시도
         if (response.code == 401) {
-            Log.e(tag, "🚨 401 응답 받음 - 토큰 재발급 시도")
             response.close()
 
             val currentRetryCount = retryAttempts.get() ?: 0
 
             // 재시도 횟수 초과 시 로그아웃
             if (currentRetryCount >= 1) {
-                Log.e(tag, "🚨 최대 재시도 횟수 초과 (${currentRetryCount}/1) - 강제 로그아웃")
                 retryAttempts.remove() // ThreadLocal 정리
                 runBlocking { tokenManager.clearTokens() }
                 return chain.proceed(originalRequest)
@@ -101,13 +78,11 @@ class AuthInterceptor(
 
             // 재시도 카운트 증가
             retryAttempts.set(currentRetryCount + 1)
-            Log.d(tag, "🔄 재시도 카운트 증가: ${currentRetryCount + 1}/1")
 
             return try {
                 val refreshToken = runBlocking { tokenManager.getRefreshToken() }
 
                 if (refreshToken.isNullOrEmpty()) {
-                    Log.e(tag, "리프레시 토큰이 없음 - 재발급 불가")
                     retryAttempts.remove() // ThreadLocal 정리
                     return chain.proceed(originalRequest)
                 }
@@ -119,16 +94,13 @@ class AuthInterceptor(
                     .header("Refresh-Token", refreshToken)
                     .build()
 
-                Log.d(tag, "토큰 재발급 API 호출")
                 val refreshResponse = chain.proceed(refreshRequest)
 
                 if (refreshResponse.isSuccessful) {
-                    Log.d(tag, "토큰 재발급 성공")
 
                     // 응답에서 새 토큰 파싱하여 저장
                     try {
                         val responseBody = refreshResponse.body?.string()
-                        Log.d(tag, "토큰 재발급 응답: $responseBody")
 
                         if (responseBody != null) {
                             val gson = com.google.gson.Gson()
@@ -147,12 +119,10 @@ class AuthInterceptor(
                                     runBlocking {
                                         tokenManager.saveTokens(newAccessToken, newRefreshToken)
                                     }
-                                    Log.d(tag, "새 토큰 저장 완료")
                                 }
                             }
                         }
                     } catch (e: Exception) {
-                        Log.e(tag, "토큰 파싱 실패: ${e.message}", e)
                     }
 
                     refreshResponse.close()
@@ -162,12 +132,10 @@ class AuthInterceptor(
                         .header("Authorization", "Bearer $newAccessToken")
                         .build()
 
-                    Log.d(tag, "새 토큰으로 요청 재시도")
                     val finalResponse = chain.proceed(retryRequest)
                     retryAttempts.remove() // ThreadLocal 정리
                     return finalResponse
                 } else {
-                    Log.e(tag, "토큰 재발급 실패: ${refreshResponse.code}")
                     refreshResponse.close()
                     retryAttempts.remove() // ThreadLocal 정리
                     // 로그아웃 처리
@@ -175,7 +143,6 @@ class AuthInterceptor(
                     return chain.proceed(originalRequest)
                 }
             } catch (e: Exception) {
-                Log.e(tag, "토큰 재발급 중 예외: ${e.message}", e)
                 retryAttempts.remove() // ThreadLocal 정리
                 return chain.proceed(originalRequest)
             }

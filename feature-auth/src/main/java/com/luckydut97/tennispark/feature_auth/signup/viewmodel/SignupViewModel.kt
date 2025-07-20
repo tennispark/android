@@ -1,6 +1,5 @@
 package com.luckydut97.tennispark.feature_auth.signup.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
@@ -155,15 +154,6 @@ class SignupViewModel : ViewModel() {
     }
 
     fun signup() {
-        Log.d(tag, "=== 회원가입 시작 ===")
-        Log.d(tag, "📱 phoneNumber: ${_phoneNumber.value}")
-        Log.d(tag, "👤 name: ${_name.value}")
-        Log.d(tag, "🚻 gender: ${if (_isMale.value) "MAN" else "WOMAN"}")
-        Log.d(tag, "🎾 experience: ${_experience.value}")
-        Log.d(tag, "📅 birthYear: ${_birthYear.value}")
-        Log.d(tag, "📍 joinPath: ${_joinPath.value}")
-        Log.d(tag, "🤝 referrer: ${_referrer.value}")
-        Log.d(tag, "📸 instagramId: ${_instagramId.value}")
 
         val isValid = _name.value.isNotEmpty() &&
                 _experience.value.isNotEmpty() &&
@@ -181,14 +171,10 @@ class SignupViewModel : ViewModel() {
                     _errorMessage.value = null
 
                     // FCM 토큰 가져오기
-                    Log.d(tag, "🔥 FCM 토큰 발급 시작...")
                     val fcmToken = fcmTokenManager.getFcmToken()
-                    Log.d(tag, "🔥 FCM 토큰 결과: $fcmToken")
 
                     if (fcmToken != null) {
-                        Log.d(tag, "✅ FCM 토큰 발급 성공! 길이: ${fcmToken.length}")
                     } else {
-                        Log.w(tag, "⚠️ FCM 토큰 발급 실패 - null 반환")
                     }
 
                     val registrationSource = when (_joinPath.value) {
@@ -210,29 +196,23 @@ class SignupViewModel : ViewModel() {
                         fcmToken = fcmToken // FCM 토큰 추가
                     )
 
-                    Log.d(tag, "🚀 회원가입 API 호출 시작...")
                     val response = membershipRepository.registerMember(request)
 
                     if (response.success) {
-                        Log.d(tag, "✅ 회원가입 성공!")
                         val registrationResponse = response.response
 
                         if (registrationResponse != null) {
-                            Log.d(tag, "🔑 AccessToken 수신: ${registrationResponse.accessToken}")
-                            Log.d(tag, "🔄 RefreshToken 수신: ${registrationResponse.refreshToken}")
 
                             // 토큰 저장
                             tokenManager.saveTokens(
                                 registrationResponse.accessToken,
                                 registrationResponse.refreshToken
                             )
-                            Log.d(tag, "💾 토큰 저장 완료")
                         }
 
                         _isSignupComplete.value = true
                     } else {
                         val errorMessage = response.error?.message ?: "회원가입에 실패했습니다."
-                        Log.e(tag, "❌ 회원가입 실패: $errorMessage")
 
                         // 중복 휴대폰 번호 에러 체크
                         if (errorMessage.contains("휴대폰") || errorMessage.contains("중복") || errorMessage.contains(
@@ -240,21 +220,17 @@ class SignupViewModel : ViewModel() {
                             )
                         ) {
                             _errorMessage.value = "이미 가입된 휴대폰 번호입니다. 휴대폰 인증을 통해 로그인해주세요."
-                            Log.w(tag, "⚠️ 중복 가입 시도 - 서버에서 기존 회원을 찾지 못한 것으로 보임")
                         } else {
                             _errorMessage.value = errorMessage
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e(tag, "🔥 회원가입 예외 발생: ${e.message}", e)
                     _errorMessage.value = "네트워크 오류가 발생했습니다: ${e.message}"
                 } finally {
                     _isLoading.value = false
-                    Log.d(tag, "=== 회원가입 완료 ===")
                 }
             }
         } else {
-            Log.w(tag, "⚠️ 필수 항목이 누락되었습니다.")
             _errorMessage.value = "필수 항목을 모두 입력해주세요."
         }
     }

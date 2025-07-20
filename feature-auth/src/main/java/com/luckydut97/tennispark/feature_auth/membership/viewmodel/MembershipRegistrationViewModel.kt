@@ -1,6 +1,5 @@
 package com.luckydut97.tennispark.feature_auth.membership.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -99,18 +98,9 @@ class MembershipRegistrationViewModel : ViewModel() {
     }
 
     fun submitMembershipRegistration() {
-        Log.d(tag, "=== 멤버십 등록 버튼 클릭 ===")
-        Log.d(tag, "멤버십 타입: ${_membershipType.value}")
-        Log.d(tag, "가입 이유: ${_joinReason.value}")
-        Log.d(tag, "선택된 코트: ${_selectedCourt.value}")
-        Log.d(tag, "선택된 기간: ${_selectedPeriod.value}")
-        Log.d(tag, "추천인: ${_referrer.value}")
-        Log.d(tag, "규정 동의: ${_agreeToRules.value}")
-        Log.d(tag, "미디어 동의: ${_agreeToMediaUsage.value}")
 
         viewModelScope.launch {
             try {
-                Log.d(tag, "API 호출 준비 중...")
                 _isLoading.value = true
                 _errorMessage.value = null
 
@@ -149,24 +139,18 @@ class MembershipRegistrationViewModel : ViewModel() {
                     recommender = recommender
                 )
 
-                Log.d(tag, "Repository 호출 시작...")
                 val response = membershipRepository.registerMembership(request)
-                Log.d(tag, "Repository 호출 완료")
 
                 if (response.success) {
-                    Log.d(tag, "멤버십 등록 성공!")
                     _isMembershipComplete.value = true
                 } else {
                     val errorMessage = response.error?.message ?: "멤버십 등록에 실패했습니다."
-                    Log.e(tag, "멤버십 등록 실패: $errorMessage")
                     _errorMessage.value = errorMessage
                 }
             } catch (e: Exception) {
-                Log.e(tag, "API 호출 예외 발생: ${e.message}", e)
                 _errorMessage.value = "오류가 발생했습니다."
             } finally {
                 _isLoading.value = false
-                Log.d(tag, "=== 멤버십 등록 처리 완료 ===")
             }
         }
     }

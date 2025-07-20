@@ -1,6 +1,5 @@
 package com.luckydut97.feature.attendance.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.luckydut97.tennispark.core.data.repository.PointRepository
@@ -23,8 +22,6 @@ class AttendanceViewModel(
         // 중복 스캔 방지
         if (_uiState.value.isLoading) return
 
-        Log.d(tag, "=== QR 코드 처리 시작 ===")
-        Log.d(tag, "QR Code detected: $qrCode")
 
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
@@ -34,20 +31,17 @@ class AttendanceViewModel(
                 val eventUrl = extractEventUrl(qrCode)
 
                 if (eventUrl != null) {
-                    Log.d(tag, "추출된 이벤트 URL: $eventUrl")
 
                     // 실제 QR 이벤트 API 호출
                     val response = pointRepository.postQrEvent(eventUrl)
 
                     if (response.success) {
-                        Log.d(tag, "✅ QR 이벤트 처리 성공!")
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             showSuccessDialog = true,
                             successMessage = "출석체크가 완료되었습니다!"
                         )
                     } else {
-                        Log.e(tag, "❌ QR 이벤트 처리 실패: ${response.error?.message}")
 
                         val errorMessage =
                             if (response.error?.message?.contains("이미 신청한") == true) {
@@ -63,7 +57,6 @@ class AttendanceViewModel(
                     }
                 } else {
                     // 테스트용 시뮬레이션 (개발 중)
-                    Log.d(tag, "테스트용 QR 코드 처리")
                     delay(1000) // 네트워크 요청 시뮬레이션
 
                     _uiState.value = _uiState.value.copy(
@@ -73,7 +66,6 @@ class AttendanceViewModel(
                     )
                 }
             } catch (e: Exception) {
-                Log.e(tag, "🔥 QR 코드 처리 예외: ${e.message}", e)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     errorMessage = "QR 코드 처리 중 오류가 발생했습니다."

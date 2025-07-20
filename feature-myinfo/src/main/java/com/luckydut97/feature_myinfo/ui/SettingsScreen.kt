@@ -26,7 +26,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.tennispark.core.utils.launchUrl
-import android.util.Log
 
 /**
  * 설정 화면
@@ -46,7 +45,6 @@ fun SettingsScreen(
     var showWithdrawalDialog by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
 
-    Log.d("🔍 SettingsScreen", "🔍 디버깅: SettingsScreen 컴포즈됨 - viewModel: $viewModel")
 
     // 🔍 디버깅: SettingsScreen에서 중복 LaunchedEffect 제거
     // MyInfoNavigation에서 처리하므로 여기서는 제거
@@ -127,7 +125,6 @@ fun SettingsScreen(
             onDismiss = { showLogoutDialog = false },
             onConfirm = {
                 showLogoutDialog = false
-                Log.d("🔍 SettingsScreen", "🔍 디버깅: 로그아웃 확인 - viewModel.logout() 직접 호출")
                 viewModel.logout()
             }
         )
@@ -137,7 +134,6 @@ fun SettingsScreen(
             onDismiss = { showWithdrawalDialog = false },
             onConfirm = {
                 showWithdrawalDialog = false
-                Log.d("🔍 SettingsScreen", "🔍 디버깅: 회원탈퇴 확인 - viewModel.withdraw() 직접 호출")
                 viewModel.withdraw()
             }
         )

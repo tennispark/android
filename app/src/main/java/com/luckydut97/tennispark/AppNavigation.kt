@@ -174,10 +174,8 @@ fun AppNavigation(
                 )
             }
         ) {
-            android.util.Log.d("출석체크 디버깅", "AttendanceScreen Composable 생성됨")
             com.luckydut97.feature.attendance.ui.AttendanceScreen(
                 onBackClick = {
-                    android.util.Log.d("출석체크 디버깅", "출석체크 뒤로가기 클릭됨")
                     val canGoBack = navController.previousBackStackEntry != null
                     if (canGoBack) {
                         navController.popBackStack()
@@ -189,7 +187,6 @@ fun AppNavigation(
                     }
                 },
                 onAttendanceComplete = {
-                    android.util.Log.d("출석체크 디버깅", "출석체크 완료됨")
                     navController.popBackStack()
                 }
             )
@@ -290,22 +287,12 @@ fun MainScreenWithBottomNav(
             ) {
                 HomeScreen(
                     onMembershipClick = {
-                        android.util.Log.d(
-                            "출석체크 디버깅",
-                            "멤버십 클릭 - mainNavController.navigate(membership)"
-                        )
                         mainNavController.navigate("membership")
                     },
                     onAttendanceClick = {
-                        android.util.Log.d(
-                            "출석체크 디버깅",
-                            "출석체크 클릭 - mainNavController.navigate(attendance) 호출"
-                        )
                         try {
                             mainNavController.navigate("attendance")
-                            android.util.Log.d("출석체크 디버깅", "출석체크 네비게이션 성공")
                         } catch (e: Exception) {
-                            android.util.Log.e("출석체크 디버깅", "출석체크 네비게이션 실패: ${e.message}")
                         }
                     }
                 )
@@ -490,49 +477,13 @@ fun MainScreenWithBottomNav(
                         }
                     },
                     onLogoutComplete = {
-                        android.util.Log.d(
-                            "🔍 AppNavigation",
-                            "🔍 디버깅: === onLogoutComplete 콜백 시작 ==="
-                        )
-                        android.util.Log.d(
-                            "🔍 AppNavigation",
-                            "🔍 디버깅: 현재 스레드: ${Thread.currentThread().name}"
-                        )
-                        android.util.Log.d("🔍 AppNavigation", "🔍 디버깅: mainNavController 상태 확인")
-                        android.util.Log.d(
-                            "🔍 AppNavigation",
-                            "🔍 디버깅: mainNavController.currentDestination: ${mainNavController.currentDestination?.route}"
-                        )
-
                         try {
-                            android.util.Log.d(
-                                "🔍 AppNavigation",
-                                "🔍 디버깅: mainNavController.navigate(\"auth\") 호출 시작"
-                            )
                             // 로그아웃 완료 시 인증 화면으로 이동
                             mainNavController.navigate("auth") {
                                 popUpTo("main") { inclusive = true }
                             }
-                            android.util.Log.d("🔍 AppNavigation", "🔍 디버깅: ✅ 인증 화면으로 네비게이션 성공")
-                            android.util.Log.d(
-                                "🔍 AppNavigation",
-                                "🔍 디버깅: 새로운 destination: ${mainNavController.currentDestination?.route}"
-                            )
                         } catch (e: Exception) {
-                            android.util.Log.e(
-                                "🔍 AppNavigation",
-                                "🔍 디버깅: ❌ 인증 화면으로 네비게이션 실패: ${e.message}",
-                                e
-                            )
-                            android.util.Log.e(
-                                "🔍 AppNavigation",
-                                "🔍 디버깅: 예외 타입: ${e.javaClass.simpleName}"
-                            )
                         }
-                        android.util.Log.d(
-                            "🔍 AppNavigation",
-                            "🔍 디버깅: === onLogoutComplete 콜백 완료 ==="
-                        )
                     }
                 )
             }

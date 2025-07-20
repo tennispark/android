@@ -1,6 +1,5 @@
 package com.luckydut97.feature.attendance.ui.components
 
-import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -52,9 +51,7 @@ fun CameraPreviewSimple(
                     preview
                 )
 
-                Log.d("CameraPreviewSimple", "Camera bound successfully")
             } catch (e: Exception) {
-                Log.e("CameraPreviewSimple", "Use case binding failed", e)
             }
         }, ContextCompat.getMainExecutor(context))
 

@@ -1,6 +1,5 @@
 package com.luckydut97.feature.attendance.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,7 +27,6 @@ fun AttendanceScreen(
     viewModel: AttendanceViewModel = viewModel()
 ) {
     val tag = "🔍 디버깅: AttendanceScreen"
-    Log.d(tag, "AttendanceScreen Composable 호출됨")
 
     val uiState by viewModel.uiState.collectAsState()
     
@@ -37,11 +35,6 @@ fun AttendanceScreen(
     var permissionChecked by remember { mutableStateOf(false) }
 
     // UI 상태 로깅
-    Log.d(tag, "UI 상태:")
-    Log.d(tag, "  - isLoading: ${uiState.isLoading}")
-    Log.d(tag, "  - showSuccessDialog: ${uiState.showSuccessDialog}")
-    Log.d(tag, "  - errorMessage: ${uiState.errorMessage}")
-    Log.d(tag, "  - successMessage: ${uiState.successMessage}")
     
     Scaffold(
         containerColor = Color.Black, // 배경색을 검은색으로 변경
@@ -50,7 +43,6 @@ fun AttendanceScreen(
             TopBar(
                 title = "출석체크",
                 onBackClick = {
-                    Log.d(tag, "TopBar 뒤로가기 버튼 클릭됨")
                     onBackClick()
                 }
             )
@@ -63,33 +55,26 @@ fun AttendanceScreen(
                 .background(Color.Black) // 명시적으로 검은색 배경
         ) {
             // 카메라 프리뷰
-            Log.d(tag, "CameraPreview 컴포넌트 호출")
             CameraPreview(
                 onQrCodeScanned = { qrCode ->
-                    Log.d(tag, "🎯 QR 코드 스캔 완료: $qrCode")
-                    Log.d(tag, "ViewModel.processQrCode 호출")
                     viewModel.processQrCode(qrCode)
                 },
                 onPermissionGranted = { isGranted ->
-                    Log.d(tag, "카메라 권한 상태 업데이트: $isGranted")
                     hasCameraPermission = isGranted
                     permissionChecked = true
                 },
                 onPermissionDenied = {
-                    Log.d(tag, "카메라 권한 거부됨 - 뒤로가기")
                     onBackClick()
                 }
             )
 
             // QR 스캐너 오버레이 - 카메라 권한이 있을 때만 표시
             if (hasCameraPermission) {
-                Log.d(tag, "QR 스캐너 오버레이 표시")
                 QrScannerOverlay()
             }
 
             // 로딩 표시
             if (uiState.isLoading) {
-                Log.d(tag, "로딩 인디케이터 표시")
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -104,7 +89,6 @@ fun AttendanceScreen(
 
             // 에러 메시지 표시
             uiState.errorMessage?.let { errorMessage ->
-                Log.e(tag, "에러 발생: $errorMessage")
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -137,7 +121,6 @@ fun AttendanceScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(
                                 onClick = {
-                                    Log.d(tag, "에러 다이얼로그 닫기")
                                     viewModel.clearError()
                                 },
                                 colors = ButtonDefaults.buttonColors(
@@ -154,7 +137,6 @@ fun AttendanceScreen(
 
             // 성공 메시지 표시
             if (uiState.showSuccessDialog) {
-                Log.d(tag, "성공 다이얼로그 표시: ${uiState.successMessage}")
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -185,7 +167,6 @@ fun AttendanceScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(
                                 onClick = {
-                                    Log.d(tag, "성공 다이얼로그 닫기")
                                     viewModel.dismissSuccessDialog()
                                 },
                                 colors = ButtonDefaults.buttonColors(
@@ -204,12 +185,9 @@ fun AttendanceScreen(
 
     // QR 코드 처리 결과 확인
     LaunchedEffect(uiState.showSuccessDialog) {
-        Log.d(tag, "성공 다이얼로그 상태 변경: ${uiState.showSuccessDialog}")
         if (uiState.showSuccessDialog) {
-            Log.d(tag, "1.5초 후 출석 완료 콜백 호출 예정")
             // 성공 시 잠시 후 화면 닫기
             kotlinx.coroutines.delay(1500)
-            Log.d(tag, "출석 완료 콜백 호출")
             onAttendanceComplete()
         }
     }

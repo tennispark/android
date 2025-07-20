@@ -1,6 +1,5 @@
 package com.luckydut97.feature_home.main.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -30,7 +29,6 @@ fun MainActionButtons(
     onAttendanceClick: () -> Unit,
     onActivityVerificationClick: () -> Unit
 ) {
-    Log.d("카메라 디버깅:", "MainActionButtons Composable called")
 
     Row(
         modifier = Modifier
@@ -43,7 +41,6 @@ fun MainActionButtons(
         ActionButton(
             text = "출석체크",
             onClick = {
-                Log.d("카메라 디버깅:", "출석체크 button clicked")
                 onAttendanceClick()
             },
             modifier = Modifier.weight(1f)

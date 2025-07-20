@@ -1,6 +1,5 @@
 package com.luckydut97.feature.attendance.ui.components
 
-import android.util.Log
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -23,7 +22,6 @@ fun QrScannerCameraView(
     onQrCodeDetected: (String) -> Unit
 ) {
     val tag = "🔍 디버깅: QrScannerCameraView"
-    Log.d(tag, "QR 스캐너 카메라 뷰 생성 시작")
 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -42,14 +40,12 @@ fun QrScannerCameraView(
     )
 
     LaunchedEffect(previewView) {
-        Log.d(tag, "카메라 설정 시작")
 
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
         cameraProviderFuture.addListener({
             try {
                 val cameraProvider = cameraProviderFuture.get()
-                Log.d(tag, "CameraProvider 획득 성공")
 
                 // Preview 설정
                 val preview = Preview.Builder().build().also {
@@ -71,7 +67,6 @@ fun QrScannerCameraView(
                                         (qrCode != lastScannedCode || currentTime - lastScannedTime > 3000)
                                     ) {
 
-                                        Log.d(tag, "🎯 새로운 QR 코드 인식: $qrCode")
                                         lastScannedCode = qrCode
                                         lastScannedTime = currentTime
                                         isScanning = false
@@ -84,7 +79,6 @@ fun QrScannerCameraView(
                                             .launch {
                                                 kotlinx.coroutines.delay(3000)
                                                 isScanning = true
-                                                Log.d(tag, "QR 스캔 재개 가능")
                                             }
                                     }
                                 },
@@ -108,21 +102,17 @@ fun QrScannerCameraView(
                         imageAnalyzer
                     )
 
-                    Log.d(tag, "✅ 카메라 바인딩 성공 - QR 스캔 준비 완료")
 
                 } catch (exc: Exception) {
-                    Log.e(tag, "❌ 카메라 바인딩 실패: ${exc.message}")
                 }
 
             } catch (exc: Exception) {
-                Log.e(tag, "❌ CameraProvider 초기화 실패: ${exc.message}")
             }
         }, ContextCompat.getMainExecutor(context))
     }
 
     DisposableEffect(Unit) {
         onDispose {
-            Log.d(tag, "카메라 리소스 정리")
             cameraExecutor.shutdown()
         }
     }
@@ -151,7 +141,6 @@ private fun processImageProxy(
                         Barcode.TYPE_URL -> {
                             val url = barcode.url?.url
                             if (!url.isNullOrEmpty()) {
-                                Log.d(tag, "📱 URL 타입 QR 코드 인식: $url")
                                 onQrDetected(url)
                             }
                         }
@@ -159,7 +148,6 @@ private fun processImageProxy(
                         Barcode.TYPE_TEXT -> {
                             val text = barcode.displayValue
                             if (!text.isNullOrEmpty()) {
-                                Log.d(tag, "📝 텍스트 타입 QR 코드 인식: $text")
                                 onQrDetected(text)
                             }
                         }
@@ -167,7 +155,6 @@ private fun processImageProxy(
                         else -> {
                             val rawValue = barcode.rawValue
                             if (!rawValue.isNullOrEmpty()) {
-                                Log.d(tag, "🔤 기타 타입 QR 코드 인식: $rawValue")
                                 onQrDetected(rawValue)
                             }
                         }
@@ -175,7 +162,6 @@ private fun processImageProxy(
                 }
             }
             .addOnFailureListener { exception ->
-                Log.e(tag, "QR 코드 인식 실패: ${exception.message}")
             }
             .addOnCompleteListener {
                 imageProxy.close()

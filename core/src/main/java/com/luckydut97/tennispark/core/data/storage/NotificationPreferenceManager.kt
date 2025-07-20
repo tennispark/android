@@ -2,7 +2,6 @@ package com.luckydut97.tennispark.core.data.storage
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 
 /**
  * 푸시 알림 설정을 관리하는 클래스
@@ -22,11 +21,9 @@ class NotificationPreferenceManager(context: Context) {
      * 푸시 알림 수신 설정 저장
      */
     fun setPushNotificationEnabled(enabled: Boolean) {
-        Log.d(TAG, "푸시 알림 설정 저장: $enabled")
         sharedPreferences.edit()
             .putBoolean(KEY_PUSH_ENABLED, enabled)
             .apply()
-        Log.d(TAG, "푸시 알림 설정 저장 완료")
     }
 
     /**
@@ -35,7 +32,6 @@ class NotificationPreferenceManager(context: Context) {
      */
     fun isPushNotificationEnabled(defaultValue: Boolean = true): Boolean {
         val enabled = sharedPreferences.getBoolean(KEY_PUSH_ENABLED, defaultValue)
-        Log.d(TAG, "푸시 알림 설정 조회: $enabled (기본값: $defaultValue)")
         return enabled
     }
 
@@ -44,7 +40,6 @@ class NotificationPreferenceManager(context: Context) {
      */
     fun isFirstTime(): Boolean {
         val isFirstTime = !sharedPreferences.contains(KEY_PUSH_ENABLED)
-        Log.d(TAG, "푸시 알림 설정 첫 실행 여부: $isFirstTime")
         return isFirstTime
     }
 }

@@ -1,6 +1,5 @@
 package com.luckydut97.tennispark.feature_auth.verification.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
@@ -108,35 +107,28 @@ class PhoneVerificationViewModel : ViewModel() {
                 }
                 return
             }
-            Log.d(tag, "=== 인증번호 요청 버튼 클릭 ===")
-            Log.d(tag, "입력된 전화번호: ${_phoneNumber.value}")
 
             viewModelScope.launch {
                 try {
                     _isLoading.value = true
                     _errorMessage.value = null
 
-                    Log.d(tag, "인증번호 요청 API 호출 시작...")
                     val response =
                         phoneVerificationRepository.requestVerificationCode(_phoneNumber.value)
 
                     if (response.success) {
-                        Log.d(tag, "인증번호 요청 성공!")
                         _isVerificationRequested.value = true
                         _isTimerActive.value = true
                         _remainingTime.value = 180 // 3분 리셋
                         startTimer()
                     } else {
                         val errorMessage = response.error?.message ?: "인증번호 요청에 실패했습니다."
-                        Log.e(tag, "🔥 인증번호 요청 실패: $errorMessage")
                         _errorMessage.value = errorMessage
                     }
                 } catch (e: Exception) {
-                    Log.e(tag, "🔥 인증번호 요청 예외 발생: ${e.message}", e)
                     _errorMessage.value = "네트워크 오류가 발생했습니다: ${e.message}"
                 } finally {
                     _isLoading.value = false
-                    Log.d(tag, "=== 인증번호 요청 처리 완료 ===")
                 }
             }
         }
@@ -144,30 +136,22 @@ class PhoneVerificationViewModel : ViewModel() {
 
     fun verifyCode() {
         if (_verificationCode.value.length == 6) {
-            Log.d(tag, "=== 인증번호 확인 시작 ===")
-            Log.d(tag, "입력된 전화번호: ${_phoneNumber.value}")
-            Log.d(tag, "입력된 인증번호: ${_verificationCode.value}")
 
             viewModelScope.launch {
                 try {
                     _isLoading.value = true
                     _errorMessage.value = null
 
-                    Log.d(tag, "인증번호 확인 API 호출 시작...")
                     val response = phoneVerificationRepository.verifyPhoneCode(
                         phoneNumber = _phoneNumber.value,
                         code = _verificationCode.value
                     )
 
                     if (response.success) {
-                        Log.d(tag, "✅ 인증번호 확인 성공!")
                         val verificationResponse = response.response
 
                         if (verificationResponse?.isRegister == true) {
                             // 기존 회원 로그인 처리
-                            Log.d(tag, "👤 기존 회원 로그인 처리")
-                            Log.d(tag, "🔑 AccessToken: ${verificationResponse.accessToken}")
-                            Log.d(tag, "🔄 RefreshToken: ${verificationResponse.refreshToken}")
 
                             // 토큰 저장 - null 체크를 명시적으로 수행
                             val accessToken = verificationResponse.accessToken
@@ -175,7 +159,6 @@ class PhoneVerificationViewModel : ViewModel() {
 
                             if (accessToken != null && refreshToken != null) {
                                 tokenManager.saveTokens(accessToken, refreshToken)
-                                Log.d(tag, "💾 기존 회원 토큰 저장 완료")
 
                                 // FCM 토큰 서버 전송 추가 (기존 회원 로그인 성공 후)
                                 val fcmTokenManager =
@@ -193,33 +176,20 @@ class PhoneVerificationViewModel : ViewModel() {
                                         )
                                     viewModelScope.launch {
                                         val fcmToken = fcmTokenManager.getFcmToken()
-                                        Log.d(
-                                            tag,
-                                            "디버깅: 로그인 후 FCM 토큰 가져옴: $fcmToken, 길이: ${fcmToken?.length}"
-                                        )
                                         if (!fcmToken.isNullOrBlank()) {
                                             if (fcmTokenManager.isValidFcmToken(fcmToken)) {
-                                                Log.d(tag, "디버깅: FCM 토큰 유효성 통과. 서버로 전송 시작")
                                                 val response =
                                                     authRepository.updateFcmToken(fcmToken)
                                                 if (response.success) {
-                                                    Log.d(tag, "✅ 디버깅: FCM 토큰 서버 전송 성공!")
                                                 } else {
-                                                    Log.e(
-                                                        tag,
-                                                        "❌ 디버깅: FCM 토큰 서버 전송 실패: ${response.error}"
-                                                    )
                                                 }
                                             } else {
-                                                Log.w(tag, "⚠️ 디버깅: FCM 토큰이 유효하지 않다!")
                                             }
                                         } else {
-                                            Log.w(tag, "⚠️ 디버깅: FCM 토큰 없음 또는 가져오기 실패")
                                         }
                                     }
                                 }
                             } else {
-                                Log.e(tag, "⚠️ 토큰이 null입니다")
                             }
 
                             _isVerified.value = true
@@ -227,22 +197,18 @@ class PhoneVerificationViewModel : ViewModel() {
                             _navigateToMain.value = true
                         } else {
                             // 신규 사용자 - 회원가입 화면으로
-                            Log.d(tag, "🆕 신규 사용자 회원가입 화면으로 이동")
                             _isVerified.value = true
                             _isTimerActive.value = false
                             _navigateToSignup.value = true
                         }
                     } else {
                         val errorMessage = response.error?.message ?: "인증번호 확인에 실패했습니다."
-                        Log.e(tag, "❌ 인증번호 확인 실패: $errorMessage")
                         _errorMessage.value = errorMessage
                     }
                 } catch (e: Exception) {
-                    Log.e(tag, "🔥 인증번호 확인 예외 발생: ${e.message}", e)
                     _errorMessage.value = "네트워크 오류가 발생했습니다: ${e.message}"
                 } finally {
                     _isLoading.value = false
-                    Log.d(tag, "=== 인증번호 확인 완료 ===")
                 }
             }
         }
@@ -250,39 +216,31 @@ class PhoneVerificationViewModel : ViewModel() {
 
     fun resendCode() {
         if (_resendCooldownTime.value > 0) {
-            Log.d(tag, "⏰ 재전송 쿨다운 중... 남은 시간: ${_resendCooldownTime.value}초")
             return
         }
 
-        Log.d(tag, "=== 인증번호 재전송 ===")
-        Log.d(tag, "전화번호: ${_phoneNumber.value}")
 
         viewModelScope.launch {
             try {
                 _isLoading.value = true
                 _errorMessage.value = null
 
-                Log.d(tag, "인증번호 재전송 API 호출 시작...")
                 val response =
                     phoneVerificationRepository.requestVerificationCode(_phoneNumber.value)
 
                 if (response.success) {
-                    Log.d(tag, "✅ 인증번호 재전송 성공!")
                     _remainingTime.value = 180 // 3분 리셋
                     _isTimerActive.value = true
                     startTimer()
                     startResendCooldown()
                 } else {
                     val errorMessage = response.error?.message ?: "인증번호 재전송에 실패했습니다."
-                    Log.e(tag, "❌ 인증번호 재전송 실패: $errorMessage")
                     _errorMessage.value = errorMessage
                 }
             } catch (e: Exception) {
-                Log.e(tag, "🔥 인증번호 재전송 예외 발생: ${e.message}", e)
                 _errorMessage.value = "네트워크 오류가 발생했습니다: ${e.message}"
             } finally {
                 _isLoading.value = false
-                Log.d(tag, "=== 인증번호 재전송 처리 완료 ===")
             }
         }
     }

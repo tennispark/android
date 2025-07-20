@@ -22,6 +22,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +35,8 @@ import com.luckydut97.tennispark.feature.home.R
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 import kotlinx.coroutines.delay
+import java.time.ZonedDateTime
+import java.time.ZoneId
 
 @Composable
 fun EventSection(
@@ -42,6 +45,10 @@ fun EventSection(
     onAcademyClick: () -> Unit
 ) {
     val pagerState = rememberPagerState(pageCount = { totalPages })
+
+    val currentMonth = remember {
+        ZonedDateTime.now(ZoneId.of("Asia/Seoul")).monthValue
+    }
 
     LaunchedEffect(key1 = Unit) {
         while (true) {
@@ -77,14 +84,14 @@ fun EventSection(
                 0 -> EventCard(
                     iconRes = R.drawable.ic_member,
                     title = "멤버십 등록하기",
-                    subtitle = "5월 정기 멤버십 등록",
+                    subtitle = "${currentMonth}월 정기 멤버십 등록",
                     pageIndicator = "${page + 1} / $totalPages",
                     onClick = onMembershipClick
                 )
                 1 -> EventCard(
                     iconRes = R.drawable.ic_tennis,
                     title = "아카데미 등록하기",
-                    subtitle = "5월 아카데미 등록",
+                    subtitle = "${currentMonth}월 아카데미 등록",
                     pageIndicator = "${page + 1} / $totalPages",
                     onClick = onAcademyClick
                 )

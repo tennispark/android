@@ -1,6 +1,5 @@
 package com.luckydut97.tennispark.core.fcm
 
-import android.util.Log
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -23,10 +22,8 @@ class FcmTokenManager {
     suspend fun getFcmToken(): String? = withContext(Dispatchers.IO) {
         try {
             val token = FirebaseMessaging.getInstance().token.await()
-            Log.d(TAG, "FCM 토큰 가져오기 성공: $token")
             token
         } catch (e: Exception) {
-            Log.e(TAG, "FCM 토큰 가져오기 실패", e)
             null
         }
     }
@@ -39,10 +36,8 @@ class FcmTokenManager {
         try {
             FirebaseMessaging.getInstance().deleteToken().await()
             val newToken = FirebaseMessaging.getInstance().token.await()
-            Log.d(TAG, "FCM 토큰 새로고침 성공: $newToken")
             newToken
         } catch (e: Exception) {
-            Log.e(TAG, "FCM 토큰 새로고침 실패", e)
             null
         }
     }
@@ -54,12 +49,10 @@ class FcmTokenManager {
     fun observeTokenRefresh(onTokenRefresh: (String) -> Unit) {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
-                Log.w(TAG, "FCM 토큰 가져오기 실패", task.exception)
                 return@addOnCompleteListener
             }
 
             val token = task.result
-            Log.d(TAG, "FCM 토큰 변경 감지: $token")
             onTokenRefresh(token)
         }
     }

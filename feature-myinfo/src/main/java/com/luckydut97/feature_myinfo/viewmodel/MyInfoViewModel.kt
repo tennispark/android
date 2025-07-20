@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import android.util.Log
 
 class MyInfoViewModel(
     private val pointRepository: PointRepository = PointRepository()
@@ -57,7 +56,6 @@ class MyInfoViewModel(
     val isWithdrawn: StateFlow<Boolean> = _isWithdrawn.asStateFlow()
 
     init {
-        Log.d(tag, "MyInfoViewModel 초기화")
         refreshAllData()
     }
 
@@ -65,31 +63,25 @@ class MyInfoViewModel(
      * 모든 포인트 데이터 새로고침
      */
     fun refreshAllData() {
-        Log.d(tag, "=== 모든 포인트 데이터 새로고침 시작 ===")
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
 
             try {
                 // 1. 내 포인트 조회
-                Log.d(tag, "1. 내 포인트 조회 시작")
                 val pointsResponse = pointRepository.getMyPoints()
                 if (pointsResponse.success) {
                     val responseData = pointsResponse.response
                     if (responseData != null) {
                         _points.value = responseData.points
-                        Log.d(tag, "✅ 포인트 조회 성공: ${responseData.points}P")
                     } else {
-                        Log.e(tag, "❌ 포인트 조회 실패: 응답 데이터가 null")
                         _errorMessage.value = "포인트 조회 실패: 응답 데이터가 없습니다"
                     }
                 } else {
-                    Log.e(tag, "❌ 포인트 조회 실패: ${pointsResponse.error?.message}")
                     _errorMessage.value = pointsResponse.error?.message ?: "포인트 조회 실패"
                 }
 
                 // 2. 포인트 내역 조회
-                Log.d(tag, "2. 포인트 내역 조회 시작")
                 val historiesResponse = pointRepository.getPointHistories()
                 if (historiesResponse.success) {
                     val responseData = historiesResponse.response
@@ -97,39 +89,30 @@ class MyInfoViewModel(
                         // 날짜 기준으로 최신순 정렬 (내림차순)
                         val sortedHistories = responseData.histories.sortedByDescending { it.date }
                         _histories.value = sortedHistories
-                        Log.d(tag, "✅ 포인트 내역 조회 성공: ${sortedHistories.size}개 (최신순 정렬)")
                     } else {
-                        Log.e(tag, "❌ 포인트 내역 조회 실패: 응답 데이터가 null")
                         _errorMessage.value = "포인트 내역 조회 실패: 응답 데이터가 없습니다"
                     }
                 } else {
-                    Log.e(tag, "❌ 포인트 내역 조회 실패: ${historiesResponse.error?.message}")
                     _errorMessage.value = historiesResponse.error?.message ?: "포인트 내역 조회 실패"
                 }
 
                 // 3. 회원정보 조회 추가
-                Log.d(tag, "3. 회원정보 조회 시작")
                 val memberInfoResponse = pointRepository.getMemberInfo()
                 if (memberInfoResponse.success) {
                     val responseData = memberInfoResponse.response
                     if (responseData != null) {
                         _memberInfo.value = responseData
-                        Log.d(tag, "✅ 회원정보 조회 성공: ${responseData.name}")
                     } else {
-                        Log.e(tag, "❌ 회원정보 조회 실패: 응답 데이터가 null")
                         _errorMessage.value = "회원정보 조회 실패: 응답 데이터가 없습니다"
                     }
                 } else {
-                    Log.e(tag, "❌ 회원정보 조회 실패: ${memberInfoResponse.error?.message}")
                     _errorMessage.value = memberInfoResponse.error?.message ?: "회원정보 조회 실패"
                 }
 
             } catch (e: Exception) {
-                Log.e(tag, "🔥 데이터 새로고침 예외: ${e.message}", e)
                 _errorMessage.value = "데이터 조회 중 오류가 발생했습니다."
             } finally {
                 _isLoading.value = false
-                Log.d(tag, "=== 모든 포인트 데이터 새로고침 완료 ===")
             }
         }
     }
@@ -138,8 +121,6 @@ class MyInfoViewModel(
      * QR 이벤트 처리 (출석, 포인트 적립 등)
      */
     fun processQrEvent(eventUrl: String) {
-        Log.d(tag, "=== QR 이벤트 처리 시작 ===")
-        Log.d(tag, "Event URL: $eventUrl")
 
         viewModelScope.launch {
             _isLoading.value = true
@@ -148,16 +129,13 @@ class MyInfoViewModel(
             try {
                 val response = pointRepository.postQrEvent(eventUrl)
                 if (response.success) {
-                    Log.d(tag, "✅ QR 이벤트 처리 성공!")
                     // QR 이벤트 성공 후 포인트 데이터 새로고침
                     refreshAllData()
                 } else {
-                    Log.e(tag, "❌ QR 이벤트 처리 실패: ${response.error?.message}")
                     _errorMessage.value = response.error?.message ?: "QR 이벤트 처리 실패"
                     _isLoading.value = false
                 }
             } catch (e: Exception) {
-                Log.e(tag, "🔥 QR 이벤트 처리 예외: ${e.message}", e)
                 _errorMessage.value = "QR 이벤트 처리 중 오류가 발생했습니다."
                 _isLoading.value = false
             }
@@ -168,37 +146,24 @@ class MyInfoViewModel(
      * 로그아웃 처리
      */
     fun logout() {
-        Log.d(tag, "🔍 디버깅: === 로그아웃 시작 ===")
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
-            Log.d(tag, "🔍 디버깅: 로딩 상태 true로 설정")
 
             try {
-                Log.d(tag, "🔍 디버깅: AuthRepository.logout() 호출")
                 val response = authRepository.logout()
-                Log.d(tag, "🔍 디버깅: 서버 응답 수신: success=${response.success}")
 
                 if (response.success) {
-                    Log.d(tag, "🔍 디버깅: ✅ 로그아웃 성공!")
                     _isLoggedOut.value = true
-                    Log.d(tag, "🔍 디버깅: isLoggedOut 상태 true로 설정")
                 } else {
-                    Log.e(tag, "🔍 디버깅: ❌ 로그아웃 실패: ${response.error?.message}")
                     // API 실패해도 로컬에서는 토큰이 삭제되었으므로 로그아웃 성공으로 처리
                     _isLoggedOut.value = true
-                    Log.d(tag, "🔍 디버깅: API 실패했지만 isLoggedOut 상태 true로 설정")
                 }
             } catch (e: Exception) {
-                Log.e(tag, "🔍 디버깅: 🔥 로그아웃 예외: ${e.message}", e)
-                Log.e(tag, "🔍 디버깅: 예외 타입: ${e.javaClass.simpleName}")
                 // 예외 발생해도 로컬에서는 토큰이 삭제되었으므로 로그아웃 성공으로 처리
                 _isLoggedOut.value = true
-                Log.d(tag, "🔍 디버깅: 예외 발생했지만 isLoggedOut 상태 true로 설정")
             } finally {
                 _isLoading.value = false
-                Log.d(tag, "🔍 디버깅: 로딩 상태 false로 설정")
-                Log.d(tag, "🔍 디버깅: === 로그아웃 완료 ===")
             }
         }
     }
@@ -207,35 +172,22 @@ class MyInfoViewModel(
      * 회원 탈퇴 처리
      */
     fun withdraw() {
-        Log.d(tag, "🔍 디버깅: === 회원 탈퇴 시작 ===")
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
-            Log.d(tag, "🔍 디버깅: 로딩 상태 true로 설정")
 
             try {
-                Log.d(tag, "🔍 디버깅: AuthRepository.withdraw() 호출")
                 val response = authRepository.withdraw()
-                Log.d(tag, "🔍 디버깅: 서버 응답 수신: success=${response.success}")
 
                 if (response.success) {
-                    Log.d(tag, "🔍 디버깅: ✅ 회원 탈퇴 성공!")
                     _isWithdrawn.value = true
-                    Log.d(tag, "🔍 디버깅: isWithdrawn 상태 true로 설정")
                 } else {
-                    Log.e(tag, "🔍 디버깅: ❌ 회원 탈퇴 실패: ${response.error?.message}")
                     _errorMessage.value = response.error?.message ?: "회원 탈퇴 실패"
-                    Log.d(tag, "🔍 디버깅: 에러 메시지 설정: ${_errorMessage.value}")
                 }
             } catch (e: Exception) {
-                Log.e(tag, "🔍 디버깅: 🔥 회원 탈퇴 예외: ${e.message}", e)
-                Log.e(tag, "🔍 디버깅: 예외 타입: ${e.javaClass.simpleName}")
                 _errorMessage.value = "회원 탈퇴 중 오류가 발생했습니다."
-                Log.d(tag, "🔍 디버깅: 예외 에러 메시지 설정: ${_errorMessage.value}")
             } finally {
                 _isLoading.value = false
-                Log.d(tag, "🔍 디버깅: 로딩 상태 false로 설정")
-                Log.d(tag, "🔍 디버깅: === 회원 탈퇴 완료 ===")
             }
         }
     }
@@ -244,7 +196,6 @@ class MyInfoViewModel(
      * 로그아웃 상태 초기화 (화면 이동 후)
      */
     fun resetLogoutState() {
-        Log.d(tag, "🔍 디버깅: resetLogoutState() 호출 - isLoggedOut: false로 설정")
         _isLoggedOut.value = false
     }
 
@@ -252,7 +203,6 @@ class MyInfoViewModel(
      * 회원 탈퇴 상태 초기화 (화면 이동 후)
      */
     fun resetWithdrawState() {
-        Log.d(tag, "🔍 디버깅: resetWithdrawState() 호출 - isWithdrawn: false로 설정")
         _isWithdrawn.value = false
     }
 
