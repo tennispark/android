@@ -24,7 +24,8 @@ class AttendanceViewModel(
 
 
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+            _uiState.value =
+                _uiState.value.copy(isLoading = true, errorMessage = null, isDuplicate = false)
 
             try {
                 // QR 코드에서 URL 추출 (간단한 예시)
@@ -39,20 +40,14 @@ class AttendanceViewModel(
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             showSuccessDialog = true,
-                            successMessage = "출석체크가 완료되었습니다!"
+                            successMessage = "포인트가 지급되었습니다."
                         )
                     } else {
-
-                        val errorMessage =
-                            if (response.error?.message?.contains("이미 신청한") == true) {
-                                "이미 출석 체크된 이벤트입니다."
-                            } else {
-                                "이미 출석 체크된 이벤트입니다."
-                        }
-
+                        // 성공 외는 모두 중복된 것으로 처리
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
-                            errorMessage = errorMessage
+                            errorMessage = "금일 포인트 적립은 이미 완료되었습니다.",
+                            isDuplicate = true
                         )
                     }
                 } else {
@@ -62,13 +57,14 @@ class AttendanceViewModel(
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         showSuccessDialog = true,
-                        successMessage = "출석체크가 완료되었습니다! (테스트)"
+                        successMessage = "포인트가 지급되었습니다. (테스트)"
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = "QR 코드 처리 중 오류가 발생했습니다."
+                    errorMessage = "금일 포인트 적립은 이미 완료되었습니다.",
+                    isDuplicate = true
                 )
             }
         }
@@ -103,7 +99,7 @@ class AttendanceViewModel(
     }
 
     fun clearError() {
-        _uiState.value = _uiState.value.copy(errorMessage = null)
+        _uiState.value = _uiState.value.copy(errorMessage = null, isDuplicate = false)
     }
 }
 
@@ -111,5 +107,6 @@ data class AttendanceUiState(
     val isLoading: Boolean = false,
     val showSuccessDialog: Boolean = false,
     val successMessage: String = "",
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isDuplicate: Boolean = false
 )

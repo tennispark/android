@@ -106,7 +106,7 @@ fun AttendanceScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = if (errorMessage.contains("이미 출석 체크된")) "알림" else "오류",
+                                text = if (uiState.isDuplicate) "실패" else "오류",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.Black
@@ -154,7 +154,7 @@ fun AttendanceScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "성공!",
+                                text = "완료",
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = AppColors.Primary
                             )
