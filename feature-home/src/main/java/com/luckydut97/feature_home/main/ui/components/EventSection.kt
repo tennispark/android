@@ -42,7 +42,8 @@ import java.time.ZoneId
 fun EventSection(
     totalPages: Int,
     onMembershipClick: () -> Unit,
-    onAcademyClick: () -> Unit
+    onAcademyClick: () -> Unit,
+    onCourtIntroClick: () -> Unit
 ) {
     val pagerState = rememberPagerState(pageCount = { totalPages })
 
@@ -94,6 +95,13 @@ fun EventSection(
                     subtitle = "${currentMonth}월 아카데미 등록",
                     pageIndicator = "${page + 1} / $totalPages",
                     onClick = onAcademyClick
+                )
+                2 -> EventCard(
+                    iconRes = R.drawable.ic_tennis,
+                    title = "활동 코트 소개",
+                    subtitle = "각 코트별 소개",
+                    pageIndicator = "${page + 1} / $totalPages",
+                    onClick = onCourtIntroClick
                 )
             }
         }

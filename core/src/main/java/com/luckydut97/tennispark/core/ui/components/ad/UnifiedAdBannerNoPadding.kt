@@ -1,5 +1,6 @@
 package com.luckydut97.tennispark.core.ui.components.ad
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,13 +22,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.luckydut97.tennispark.core.data.model.AdBannerData
+import com.luckydut97.tennispark.core.data.model.Advertisement
 import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
-import kotlinx.coroutines.delay
 import com.luckydut97.tennispark.core.utils.launchUrl
+import kotlinx.coroutines.delay
 
 /**
- * 앱 내 공통 사용 광고배너 (자동 스크롤, 인디케이터 & 클릭시 외부 URL) - 패딩 없는 버전
+ * 패딩이 없는 광고 배너 - 기존 로컬 리소스용
+ * (Bottom Sheet 등 좁은 공간에서 사용)
  */
 @Composable
 fun UnifiedAdBannerNoPadding(
@@ -43,59 +47,157 @@ fun UnifiedAdBannerNoPadding(
         pageCount = { infinitePageCount }
     )
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
+
+    val tag = "🔍 디버깅: UnifiedAdBannerNoPadding"
+    Log.d(tag, "[UnifiedAdBannerNoPadding] rendering with ${bannerList.size} local banners")
 
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-        ) {
-            HorizontalPager(
-                state = pagerState,
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth()
+        ) { page ->
+            val bannerIndex = page % bannerList.size
+            val banner = bannerList[bannerIndex]
+            PressableComponent(
+                onClick = {
+                    Log.d(tag, "[UnifiedAdBannerNoPadding] banner clicked: url=${banner.url}")
+                    context.launchUrl(banner.url)
+                },
                 modifier = Modifier.fillMaxWidth()
-            ) { page ->
-                val bannerIndex = page % bannerList.size
-                val banner = bannerList[bannerIndex]
-                PressableComponent(
-                    onClick = {
-                        context.launchUrl(banner.url)
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Image(
-                        painter = painterResource(id = banner.imageRes),
-                        contentDescription = "광고배너_${bannerIndex + 1}",
-                        modifier = Modifier.fillMaxWidth(),
-                        contentScale = ContentScale.FillWidth
-                    )
-                }
-            }
-            // 인디케이터
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                repeat(bannerList.size) { index ->
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .background(
-                                color = if (index == pagerState.currentPage % bannerList.size) Color.Black else Color.Gray,
-                                shape = CircleShape
-                            )
-                    )
-                }
+                Image(
+                    painter = painterResource(id = banner.imageRes),
+                    contentDescription = "광고배너_${bannerIndex + 1}",
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+        }
+
+        // 인디케이터
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            repeat(bannerList.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .background(
+                            color = if (index == pagerState.currentPage % bannerList.size) Color.White else Color.Gray,
+                            shape = CircleShape
+                        )
+                )
             }
         }
     }
 
-    // 간단한 자동 스크롤 (5초마다, 사용자 드래그 중에는 건너뛰기)
+    // 자동 스크롤
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(5000)
+            if (!pagerState.isScrollInProgress) {
+                try {
+                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                } catch (e: Exception) {
+                    // 애니메이션 충돌 시 무시
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 패딩이 없는 광고 배너 - API 기반 버전
+ * (Bottom Sheet 등 좁은 공간에서 사용)
+ */
+@Composable
+fun UnifiedAdBannerNoPaddingApi(
+    advertisements: List<Advertisement>,
+    modifier: Modifier = Modifier
+) {
+    if (advertisements.isEmpty()) return
+
+    // 무한 스크롤을 위한 매우 큰 페이지 수 설정
+    val infinitePageCount = Int.MAX_VALUE
+    val pagerState = rememberPagerState(
+        initialPage = infinitePageCount / 2 - (infinitePageCount / 2) % advertisements.size,
+        pageCount = { infinitePageCount }
+    )
+    val context = LocalContext.current
+
+    val tag = "🔍 디버깅: UnifiedAdBannerNoPaddingApi"
+    Log.d(tag, "[UnifiedAdBannerNoPaddingApi] rendering with ${advertisements.size} API banners")
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+    ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth()
+        ) { page ->
+            val adIndex = page % advertisements.size
+            val advertisement = advertisements[adIndex]
+            PressableComponent(
+                onClick = {
+                    Log.d(
+                        tag,
+                        "[UnifiedAdBannerNoPaddingApi] ad clicked: id=${advertisement.id}, linkUrl=${advertisement.linkUrl}"
+                    )
+                    context.launchUrl(advertisement.linkUrl)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                AsyncImage(
+                    model = advertisement.imageUrl,
+                    contentDescription = "광고배너_${advertisement.id}",
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.FillWidth,
+                    onSuccess = {
+                        Log.d(
+                            tag,
+                            "[UnifiedAdBannerNoPaddingApi] image loaded successfully: ${advertisement.imageUrl}"
+                        )
+                    },
+                    onError = {
+                        Log.e(
+                            tag,
+                            "[UnifiedAdBannerNoPaddingApi] image load failed: ${advertisement.imageUrl}"
+                        )
+                    }
+                )
+            }
+        }
+
+        // 인디케이터
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 11.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            repeat(advertisements.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .background(
+                            color = if (index == pagerState.currentPage % advertisements.size) Color.White else Color.Gray,
+                            shape = CircleShape
+                        )
+                )
+            }
+        }
+    }
+
+    // 자동 스크롤
     LaunchedEffect(Unit) {
         while (true) {
             delay(5000)

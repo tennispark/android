@@ -43,6 +43,9 @@ import com.luckydut97.feature_home.main.ui.components.WeeklyPhotoSection
 import com.luckydut97.feature_home.main.viewmodel.HomeViewModel
 import com.luckydut97.feature_home.main.viewmodel.PhotoUploadViewModel
 import com.luckydut97.tennispark.core.data.repository.ActivityCertificationRepositoryImpl
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun HomeScreen(
@@ -50,9 +53,20 @@ fun HomeScreen(
     onMembershipClick: () -> Unit = {},
     onAttendanceClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val currentEventPage by viewModel.currentEventPage.collectAsState()
     val totalEventPages by viewModel.totalEventPages.collectAsState()
     val scrollState = rememberScrollState()
+
+    // URL 열기 함수
+    val openUrl = { url: String ->
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            // URL 열기 실패 시 처리 (선택사항)
+        }
+    }
 
     // WeeklyActivity ViewModel 생성 (변경됨)
     val weeklyActivityViewModel: WeeklyActivityViewModel = viewModel {
@@ -124,11 +138,14 @@ fun HomeScreen(
                 onAcademyClick = {
                     // TODO: 아카데미 신청 바텀시트 표시
                     academyApplicationViewModel.showAcademyApplicationSheet()
+                },
+                onCourtIntroClick = {
+                    openUrl("https://leeward-verdict-b34.notion.site/238bec73dd0a807eaa2afd798d0ce133?source=copy_link")
                 }
             )
 
-            /*// 이번주 활동 사진 섹션
-            WeeklyPhotoSection()*/
+            // 이번주 활동 사진 섹션
+            WeeklyPhotoSection()
         }
     }
 

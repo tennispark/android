@@ -265,6 +265,7 @@ fun AcademyApplicationBottomSheet(
         AcademyCompleteBottomSheet(
             isVisible = showCompleteDialog,
             isDuplicateError = isDuplicateError,
+            academyApplicationViewModel = viewModel,
             onConfirm = {
                 viewModel.hideCompleteDialog()
             }

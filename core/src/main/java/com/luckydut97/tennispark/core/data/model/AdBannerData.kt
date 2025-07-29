@@ -1,27 +1,38 @@
 package com.luckydut97.tennispark.core.data.model
 
-import com.luckydut97.tennispark.core.R
+import com.google.gson.annotations.SerializedName
 
+/**
+ * 광고 배너 데이터 모델 (기존 - 로컬 리소스용)
+ */
 data class AdBannerData(
     val imageRes: Int,
     val url: String
 )
 
-val unifiedAdBannerList = listOf(
-    AdBannerData(
-        imageRes = R.drawable.test_ad_img1,
-        url = "https://hyggee.com/"
-    ),
-    AdBannerData(
-        imageRes = R.drawable.test_ad_img2,
-        url = "https://smartstore.naver.com/altafit"
-    ),
-    AdBannerData(
-        imageRes = R.drawable.test_ad_img3,
-        url = "https://smartstore.naver.com/tennispark"
-    ),
-    AdBannerData(
-        imageRes = R.drawable.test_ad_img4,
-        url = "https://princetennis.com/"
-    )
+/**
+ * 광고 배너 API 응답 모델
+ */
+data class Advertisement(
+    val id: Long,
+    val position: String,
+    val imageUrl: String,
+    val linkUrl: String
 )
+
+/**
+ * 광고 배너 목록 API 응답 데이터 모델
+ */
+data class AdvertisementListResponse(
+    val advertisements: List<Advertisement>
+)
+
+/**
+ * 광고 배너 Position 열거형
+ */
+enum class AdPosition(val value: String) {
+    MAIN("MAIN"),
+    ACTIVITY("ACTIVITY"),
+    PURCHASE("PURCHASE"),
+    MEMBER("MEMBER")
+}

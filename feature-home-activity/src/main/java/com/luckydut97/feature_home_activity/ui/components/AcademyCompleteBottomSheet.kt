@@ -1,5 +1,6 @@
 package com.luckydut97.feature_home_activity.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,8 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
-import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBannerNoPadding
-import com.luckydut97.tennispark.core.data.model.unifiedAdBannerList
+import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBannerNoPaddingApi
+import com.luckydut97.feature_home_activity.viewmodel.AcademyApplicationViewModel
 
 /**
  * 아카데미 신청 완료 Bottom Sheet
@@ -33,8 +36,19 @@ import com.luckydut97.tennispark.core.data.model.unifiedAdBannerList
 fun AcademyCompleteBottomSheet(
     isVisible: Boolean,
     isDuplicateError: Boolean = false, // 중복 신청 에러 여부
+    academyApplicationViewModel: AcademyApplicationViewModel, // ViewModel 추가
     onConfirm: () -> Unit
 ) {
+    val tag = "🔍 디버깅: AcademyCompleteBottomSheet"
+
+    val activityAdvertisements by academyApplicationViewModel.activityAdvertisements.collectAsState()
+    val isLoadingAds by academyApplicationViewModel.isLoadingAds.collectAsState()
+
+    Log.d(
+        tag,
+        "[AcademyCompleteBottomSheet] isVisible: $isVisible, advertisements: ${activityAdvertisements.size}, isLoadingAds: $isLoadingAds"
+    )
+
     if (isVisible) {
         ModalBottomSheet(
             onDismissRequest = onConfirm,
@@ -102,10 +116,20 @@ fun AcademyCompleteBottomSheet(
                 }
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // 광고 배너 추가
-                UnifiedAdBannerNoPadding(
-                    bannerList = unifiedAdBannerList
-                )
+                // 광고 배너 - API 기반으로 변경
+                if (activityAdvertisements.isNotEmpty()) {
+                    Log.d(
+                        tag,
+                        "[AcademyCompleteBottomSheet] showing ${activityAdvertisements.size} advertisements"
+                    )
+                    UnifiedAdBannerNoPaddingApi(
+                        advertisements = activityAdvertisements
+                    )
+                } else if (!isLoadingAds) {
+                    Log.d(tag, "[AcademyCompleteBottomSheet] no advertisements available")
+                    // 광고가 없으면 높이 조정을 위한 Spacer
+                    Spacer(modifier = Modifier.height(60.dp))
+                }
 
                 Spacer(modifier = Modifier.weight(1f))
 

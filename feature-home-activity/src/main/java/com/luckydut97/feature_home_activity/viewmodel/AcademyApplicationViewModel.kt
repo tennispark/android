@@ -1,9 +1,15 @@
 package com.luckydut97.feature_home_activity.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.luckydut97.feature_home_activity.data.model.Academy
 import com.luckydut97.feature_home_activity.data.repository.AcademyRepository
+import com.luckydut97.tennispark.core.data.model.Advertisement
+import com.luckydut97.tennispark.core.data.model.AdPosition
+import com.luckydut97.tennispark.core.data.network.NetworkModule
+import com.luckydut97.tennispark.core.data.repository.AdBannerRepository
+import com.luckydut97.tennispark.core.data.repository.AdBannerRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +23,11 @@ class AcademyApplicationViewModel(
 ) : ViewModel() {
 
     private val tag = "🔍 디버깅: AcademyApplicationViewModel"
+
+    // AdBanner Repository
+    private val adBannerRepository: AdBannerRepository by lazy {
+        AdBannerRepositoryImpl(NetworkModule.apiService)
+    }
 
     // 아카데미 목록
     private val _academies = MutableStateFlow<List<Academy>>(emptyList())
@@ -50,8 +61,18 @@ class AcademyApplicationViewModel(
     private val _selectedAcademy = MutableStateFlow<Academy?>(null)
     val selectedAcademy: StateFlow<Academy?> = _selectedAcademy.asStateFlow()
 
+    // 광고 배너 관련 - ACTIVITY position
+    private val _activityAdvertisements = MutableStateFlow<List<Advertisement>>(emptyList())
+    val activityAdvertisements: StateFlow<List<Advertisement>> =
+        _activityAdvertisements.asStateFlow()
+
+    private val _isLoadingAds = MutableStateFlow(false)
+    val isLoadingAds: StateFlow<Boolean> = _isLoadingAds.asStateFlow()
+
     init {
+        Log.d(tag, "[init] AcademyApplicationViewModel initialized")
         loadAcademies()
+        loadActivityAdvertisements()
     }
 
     /**
@@ -70,6 +91,31 @@ class AcademyApplicationViewModel(
             } catch (e: Exception) {
                 _error.value = e.message ?: "알 수 없는 오류가 발생했습니다."
                 _isLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * ACTIVITY position 광고 배너 로드
+     */
+    private fun loadActivityAdvertisements() {
+        Log.d(tag, "[loadActivityAdvertisements] called")
+        viewModelScope.launch {
+            _isLoadingAds.value = true
+            try {
+                adBannerRepository.getAdvertisements(AdPosition.ACTIVITY)
+                    .collect { advertisements ->
+                        Log.d(
+                            tag,
+                            "[loadActivityAdvertisements] received ${advertisements.size} advertisements"
+                        )
+                        _activityAdvertisements.value = advertisements
+                    }
+            } catch (e: Exception) {
+                Log.e(tag, "[loadActivityAdvertisements] Exception: ${e.message}", e)
+                _activityAdvertisements.value = emptyList()
+            } finally {
+                _isLoadingAds.value = false
             }
         }
     }
@@ -163,5 +209,13 @@ class AcademyApplicationViewModel(
      */
     fun clearError() {
         _error.value = null
+    }
+
+    /**
+     * 광고 배너 새로고침
+     */
+    fun refreshAdvertisements() {
+        Log.d(tag, "[refreshAdvertisements] called")
+        loadActivityAdvertisements()
     }
 }

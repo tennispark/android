@@ -1,5 +1,6 @@
 package com.luckydut97.feature_myinfo.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,8 +47,11 @@ import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.feature_myinfo.viewmodel.MyInfoViewModel
 import com.luckydut97.tennispark.core.data.model.PointHistoryItem
 import com.luckydut97.tennispark.core.ui.components.navigation.NoArrowTopBar
-import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBanner
-import com.luckydut97.tennispark.core.data.model.unifiedAdBannerList
+import com.luckydut97.tennispark.core.ui.components.ad.UnifiedAdBannerApi
+import com.luckydut97.tennispark.core.data.model.Advertisement
+import com.luckydut97.tennispark.core.data.model.AdPosition
+import com.luckydut97.tennispark.core.data.network.NetworkModule
+import com.luckydut97.tennispark.core.data.repository.AdBannerRepositoryImpl
 import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -59,12 +65,22 @@ fun MyInfoScreen(
     onSettingsClick: () -> Unit = {},
     viewModel: MyInfoViewModel = viewModel()
 ) {
+    val tag = "🔍 디버깅: MyInfoScreen"
+
     // ViewModel에서 데이터 구독
     val points by viewModel.points.collectAsState()
     val histories by viewModel.histories.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val memberInfo by viewModel.memberInfo.collectAsState()
+
+    // 광고 배너 상태 - MEMBER position
+    var advertisements by remember { mutableStateOf<List<Advertisement>>(emptyList()) }
+    var isLoadingAds by remember { mutableStateOf(false) }
+
+    val adBannerRepository = remember {
+        AdBannerRepositoryImpl(NetworkModule.apiService)
+    }
 
     // 포인트 새로고침 핸들러
     val coroutineScope = rememberCoroutineScope()
@@ -79,6 +95,21 @@ fun MyInfoScreen(
     // 🔥 화면 진입 시마다 자동 새로고침
     LaunchedEffect(Unit) {
         viewModel.refreshAllData()
+
+        // MEMBER position 광고 로드
+        Log.d(tag, "[MyInfoScreen] loading MEMBER advertisements")
+        isLoadingAds = true
+        try {
+            adBannerRepository.getAdvertisements(AdPosition.MEMBER).collect { ads ->
+                Log.d(tag, "[MyInfoScreen] received ${ads.size} MEMBER advertisements")
+                advertisements = ads
+            }
+        } catch (e: Exception) {
+            Log.e(tag, "[MyInfoScreen] Exception: ${e.message}", e)
+            advertisements = emptyList()
+        } finally {
+            isLoadingAds = false
+        }
     }
 
     Scaffold(
@@ -280,11 +311,21 @@ fun MyInfoScreen(
                 }
             }
 
-            // 광고 배너
+            // 광고 배너 - API 기반으로 변경
             item {
-                UnifiedAdBanner(
-                    bannerList = unifiedAdBannerList
-                )
+                if (advertisements.isNotEmpty()) {
+                    Log.d(
+                        tag,
+                        "[MyInfoScreen] showing ${advertisements.size} MEMBER advertisements"
+                    )
+                    UnifiedAdBannerApi(
+                        advertisements = advertisements
+                    )
+                } else if (!isLoadingAds) {
+                    Log.d(tag, "[MyInfoScreen] no MEMBER advertisements available")
+                    // 광고가 없으면 높이 조정을 위한 Spacer
+                    Spacer(modifier = Modifier.height(60.dp))
+                }
             }
 
             // 여백 및 구분선

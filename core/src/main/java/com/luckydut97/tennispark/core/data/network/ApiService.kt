@@ -16,16 +16,18 @@ import com.luckydut97.tennispark.core.data.model.MembershipRegistrationRequest
 import com.luckydut97.tennispark.core.data.model.QrPurchaseResponse
 import com.luckydut97.tennispark.core.data.model.ShopProductListResponse
 import com.luckydut97.tennispark.core.data.model.UpdateFcmTokenRequest
+import com.luckydut97.tennispark.core.data.model.AdvertisementListResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
-import retrofit2.http.GET
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 import retrofit2.http.Url
 
 interface ApiService {
@@ -99,4 +101,8 @@ interface ApiService {
     // 회원 탈퇴 API
     @DELETE("api/members/me")
     suspend fun withdraw(): Response<ApiResponse<Any>>
+
+    // 광고 배너 API
+    @GET("api/members/advertisements")
+    suspend fun getAdvertisements(@Query("position") position: String): Response<ApiResponse<AdvertisementListResponse>>
 }
