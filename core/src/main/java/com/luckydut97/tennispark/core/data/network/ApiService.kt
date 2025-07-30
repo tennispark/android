@@ -17,6 +17,7 @@ import com.luckydut97.tennispark.core.data.model.QrPurchaseResponse
 import com.luckydut97.tennispark.core.data.model.ShopProductListResponse
 import com.luckydut97.tennispark.core.data.model.UpdateFcmTokenRequest
 import com.luckydut97.tennispark.core.data.model.AdvertisementListResponse
+import com.luckydut97.tennispark.core.data.model.ActivityImageListResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -105,4 +106,8 @@ interface ApiService {
     // 광고 배너 API
     @GET("api/members/advertisements")
     suspend fun getAdvertisements(@Query("position") position: String): Response<ApiResponse<AdvertisementListResponse>>
+
+    // 활동 이미지 API
+    @GET("api/members/activities/images")
+    suspend fun getActivityImages(): Response<ApiResponse<ActivityImageListResponse>>
 }
