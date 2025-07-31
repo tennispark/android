@@ -335,8 +335,9 @@ fun SignupScreen(
                 value = referrer,
                 onValueChange = { viewModel.updateReferrer(it) },
                 label = "추천인",
+                isRequired = joinPath == 2,
                 placeholder = "ex) 추천인 이름 + 연락처 끝 4자리",
-                enabled = joinPath == 2, // 친구 추천(2)을 선택했을 때만 활성화
+                enabled = joinPath == 2,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -571,6 +572,7 @@ fun SignupScreen(
                         && birthYear.isNotEmpty()
                         && instagramId.isNotEmpty()
                         && joinPath != -1
+                        && (joinPath != 2 || referrer.isNotEmpty())
                         && agreeTerms
                         && agreePrivacy
                         && agreeFourteen

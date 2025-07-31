@@ -160,6 +160,7 @@ class SignupViewModel : ViewModel() {
                 _birthYear.value.isNotEmpty() &&
                 _instagramId.value.isNotEmpty() &&
                 _joinPath.value != -1 &&
+                (_joinPath.value != 2 || _referrer.value.isNotEmpty()) &&
                 _agreeTerms.value &&
                 _agreePrivacy.value &&
                 _agreeFourteen.value
