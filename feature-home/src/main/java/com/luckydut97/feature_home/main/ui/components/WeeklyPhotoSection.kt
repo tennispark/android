@@ -45,7 +45,7 @@ fun WeeklyPhotoSection(
 
     val activityImages by homeViewModel.activityImages.collectAsState()
     val isLoadingImages by homeViewModel.isLoadingImages.collectAsState()
-    val totalPages by homeViewModel.totalEventPages.collectAsState()
+    val totalPages by homeViewModel.totalActivityImagePages.collectAsState()
 
     Log.d(
         tag,

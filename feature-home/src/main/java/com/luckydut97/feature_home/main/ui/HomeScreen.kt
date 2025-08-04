@@ -55,7 +55,6 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val currentEventPage by viewModel.currentEventPage.collectAsState()
-    val totalEventPages by viewModel.totalEventPages.collectAsState()
     val scrollState = rememberScrollState()
 
     // URL 열기 함수
@@ -133,7 +132,7 @@ fun HomeScreen(
 
             // 이벤트 섹션
             EventSection(
-                totalPages = totalEventPages,
+                totalPages = 3,
                 onMembershipClick = onMembershipClick,
                 onAcademyClick = {
                     // TODO: 아카데미 신청 바텀시트 표시

@@ -29,11 +29,11 @@ class HomeViewModel : ViewModel() {
         ActivityImageRepositoryImpl(NetworkModule.apiService)
     }
 
-    // 이벤트 페이지 관련
+    // 이벤트 페이지 관련 (3개 고정)
     private val _currentEventPage = MutableStateFlow(0)
     val currentEventPage: StateFlow<Int> = _currentEventPage.asStateFlow()
 
-    private val _totalEventPages = MutableStateFlow(3)
+    private val _totalEventPages = MutableStateFlow(3) // 이벤트는 항상 3개 고정
     val totalEventPages: StateFlow<Int> = _totalEventPages.asStateFlow()
 
     // 광고 배너 관련
@@ -49,6 +49,10 @@ class HomeViewModel : ViewModel() {
 
     private val _isLoadingImages = MutableStateFlow(false)
     val isLoadingImages: StateFlow<Boolean> = _isLoadingImages.asStateFlow()
+
+    // 활동 이미지 페이지 수 (별도 관리)
+    private val _totalActivityImagePages = MutableStateFlow(1)
+    val totalActivityImagePages: StateFlow<Int> = _totalActivityImagePages.asStateFlow()
 
     init {
         Log.d(tag, "[init] HomeViewModel initialized")
@@ -107,13 +111,13 @@ class HomeViewModel : ViewModel() {
                 activityImageRepository.getActivityImages().collect { images ->
                     Log.d(tag, "[loadActivityImages] received ${images.size} images")
                     _activityImages.value = images
-                    // 동적으로 totalEventPages 업데이트
-                    _totalEventPages.value = if (images.isEmpty()) 1 else images.size
+                    // 활동 이미지 페이지 수만 업데이트 (이벤트와 분리)
+                    _totalActivityImagePages.value = if (images.isEmpty()) 1 else images.size
                 }
             } catch (e: Exception) {
                 Log.e(tag, "[loadActivityImages] Exception: ${e.message}", e)
                 _activityImages.value = emptyList()
-                _totalEventPages.value = 1
+                _totalActivityImagePages.value = 1
             } finally {
                 _isLoadingImages.value = false
             }
