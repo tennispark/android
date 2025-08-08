@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.luckydut97.tennispark.core.data.model.PointHistoryItem
 import com.luckydut97.tennispark.core.data.model.MemberInfoResponse
 import com.luckydut97.tennispark.core.data.model.GameRecord
+import com.luckydut97.tennispark.core.data.model.MatchRecordResponse
 import com.luckydut97.tennispark.core.data.repository.PointRepository
 import com.luckydut97.tennispark.core.data.repository.AuthRepository
 import com.luckydut97.tennispark.core.data.repository.AuthRepositoryImpl
@@ -55,6 +56,10 @@ class MyInfoViewModel(
     private val _isWithdrawn = MutableStateFlow(false)
     val isWithdrawn: StateFlow<Boolean> = _isWithdrawn.asStateFlow()
 
+    // 매치 기록 상태 추가
+    private val _matchRecord = MutableStateFlow<MatchRecordResponse?>(null)
+    val matchRecord: StateFlow<MatchRecordResponse?> = _matchRecord.asStateFlow()
+
     init {
         refreshAllData()
     }
@@ -63,56 +68,127 @@ class MyInfoViewModel(
      * 모든 포인트 데이터 새로고침
      */
     fun refreshAllData() {
+        android.util.Log.d(tag, "[refreshAllData] 데이터 새로고침 시작")
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
 
             try {
+                android.util.Log.d(tag, "[refreshAllData] 1. 포인트 조회 API 호출")
                 // 1. 내 포인트 조회
                 val pointsResponse = pointRepository.getMyPoints()
+                android.util.Log.d(
+                    tag,
+                    "[refreshAllData] 포인트 조회 결과: success=${pointsResponse.success}"
+                )
                 if (pointsResponse.success) {
                     val responseData = pointsResponse.response
                     if (responseData != null) {
+                        android.util.Log.d(tag, "[refreshAllData] 포인트 업데이트: ${responseData.points}")
                         _points.value = responseData.points
                     } else {
+                        android.util.Log.w(tag, "[refreshAllData] 포인트 응답 데이터가 null")
                         _errorMessage.value = "포인트 조회 실패: 응답 데이터가 없습니다"
                     }
                 } else {
+                    android.util.Log.e(
+                        tag,
+                        "[refreshAllData] 포인트 조회 실패: ${pointsResponse.error?.message}"
+                    )
                     _errorMessage.value = pointsResponse.error?.message ?: "포인트 조회 실패"
                 }
 
+                android.util.Log.d(tag, "[refreshAllData] 2. 포인트 내역 조회 API 호출")
                 // 2. 포인트 내역 조회
                 val historiesResponse = pointRepository.getPointHistories()
+                android.util.Log.d(
+                    tag,
+                    "[refreshAllData] 포인트 내역 조회 결과: success=${historiesResponse.success}"
+                )
                 if (historiesResponse.success) {
                     val responseData = historiesResponse.response
                     if (responseData != null) {
                         // 날짜 기준으로 최신순 정렬 (내림차순)
                         val sortedHistories = responseData.histories.sortedByDescending { it.date }
+                        android.util.Log.d(
+                            tag,
+                            "[refreshAllData] 포인트 내역 업데이트: ${sortedHistories.size}개"
+                        )
                         _histories.value = sortedHistories
                     } else {
+                        android.util.Log.w(tag, "[refreshAllData] 포인트 내역 응답 데이터가 null")
                         _errorMessage.value = "포인트 내역 조회 실패: 응답 데이터가 없습니다"
                     }
                 } else {
+                    android.util.Log.e(
+                        tag,
+                        "[refreshAllData] 포인트 내역 조회 실패: ${historiesResponse.error?.message}"
+                    )
                     _errorMessage.value = historiesResponse.error?.message ?: "포인트 내역 조회 실패"
                 }
 
+                android.util.Log.d(tag, "[refreshAllData] 3. 회원정보 조회 API 호출")
                 // 3. 회원정보 조회 추가
                 val memberInfoResponse = pointRepository.getMemberInfo()
+                android.util.Log.d(
+                    tag,
+                    "[refreshAllData] 회원정보 조회 결과: success=${memberInfoResponse.success}"
+                )
                 if (memberInfoResponse.success) {
                     val responseData = memberInfoResponse.response
                     if (responseData != null) {
+                        android.util.Log.d(
+                            tag,
+                            "[refreshAllData] 회원정보 업데이트: name=${responseData.name}, record=${responseData.record}"
+                        )
                         _memberInfo.value = responseData
                     } else {
+                        android.util.Log.w(tag, "[refreshAllData] 회원정보 응답 데이터가 null")
                         _errorMessage.value = "회원정보 조회 실패: 응답 데이터가 없습니다"
                     }
                 } else {
+                    android.util.Log.e(
+                        tag,
+                        "[refreshAllData] 회원정보 조회 실패: ${memberInfoResponse.error?.message}"
+                    )
                     _errorMessage.value = memberInfoResponse.error?.message ?: "회원정보 조회 실패"
                 }
 
+                android.util.Log.d(tag, "[refreshAllData] 4. 매치 기록 조회 API 호출")
+                // 4. 매치 기록 조회 추가
+                val matchRecordResponse = pointRepository.getMatchRecords()
+                android.util.Log.d(
+                    tag,
+                    "[refreshAllData] 매치 기록 조회 결과: success=${matchRecordResponse.success}"
+                )
+                if (matchRecordResponse.success) {
+                    val responseData = matchRecordResponse.response
+                    if (responseData != null) {
+                        android.util.Log.d(
+                            tag,
+                            "[refreshAllData] 매치 기록 업데이트: wins=${responseData.wins}, draws=${responseData.draws}, losses=${responseData.losses}, matchPoint=${responseData.matchPoint}, ranking=${responseData.ranking}"
+                        )
+                        _matchRecord.value = responseData
+                    } else {
+                        android.util.Log.w(tag, "[refreshAllData] 매치 기록 응답 데이터가 null")
+                        _errorMessage.value = "매치 기록 조회 실패: 응답 데이터가 없습니다"
+                    }
+                } else {
+                    android.util.Log.e(
+                        tag,
+                        "[refreshAllData] 매치 기록 조회 실패: ${matchRecordResponse.error?.message}"
+                    )
+                    _errorMessage.value = matchRecordResponse.error?.message ?: "매치 기록 조회 실패"
+                }
+
+                android.util.Log.d(tag, "[refreshAllData] 모든 API 호출 완료")
+
             } catch (e: Exception) {
+                android.util.Log.e(tag, "[refreshAllData] Exception: ${e.message}", e)
                 _errorMessage.value = "데이터 조회 중 오류가 발생했습니다."
             } finally {
                 _isLoading.value = false
+                android.util.Log.d(tag, "[refreshAllData] 데이터 새로고침 완료")
             }
         }
     }

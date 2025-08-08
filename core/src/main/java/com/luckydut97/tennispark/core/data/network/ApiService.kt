@@ -12,6 +12,7 @@ import com.luckydut97.tennispark.core.data.model.ActivityListResponse
 import com.luckydut97.tennispark.core.data.model.MemberInfoResponse
 import com.luckydut97.tennispark.core.data.model.MyPointResponse
 import com.luckydut97.tennispark.core.data.model.PointHistoryListResponse
+import com.luckydut97.tennispark.core.data.model.MatchRecordResponse
 import com.luckydut97.tennispark.core.data.model.MembershipRegistrationRequest
 import com.luckydut97.tennispark.core.data.model.QrPurchaseResponse
 import com.luckydut97.tennispark.core.data.model.ShopProductListResponse
@@ -67,6 +68,10 @@ interface ApiService {
 
     @GET("api/members/points/me/history")
     suspend fun getPointHistories(): Response<ApiResponse<PointHistoryListResponse>>
+
+    // 매치 기록 API
+    @GET("api/members/matches/me")
+    suspend fun getMatchRecords(): Response<ApiResponse<MatchRecordResponse>>
 
     // 멤버십 관련 API
     @POST("api/members/memberships")

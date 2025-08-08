@@ -59,6 +59,26 @@ data class GameRecord(
 )
 
 /**
+ * 경기 기록 조회 응답 모델 (새로 추가)
+ */
+data class MatchRecordResponse(
+    @SerializedName("wins")
+    val wins: Int,
+
+    @SerializedName("draws")
+    val draws: Int,
+
+    @SerializedName("losses")
+    val losses: Int,
+
+    @SerializedName("matchPoint")
+    val matchPoint: Int, // score 대신 matchPoint
+
+    @SerializedName("ranking")
+    val ranking: Int
+)
+
+/**
  * 회원 정보 응답 모델 (이름, 포인트, 경기기록 통합)
  */
 data class MemberInfoResponse(

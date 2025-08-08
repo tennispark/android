@@ -73,6 +73,7 @@ fun MyInfoScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val memberInfo by viewModel.memberInfo.collectAsState()
+    val matchRecord by viewModel.matchRecord.collectAsState()
 
     // 광고 배너 상태 - MEMBER position
     var advertisements by remember { mutableStateOf<List<Advertisement>>(emptyList()) }
@@ -88,7 +89,17 @@ fun MyInfoScreen(
 
     // 실제 API 데이터 또는 기본값 사용
     val userName = memberInfo?.name ?: "로딩 중..."
-    val gameRecord = memberInfo?.record ?: com.luckydut97.tennispark.core.data.model.GameRecord(
+
+    // 매치 기록을 새로운 API에서 가져오기 (기존 memberInfo.record 대신)
+    val gameRecord = matchRecord?.let { record ->
+        com.luckydut97.tennispark.core.data.model.GameRecord(
+            wins = record.wins,
+            draws = record.draws,
+            losses = record.losses,
+            score = record.matchPoint, // matchPoint를 score로 매핑
+            ranking = record.ranking
+        )
+    } ?: com.luckydut97.tennispark.core.data.model.GameRecord(
         wins = 0, draws = 0, losses = 0, score = 0, ranking = 0
     )
 
