@@ -52,17 +52,28 @@ fun WeeklyPhotoSection(
         "[WeeklyPhotoSection] rendering - images: ${activityImages.size}, isLoading: $isLoadingImages, totalPages: $totalPages"
     )
 
-    val pagerState = rememberPagerState(pageCount = { totalPages })
+    // 무한 스크롤을 위한 매우 큰 페이지 수 설정
+    val infinitePageCount = Int.MAX_VALUE
+    val pagerState = rememberPagerState(
+        initialPage = if (activityImages.isNotEmpty()) {
+            infinitePageCount / 2 - (infinitePageCount / 2) % activityImages.size
+        } else 0,
+        pageCount = { infinitePageCount }
+    )
 
-    // 자동 스크롤 (이미지가 있을 때만)
+    // 자동 스크롤 (이미지가 있을 때만, 개선된 버전)
     LaunchedEffect(activityImages.size) {
         if (activityImages.isNotEmpty()) {
             while (true) {
                 delay(5000)
-                if (pagerState.currentPage < totalPages - 1) {
-                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                } else {
-                    pagerState.animateScrollToPage(0)
+                // 스크롤 중이 아닐 때만 자동 넘김 (사용자 드래그 중단 방지)
+                if (!pagerState.isScrollInProgress) {
+                    try {
+                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                    } catch (e: Exception) {
+                        // 애니메이션 충돌 시 무시
+                        Log.w(tag, "[WeeklyPhotoSection] Animation conflict ignored: ${e.message}")
+                    }
                 }
             }
         }
@@ -72,7 +83,7 @@ fun WeeklyPhotoSection(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 17.dp)
-            .padding(top = 20.dp, bottom = 10.dp) // 바텀 네비게이션을 위한 여백
+            .padding(top = 20.dp, bottom = 10.dp) // 바텀 패딩을 50dp에서 10dp로 변경
     ) {
         Text(
             text = "이번주 활동 사진",
@@ -91,17 +102,22 @@ fun WeeklyPhotoSection(
                 .clip(RoundedCornerShape(10.dp)) // 컨테이너 전체에 clip 적용
         ) {
             if (activityImages.isNotEmpty()) {
-                // HorizontalPager로 이미지 슬라이드
+                // HorizontalPager로 이미지 슬라이드 (무한 스크롤)
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier.fillMaxSize()
                 ) { page ->
-                    val imageUrl = activityImages[page]
-                    Log.d(tag, "[WeeklyPhotoSection] showing image[$page]: $imageUrl")
+                    // 모듈로 연산으로 실제 이미지 인덱스 계산
+                    val imageIndex = page % activityImages.size
+                    val imageUrl = activityImages[imageIndex]
+                    Log.d(
+                        tag,
+                        "[WeeklyPhotoSection] showing image[$imageIndex] (page: $page): $imageUrl"
+                    )
 
                     AsyncImage(
                         model = imageUrl,
-                        contentDescription = "Weekly Activity Photo ${page + 1}",
+                        contentDescription = "Weekly Activity Photo ${imageIndex + 1}",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
                         onSuccess = {
@@ -113,7 +129,7 @@ fun WeeklyPhotoSection(
                     )
                 }
 
-                // 페이지 인디케이터 (이미지가 2개 이상일 때만 표시)
+                // 페이지 인디케이터 (이미지가 2개 이상일 때만 표시, 무한 스크롤 대응)
                 if (activityImages.size > 1) {
                     Box(
                         modifier = Modifier
@@ -127,7 +143,7 @@ fun WeeklyPhotoSection(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "${pagerState.currentPage + 1} / ${activityImages.size}",
+                            text = "${(pagerState.currentPage % activityImages.size) + 1} / ${activityImages.size}",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Normal,
                             color = Color.White,
