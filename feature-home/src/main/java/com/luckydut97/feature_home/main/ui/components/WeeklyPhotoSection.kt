@@ -72,7 +72,7 @@ fun WeeklyPhotoSection(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 17.dp)
-            .padding(top = 20.dp, bottom = 50.dp) // 바텀 네비게이션을 위한 여백
+            .padding(top = 20.dp, bottom = 10.dp) // 바텀 네비게이션을 위한 여백
     ) {
         Text(
             text = "이번주 활동 사진",

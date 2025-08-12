@@ -40,6 +40,7 @@ import com.luckydut97.feature_home.main.ui.components.PhotoUploadBottomSheet
 import com.luckydut97.feature_home.main.ui.components.SuccessDialog
 import com.luckydut97.feature_home.main.ui.components.WeeklyApplicationSection
 import com.luckydut97.feature_home.main.ui.components.WeeklyPhotoSection
+import com.luckydut97.feature_home.main.ui.components.WeeklyPhotoDownloadSection
 import com.luckydut97.feature_home.main.viewmodel.HomeViewModel
 import com.luckydut97.feature_home.main.viewmodel.PhotoUploadViewModel
 import com.luckydut97.tennispark.core.data.repository.ActivityCertificationRepositoryImpl
@@ -145,6 +146,7 @@ fun HomeScreen(
 
             // 이번주 활동 사진 섹션
             WeeklyPhotoSection()
+            WeeklyPhotoDownloadSection()
         }
     }
 
