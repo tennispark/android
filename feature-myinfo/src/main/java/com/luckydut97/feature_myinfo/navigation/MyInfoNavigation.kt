@@ -246,7 +246,8 @@ fun MyInfoNavigation(
             }
         ) {
             PointHistoryScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                viewModel = viewModel
             )
         }
 

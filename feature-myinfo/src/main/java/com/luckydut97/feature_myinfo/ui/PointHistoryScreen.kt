@@ -19,6 +19,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -28,26 +31,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.components.navigation.TopBar
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
-
-/**
- * 더미 포인트 내역 데이터
- */
-data class DummyPointHistory(
-    val date: String,
-    val title: String,
-    val point: Int,
-    val type: String // "EARNED" | "USED"
-)
+import com.luckydut97.feature_myinfo.viewmodel.MyInfoViewModel
+import com.luckydut97.tennispark.core.data.model.PointHistoryItem
 
 /**
  * 날짜별 그룹핑된 포인트 내역
  */
 data class GroupedPointHistory(
     val date: String,
-    val histories: List<DummyPointHistory>
+    val histories: List<PointHistoryItem>
 )
 
 /**
@@ -55,23 +51,30 @@ data class GroupedPointHistory(
  */
 @Composable
 fun PointHistoryScreen(
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    viewModel: MyInfoViewModel = viewModel()
 ) {
-    // 더미 데이터
-    val dummyHistories = listOf(
-        DummyPointHistory("04월 25일", "핸드그립 구매", -7500, "USED"),
-        DummyPointHistory("04월 25일", "출석체크", 500, "EARNED"),
-        DummyPointHistory("04월 24일", "핸드그립 구매", -7500, "USED"),
-        DummyPointHistory("04월 24일", "출석체크", 500, "EARNED"),
-        DummyPointHistory("04월 24일", "출석체크", 500, "EARNED"),
-        DummyPointHistory("04월 24일", "핸드그립 구매", -7500, "USED"),
-        DummyPointHistory("04월 24일", "출석체크", 500, "EARNED"),
-        DummyPointHistory("04월 23일", "핸드그립 구매", -7500, "USED"),
-        DummyPointHistory("04월 23일", "출석체크", 500, "EARNED")
-    )
+    // ViewModel에서 데이터 구독
+    val points by viewModel.points.collectAsState()
+    val histories by viewModel.histories.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    // 화면 진입 시 데이터 새로고침
+    LaunchedEffect(Unit) {
+        viewModel.refreshAllData()
+    }
 
     // 날짜별 그룹핑
-    val groupedHistories = dummyHistories.groupBy { it.date }.map { (date, histories) ->
+    val groupedHistories = histories.groupBy {
+        // "YYYY.MM.DD" 형식을 "MM월 DD일"로 변환
+        if (it.date.length >= 10) {
+            val month = it.date.substring(5, 7).toIntOrNull()?.toString() ?: "00"
+            val day = it.date.substring(8, 10).toIntOrNull()?.toString() ?: "00"
+            "${month.padStart(2, '0')}월 ${day.padStart(2, '0')}일"
+        } else {
+            it.date
+        }
+    }.map { (date, histories) ->
         GroupedPointHistory(date, histories)
     }
 
@@ -151,9 +154,9 @@ fun PointHistoryScreen(
 
                                 Spacer(modifier = Modifier.height(6.dp))
 
-                                // 포인트 금액
+                                // 실제 포인트 데이터
                                 Text(
-                                    text = "24,000P",
+                                    text = String.format("%,d", points) + "P",
                                     fontSize = 32.sp,
                                     fontWeight = FontWeight.Bold,
                                     fontFamily = Pretendard,
@@ -184,45 +187,69 @@ fun PointHistoryScreen(
                 }
             }
 
-            // 날짜별 그룹핑된 포인트 내역
-            items(groupedHistories.size) { index ->
-                val group = groupedHistories[index]
-
-                // 날짜 헤더
-                Text(
-                    text = group.date,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = Pretendard,
-                    color = Color(0xFF939393),
-                    modifier = Modifier.padding(horizontal = 18.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 해당 날짜의 포인트 내역들
-                group.histories.forEach { history ->
-                    DummyPointHistoryItem(
-                        history = history,
-                        showDate = false, // 날짜는 헤더에서 표시하므로 아이템에서는 숨김
-                        modifier = Modifier.padding(horizontal = 18.dp)
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-
-                // 마지막 그룹이 아니면 구분선 추가
-                if (index < groupedHistories.size - 1) {
-                    Spacer(modifier = Modifier.height(4.dp)) // 위쪽 24dp 여백 (20dp + 4dp = 24dp)
-
+            // 포인트 내역이 비어있을 때 빈 상태 표시
+            if (histories.isEmpty() && !isLoading) {
+                item {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 18.dp)
-                            .height(1.dp)
-                            .background(Color(0xFFF0F0F0))
+                            .height(65.dp)
+                            .padding(horizontal = 44.dp) // 18dp + 26dp = 44dp
+                            .background(
+                                color = Color(0xFFF5F5F5),
+                                shape = RoundedCornerShape(10.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "현재 보유 중인 포인트가 없습니다.",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = Pretendard,
+                            color = Color.Black
+                        )
+                    }
+                }
+            } else {
+                // 날짜별 그룹핑된 포인트 내역
+                items(groupedHistories.size) { index ->
+                    val group = groupedHistories[index]
+
+                    // 날짜 헤더
+                    Text(
+                        text = group.date,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = Pretendard,
+                        color = Color(0xFF939393),
+                        modifier = Modifier.padding(horizontal = 18.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp)) // 아래쪽 24dp 여백
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 해당 날짜의 포인트 내역들
+                    group.histories.forEach { history ->
+                        PointHistoryItem(
+                            history = history,
+                            modifier = Modifier.padding(horizontal = 18.dp)
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
+
+                    // 마지막 그룹이 아니면 구분선 추가
+                    if (index < groupedHistories.size - 1) {
+                        Spacer(modifier = Modifier.height(4.dp)) // 위쪽 24dp 여백 (20dp + 4dp = 24dp)
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 18.dp)
+                                .height(1.dp)
+                                .background(Color(0xFFF0F0F0))
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp)) // 아래쪽 24dp 여백
+                    }
                 }
             }
 
@@ -235,12 +262,11 @@ fun PointHistoryScreen(
 }
 
 /**
- * 더미 포인트 내역 아이템 컴포넌트
+ * 포인트 내역 아이템 컴포넌트 (날짜별 그룹핑용)
  */
 @Composable
-fun DummyPointHistoryItem(
-    history: DummyPointHistory,
-    showDate: Boolean = true,
+fun PointHistoryItem(
+    history: PointHistoryItem,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -254,20 +280,6 @@ fun DummyPointHistoryItem(
             modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 날짜는 showDate가 true일 때만 표시 (기존 마이페이지에서 사용하는 경우)
-            if (showDate) {
-                Text(
-                    text = history.date,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = Pretendard,
-                    color = Color(0xFF959595),
-                    modifier = Modifier.width(65.dp)
-                )
-
-                Spacer(modifier = Modifier.width(17.dp))
-            }
-
             Text(
                 text = history.title,
                 fontSize = 18.sp,
@@ -286,7 +298,7 @@ fun DummyPointHistoryItem(
             text = if (history.type == "EARNED") {
                 "+${String.format("%,d", history.point)}P"
             } else {
-                "${String.format("%,d", history.point)}P"
+                "-${String.format("%,d", history.point)}P"
             },
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
