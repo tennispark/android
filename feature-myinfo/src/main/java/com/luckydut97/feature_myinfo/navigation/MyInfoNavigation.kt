@@ -17,6 +17,8 @@ import com.luckydut97.feature_myinfo.ui.NoticeScreen
 import com.luckydut97.feature_myinfo.ui.FaqScreen
 import com.luckydut97.feature_myinfo.ui.SettingsScreen
 import com.luckydut97.feature_myinfo.ui.AppSettingsScreen
+import com.luckydut97.feature_myinfo.ui.PointHistoryScreen
+import com.luckydut97.feature_myinfo.ui.ActivityHistoryScreen
 import com.luckydut97.feature_myinfo.viewmodel.MyInfoViewModel
 import kotlinx.coroutines.delay
 
@@ -72,6 +74,12 @@ fun MyInfoNavigation(
             MyInfoScreen(
                 onSettingsClick = {
                     navController.navigate("settings")
+                },
+                onPointHistoryClick = {
+                    navController.navigate("point_history")
+                },
+                onActivityHistoryClick = {
+                    navController.navigate("activity_history")
                 },
                 viewModel = viewModel
             )
@@ -217,6 +225,48 @@ fun MyInfoNavigation(
             }
         ) {
             SettingsScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        // 포인트 내역 화면
+        composable(
+            "point_history",
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
+            }
+        ) {
+            PointHistoryScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        // 활동 내역 화면
+        composable(
+            "activity_history",
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
+            }
+        ) {
+            ActivityHistoryScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }

@@ -53,6 +53,8 @@ import com.luckydut97.tennispark.core.data.model.AdPosition
 import com.luckydut97.tennispark.core.data.network.NetworkModule
 import com.luckydut97.tennispark.core.data.repository.AdBannerRepositoryImpl
 import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
+import com.luckydut97.tennispark.core.ui.components.button.MyPageDetailButton
+import com.luckydut97.tennispark.core.ui.components.button.MyPageDetailDivider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -63,6 +65,8 @@ import kotlinx.coroutines.launch
 fun MyInfoScreen(
     onBackClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
+    onPointHistoryClick: () -> Unit = {},
+    onActivityHistoryClick: () -> Unit = {},
     viewModel: MyInfoViewModel = viewModel()
 ) {
     val tag = "🔍 디버깅: MyInfoScreen"
@@ -350,6 +354,29 @@ fun MyInfoScreen(
                         .height(12.dp)
                         .background(Color(0xFFF5F5F5))
                 )
+            }
+
+            // 마이페이지 세부 버튼들
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+
+                MyPageDetailButton(
+                    iconRes = R.drawable.ic_coin_black,
+                    text = "나의 포인트 내역",
+                    iconSize = 14.dp,
+                    onClick = onPointHistoryClick
+                )
+
+                MyPageDetailDivider()
+
+                MyPageDetailButton(
+                    iconRes = R.drawable.ic_tennis,
+                    text = "나의 활동신청 내역",
+                    iconSize = 20.dp,
+                    onClick = onActivityHistoryClick
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             // 포인트 내역 타이틀
