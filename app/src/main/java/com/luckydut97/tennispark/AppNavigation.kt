@@ -17,15 +17,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.luckydut97.feature.attendance.ui.AttendanceScreen
-import com.luckydut97.feature_home_shop.ui.ShopDetailScreen
-import com.luckydut97.feature_home_shop.data.model.ShopItem
-import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
-import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationItem
 import com.luckydut97.feature_home.main.ui.HomeScreen
+import com.luckydut97.feature_home_shop.data.model.ShopItem
+import com.luckydut97.feature_home_shop.ui.ShopDetailScreen
 import com.luckydut97.feature_home_shop.ui.ShopScreen
 import com.luckydut97.feature_myinfo.navigation.MyInfoNavigation
+import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
+import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationItem
 import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
+
 
 /**
  * 탭 순서에 따른 슬라이드 방향 결정
@@ -192,6 +192,48 @@ fun AppNavigation(
             )
         }
 
+        // 푸시 알림 화면
+        composable(
+            "app_push",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(300)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            }
+        ) {
+            com.luckydut97.feature.push.ui.AppPushScreen(
+                onBackClick = {
+                    val canGoBack = navController.previousBackStackEntry != null
+                    if (canGoBack) {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate("main") {
+                            popUpTo("main") { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -218,6 +260,8 @@ fun MainScreenWithBottomNav(
                 currentRoute == "version_info" || currentRoute == "withdrawal" -> BottomNavigationItem.PROFILE.route
         // 포인트 내역 화면에서는 바텀 네비게이션 숨김
         currentRoute == "point_history" -> null
+        // 푸시 알림 화면에서는 바텀 네비게이션 숨김
+        currentRoute == "app_push" -> null
         else -> currentRoute
     }
 
@@ -300,6 +344,12 @@ fun MainScreenWithBottomNav(
                     onAttendanceClick = {
                         try {
                             mainNavController.navigate("attendance")
+                        } catch (e: Exception) {
+                        }
+                    },
+                    onNotificationClick = {
+                        try {
+                            mainNavController.navigate("app_push")
                         } catch (e: Exception) {
                         }
                     }

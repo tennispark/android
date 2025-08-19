@@ -99,6 +99,7 @@ dependencies {
     implementation(project(":feature-myinfo"))
     implementation(project(":feature-home-activity"))
     implementation(project(":feature-attendance"))
+    implementation(project(":feature-push"))
 
     implementation("androidx.appcompat:appcompat:1.6.1")
 }

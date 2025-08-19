@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.luckydut97.feature_push"
+    namespace = "com.luckydut97.feature.push"
     compileSdk = 35
 
     defaultConfig {

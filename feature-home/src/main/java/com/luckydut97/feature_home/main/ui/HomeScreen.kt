@@ -52,7 +52,8 @@ import androidx.compose.ui.platform.LocalContext
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
     onMembershipClick: () -> Unit = {},
-    onAttendanceClick: () -> Unit = {}
+    onAttendanceClick: () -> Unit = {},
+    onNotificationClick: () -> Unit = {} // 알림 클릭 콜백 추가
 ) {
     val context = LocalContext.current
     val currentEventPage by viewModel.currentEventPage.collectAsState()
@@ -102,10 +103,7 @@ fun HomeScreen(
     ) {
         // 상단 앱바
         HomeTopAppBar(
-            onNotificationClick = {
-                // TODO: 푸시 알림 화면 모듈 구현 완료 후 실제 네비게이션으로 교체
-                // 현재는 임시 처리 (예: 토스트 메시지 등)
-            },
+            onNotificationClick = onNotificationClick,
             onSearchClick = { /* 검색 클릭 이벤트 */ },
             notificationCount = 155 // 테스트용 알림 개수 (8 → 50 → 128로 테스트 예정)
         )
