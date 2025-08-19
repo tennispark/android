@@ -206,13 +206,18 @@ fun MainScreenWithBottomNav(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: BottomNavigationItem.HOME.route
 
+    // 바텀 네비게이션 표시/숨김 상태
+    var isBottomNavVisible by remember { mutableStateOf(true) }
+
     // 상품 상세 화면에서도 상품구매 탭이 활성화되도록 라우트 매핑
     val bottomNavRoute = when {
         currentRoute.startsWith("shop_detail") -> BottomNavigationItem.SHOP.route
-        // 내정보 하위 화면들에서도 내정보 탭 활성화
+        // 내정보 하위 화면들에서도 내정보 탭 활성화 (point_history 제외)
         currentRoute == "myinfo" || currentRoute == "settings" || currentRoute == "notice" ||
                 currentRoute == "app_settings" || currentRoute == "faq" || currentRoute == "terms" ||
                 currentRoute == "version_info" || currentRoute == "withdrawal" -> BottomNavigationItem.PROFILE.route
+        // 포인트 내역 화면에서는 바텀 네비게이션 숨김
+        currentRoute == "point_history" -> null
         else -> currentRoute
     }
 
@@ -222,20 +227,23 @@ fun MainScreenWithBottomNav(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavigationBar(
-                currentRoute = bottomNavRoute, // 매핑된 라우트 사용
-                onItemClick = { route ->
-                    previousRoute = currentRoute
-                    navController.navigate(route) {
-                        // 바텀 네비게이션 클릭 시 백스택 관리
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
+            if (bottomNavRoute != null && isBottomNavVisible) {
+                BottomNavigationBar(
+                    currentRoute = bottomNavRoute, // 매핑된 라우트 사용
+                    onItemClick = { route ->
+                        previousRoute = currentRoute
+                        isBottomNavVisible = true // 바텀 네비게이션 클릭시 항상 표시
+                        navController.navigate(route) {
+                            // 바텀 네비게이션 클릭 시 백스택 관리
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
-                }
-            )
+                )
+            }
         }
     ) { paddingValues ->
         NavHost(
@@ -484,6 +492,9 @@ fun MainScreenWithBottomNav(
                             }
                         } catch (e: Exception) {
                         }
+                    },
+                    onBottomNavVisibilityChange = { visible ->
+                        isBottomNavVisible = visible
                     }
                 )
             }

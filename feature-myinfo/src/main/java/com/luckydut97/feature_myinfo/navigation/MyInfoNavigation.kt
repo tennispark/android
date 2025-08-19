@@ -30,6 +30,7 @@ import kotlinx.coroutines.delay
 fun MyInfoNavigation(
     onBackClick: () -> Unit = {},
     onLogoutComplete: () -> Unit = {}, // 로그아웃 완료 시 인증 화면으로 이동
+    onBottomNavVisibilityChange: (Boolean) -> Unit = {}, // 바텀 네비게이션 표시/숨김 제어
     navController: NavHostController = rememberNavController(),
     viewModel: MyInfoViewModel = viewModel()
 ) {
@@ -74,12 +75,15 @@ fun MyInfoNavigation(
             MyInfoScreen(
                 onSettingsClick = {
                     navController.navigate("settings")
+                    onBottomNavVisibilityChange(true)
                 },
                 onPointHistoryClick = {
                     navController.navigate("point_history")
+                    onBottomNavVisibilityChange(false)
                 },
                 onActivityHistoryClick = {
                     navController.navigate("activity_history")
+                    onBottomNavVisibilityChange(false)
                 },
                 viewModel = viewModel
             )
@@ -104,6 +108,7 @@ fun MyInfoNavigation(
             SettingsScreen(
                 onBackClick = {
                     navController.popBackStack()
+                    onBottomNavVisibilityChange(true)
                 },
                 onNoticeClick = {
                     navController.navigate("notice")
@@ -246,7 +251,10 @@ fun MyInfoNavigation(
             }
         ) {
             PointHistoryScreen(
-                onBackClick = { navController.popBackStack() },
+                onBackClick = {
+                    navController.popBackStack()
+                    onBottomNavVisibilityChange(true)
+                },
                 viewModel = viewModel
             )
         }
@@ -268,7 +276,10 @@ fun MyInfoNavigation(
             }
         ) {
             ActivityHistoryScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = {
+                    navController.popBackStack()
+                    onBottomNavVisibilityChange(true)
+                }
             )
         }
     }
