@@ -85,14 +85,15 @@ fun EventSection(
                 0 -> EventCard(
                     iconRes = R.drawable.ic_member,
                     title = "멤버십 등록하기",
-                    subtitle = "${currentMonth}월 정기 멤버십 등록",
+                    subtitle = "${(currentMonth % 12) + 1}월 정기 멤버십 등록",
                     pageIndicator = "${page + 1} / $totalPages",
                     onClick = onMembershipClick
                 )
                 1 -> EventCard(
                     iconRes = R.drawable.ic_tennis,
                     title = "아카데미 등록하기",
-                    subtitle = "${currentMonth}월 아카데미 등록",
+                    //subtitle = "${currentMonth}월 아카데미 등록",
+                    subtitle = "아카데미 바로 신청하기",
                     pageIndicator = "${page + 1} / $totalPages",
                     onClick = onAcademyClick
                 )

@@ -8,16 +8,22 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +32,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import coil.compose.AsyncImage
 import com.luckydut97.tennispark.core.data.model.AdBannerData
 import com.luckydut97.tennispark.core.data.model.Advertisement
@@ -63,49 +73,51 @@ fun UnifiedAdBanner(
             .fillMaxWidth()
             .padding(horizontal = 17.dp) // 패딩 통일
     ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth()
+        ) { page ->
+            val bannerIndex = page % bannerList.size
+            val banner = bannerList[bannerIndex]
+            PressableComponent(
+                onClick = {
+                    Log.d(tag, "[UnifiedAdBanner] banner clicked: url=${banner.url}")
+                    context.launchUrl(banner.url)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(id = banner.imageRes),
+                    contentDescription = "광고배너_${bannerIndex + 1}",
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+        }
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
+                .align(Alignment.BottomEnd)
+                .offset(x = (-12).dp, y = (-12).dp)
         ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxWidth()
-            ) { page ->
-                val bannerIndex = page % bannerList.size
-                val banner = bannerList[bannerIndex]
-                PressableComponent(
-                    onClick = {
-                        Log.d(tag, "[UnifiedAdBanner] banner clicked: url=${banner.url}")
-                        context.launchUrl(banner.url)
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Image(
-                        painter = painterResource(id = banner.imageRes),
-                        contentDescription = "광고배너_${bannerIndex + 1}",
-                        modifier = Modifier.fillMaxWidth(),
-                        contentScale = ContentScale.FillWidth
-                    )
-                }
-            }
-            // 인디케이터
-            Row(
+            Box(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    .size(40.dp, 17.dp)
+                    .clip(RoundedCornerShape(70.dp))
+                    .background(color = Color(0x4D000000)),
+                contentAlignment = Alignment.Center
             ) {
-                repeat(bannerList.size) { index ->
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .background(
-                                color = if (index == pagerState.currentPage % bannerList.size) Color.Black else Color.Gray,
-                                shape = CircleShape
-                            )
-                    )
-                }
+                Text(
+                    text = "${pagerState.currentPage % bannerList.size + 1} / ${bannerList.size}",
+                    color = Color.White,
+                    fontSize = 10.sp,
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .wrapContentHeight(Alignment.CenterVertically)
+                        .wrapContentWidth(),
+                    lineHeight = 10.sp
+                )
             }
         }
     }
@@ -152,66 +164,67 @@ fun UnifiedAdBannerApi(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 17.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-        ) {
-            HorizontalPager(
-                state = pagerState,
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth()
+        ) { page ->
+            val adIndex = page % advertisements.size
+            val advertisement = advertisements[adIndex]
+            PressableComponent(
+                onClick = {
+                    Log.d(
+                        tag,
+                        "[UnifiedAdBannerApi] ad clicked: id=${advertisement.id}, linkUrl=${advertisement.linkUrl}"
+                    )
+                    context.launchUrl(advertisement.linkUrl)
+                },
                 modifier = Modifier.fillMaxWidth()
-            ) { page ->
-                val adIndex = page % advertisements.size
-                val advertisement = advertisements[adIndex]
-                PressableComponent(
-                    onClick = {
+            ) {
+                AsyncImage(
+                    model = advertisement.imageUrl,
+                    contentDescription = "광고배너_${advertisement.id}",
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.FillWidth,
+                    onSuccess = {
                         Log.d(
                             tag,
-                            "[UnifiedAdBannerApi] ad clicked: id=${advertisement.id}, linkUrl=${advertisement.linkUrl}"
+                            "[UnifiedAdBannerApi] image loaded successfully: ${advertisement.imageUrl}"
                         )
-                        context.launchUrl(advertisement.linkUrl)
                     },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    AsyncImage(
-                        model = advertisement.imageUrl,
-                        contentDescription = "광고배너_${advertisement.id}",
-                        modifier = Modifier.fillMaxWidth(),
-                        contentScale = ContentScale.FillWidth,
-                        onSuccess = {
-                            Log.d(
-                                tag,
-                                "[UnifiedAdBannerApi] image loaded successfully: ${advertisement.imageUrl}"
-                            )
-                        },
-                        onError = {
-                            Log.e(
-                                tag,
-                                "[UnifiedAdBannerApi] image load failed: ${advertisement.imageUrl}"
-                            )
-                        }
-                    )
-                }
+                    onError = {
+                        Log.e(
+                            tag,
+                            "[UnifiedAdBannerApi] image load failed: ${advertisement.imageUrl}"
+                        )
+                    }
+                )
             }
-            // 인디케이터
-            Row(
+        }
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .offset(x = (-12).dp, y = (-12).dp)
+        ) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    .size(40.dp, 17.dp)
+                    .clip(RoundedCornerShape(70.dp))
+                    .background(color = Color(0x4D000000)),
+                contentAlignment = Alignment.Center
             ) {
-                repeat(advertisements.size) { index ->
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .background(
-                                color = if (index == pagerState.currentPage % advertisements.size) Color.Black else Color.Gray,
-                                shape = CircleShape
-                            )
-                    )
-                }
+                Text(
+                    text = "${pagerState.currentPage % advertisements.size + 1} / ${advertisements.size}",
+                    color = Color.White,
+                    fontSize = 10.sp,
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .wrapContentHeight(Alignment.CenterVertically)
+                        .wrapContentWidth(),
+                    lineHeight = 10.sp
+                )
             }
         }
     }

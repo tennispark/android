@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit
 
 object  NetworkModule {
     private const val BASE_URL = "https://tennis-park.store/"
+    //운영섭: https://tennis-park.store/
+    //테섭: https://dev-tennis-park.store/
     private val tag = "🔍 디버깅: NetworkModule"
 
     private var appContext: Context? = null

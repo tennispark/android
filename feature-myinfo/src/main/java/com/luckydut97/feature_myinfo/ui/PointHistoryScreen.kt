@@ -87,17 +87,18 @@ fun PointHistoryScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // 상단 포인트 박스 영역
-            item {
+            // 상단 고정 영역 (스크롤 안됨)
+            Column {
+                // 상단 포인트 박스 영역
                 Column(
                     modifier = Modifier.padding(horizontal = 18.dp)
                 ) {
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     // 전체 영역 높이 133dp
                     Box(
@@ -168,10 +169,8 @@ fun PointHistoryScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
                 }
-            }
 
-            // 적립/사용 내역 타이틀
-            item {
+                // 적립/사용 내역 타이틀
                 Column(
                     modifier = Modifier.padding(horizontal = 18.dp)
                 ) {
@@ -187,75 +186,82 @@ fun PointHistoryScreen(
                 }
             }
 
-            // 포인트 내역이 비어있을 때 빈 상태 표시
-            if (histories.isEmpty() && !isLoading) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(65.dp)
-                            .padding(horizontal = 44.dp) // 18dp + 26dp = 44dp
-                            .background(
-                                color = Color(0xFFF5F5F5),
-                                shape = RoundedCornerShape(10.dp)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "현재 보유 중인 포인트가 없습니다.",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                            fontFamily = Pretendard,
-                            color = Color.Black
-                        )
-                    }
-                }
-            } else {
-                // 날짜별 그룹핑된 포인트 내역
-                items(groupedHistories.size) { index ->
-                    val group = groupedHistories[index]
-
-                    // 날짜 헤더
-                    Text(
-                        text = group.date,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Normal,
-                        fontFamily = Pretendard,
-                        color = Color(0xFF939393),
-                        modifier = Modifier.padding(horizontal = 18.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // 해당 날짜의 포인트 내역들
-                    group.histories.forEach { history ->
-                        PointHistoryItem(
-                            history = history,
-                            modifier = Modifier.padding(horizontal = 18.dp)
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-
-                    // 마지막 그룹이 아니면 구분선 추가
-                    if (index < groupedHistories.size - 1) {
-                        Spacer(modifier = Modifier.height(4.dp)) // 위쪽 24dp 여백 (20dp + 4dp = 24dp)
-
+            // 하단 스크롤 영역 (포인트 내역들만 스크롤)
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+            ) {
+                // 포인트 내역이 비어있을 때 빈 상태 표시
+                if (histories.isEmpty() && !isLoading) {
+                    item {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 18.dp)
-                                .height(1.dp)
-                                .background(Color(0xFFF0F0F0))
+                                .height(65.dp)
+                                .padding(horizontal = 44.dp) // 18dp + 26dp = 44dp
+                                .background(
+                                    color = Color(0xFFF5F5F5),
+                                    shape = RoundedCornerShape(10.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "현재 보유 중인 포인트가 없습니다.",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = Pretendard,
+                                color = Color.Black
+                            )
+                        }
+                    }
+                } else {
+                    // 날짜별 그룹핑된 포인트 내역
+                    items(groupedHistories.size) { index ->
+                        val group = groupedHistories[index]
+
+                        // 날짜 헤더
+                        Text(
+                            text = group.date,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = Pretendard,
+                            color = Color(0xFF939393),
+                            modifier = Modifier.padding(horizontal = 18.dp)
                         )
 
-                        Spacer(modifier = Modifier.height(24.dp)) // 아래쪽 24dp 여백
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // 해당 날짜의 포인트 내역들
+                        group.histories.forEach { history ->
+                            PointHistoryItem(
+                                history = history,
+                                modifier = Modifier.padding(horizontal = 18.dp)
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
+
+                        // 마지막 그룹이 아니면 구분선 추가
+                        if (index < groupedHistories.size - 1) {
+                            Spacer(modifier = Modifier.height(4.dp)) // 위쪽 24dp 여백 (20dp + 4dp = 24dp)
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 18.dp)
+                                    .height(1.dp)
+                                    .background(Color(0xFFF0F0F0))
+                            )
+
+                            Spacer(modifier = Modifier.height(24.dp)) // 아래쪽 24dp 여백
+                        }
                     }
                 }
-            }
 
-            // 하단 여백
-            item {
-                Spacer(modifier = Modifier.height(40.dp))
+                // 하단 여백
+                item {
+                    Spacer(modifier = Modifier.height(40.dp))
+                }
             }
         }
     }

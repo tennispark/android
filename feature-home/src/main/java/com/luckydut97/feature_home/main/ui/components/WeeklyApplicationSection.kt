@@ -136,7 +136,7 @@ fun WeeklyApplicationCard(
                         Spacer(modifier = Modifier.height(12.dp))
 
                         Text(
-                            text = "게스트는 월요일부터 가능합니다.",
+                            text = "멤버십, 게스트 모두 신청 가능합니다.",
                             fontSize = 14.sp,
                             fontFamily = Pretendard,
                             color = Color(0xFF8B9096)

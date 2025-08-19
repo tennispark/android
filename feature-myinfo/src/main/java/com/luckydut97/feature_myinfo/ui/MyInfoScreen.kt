@@ -369,12 +369,12 @@ fun MyInfoScreen(
 
                 MyPageDetailDivider()
 
-                MyPageDetailButton(
+                /*MyPageDetailButton(
                     iconRes = R.drawable.ic_tennis,
                     text = "나의 활동신청 내역",
                     iconSize = 20.dp,
                     onClick = onActivityHistoryClick
-                )
+                )*/
 
                 Spacer(modifier = Modifier.height(40.dp)) // 하단 여백
             }

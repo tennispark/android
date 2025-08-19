@@ -163,7 +163,7 @@ fun WeeklyPhotoSection(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "아직 활동 사진이 없습니다.",
+                        text = "활동 사진을 준비중입니다.",
                         fontSize = 16.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.Normal,
