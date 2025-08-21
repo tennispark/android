@@ -4,5 +4,7 @@
     <style name="Base.Theme.TennisPark" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:fontFamily">@font/pretendard</item>
         <item name="android:textAppearance">@style/TextAppearance.TennisPark.Regular</item>
+        <item name="android:statusBarColor">#FFFFFF</item> <!-- 상태바 색상을 흰색으로 설정 -->
+        <item name="android:windowLightStatusBar">true</item> <!-- 상태바 텍스트를 어둡게 -->
     </style>
 </resources>

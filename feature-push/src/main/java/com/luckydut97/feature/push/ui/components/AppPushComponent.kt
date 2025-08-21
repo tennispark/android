@@ -3,6 +3,7 @@ package com.luckydut97.feature.push.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,12 +11,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.feature.push.R
 
@@ -77,7 +81,7 @@ fun PushNotificationItem(
     val containerHeight = when {
         notification.isExpanded -> null // 확장시 높이 제한 없음
         isMultiLine -> 140.dp // 2줄 + 더보기 버튼
-        else -> 109.dp // 1줄, 더보기 버튼 없음
+        else -> 114.dp // 1줄, 더보기 버튼
     }
 
     // 텍스트를 2줄까지와 나머지로 분리
@@ -107,7 +111,10 @@ fun PushNotificationItem(
                 color = if (isSelected) Color(0xFFF2FAF4) else Color.White,
                 shape = RoundedCornerShape(8.dp)
             )
-            .clickable { onItemClick(notification.id) }
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onItemClick(notification.id) }
             .padding(horizontal = 18.dp)
             .padding(vertical = 16.dp), // 고정 세로 패딩
         contentAlignment = Alignment.TopStart // 상단 시작점 고정
@@ -121,7 +128,9 @@ fun PushNotificationItem(
             Image(
                 painter = painterResource(id = iconRes),
                 contentDescription = notification.title,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier
+                    .size(18.dp)
+                    .offset(y = 4.dp) // 아이콘을 2dp만큼 아래로 이동
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -187,10 +196,17 @@ fun PushNotificationItem(
                     )
                 }
 
-                // 더보기 버튼 (2줄 이상일 때만 표시) - 고정 위치
-                if (isMultiLine) {
-                    Spacer(modifier = Modifier.height(5.dp))
+                // 더보기 버튼 (모든 아이템에 표시) - 고정 위치
+                Spacer(modifier = Modifier.height(5.dp))
 
+                PressableComponent(
+                    onClick = {
+                        // 2줄 이상일 때만 실제 동작
+                        if (isMultiLine) {
+                            onMoreClick(notification.id)
+                        }
+                    }
+                ) {
                     Text(
                         text = if (notification.isExpanded) "접기" else "더보기",
                         fontSize = 13.sp,
@@ -198,7 +214,7 @@ fun PushNotificationItem(
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFF359170),
                         letterSpacing = (-0.5).sp,
-                        modifier = Modifier.clickable { onMoreClick(notification.id) }
+                        modifier = Modifier
                     )
                 }
             }
