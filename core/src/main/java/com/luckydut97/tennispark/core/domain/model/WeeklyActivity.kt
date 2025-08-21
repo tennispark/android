@@ -1,13 +1,10 @@
-/*
-도메인 모델 + ActivityStatus enum
- */
-package com.luckydut97.feature_home_activity.domain.model
+package com.luckydut97.tennispark.core.domain.model
 
 import java.time.LocalDate
 import java.time.LocalTime
 
 /**
- * 주간 활동 도메인 모델
+ * 주간 활동 도메인 모델 (Core Domain)
  */
 data class WeeklyActivity(
     val id: String,
@@ -52,7 +49,11 @@ data class WeeklyActivity(
      * 시간 포맷팅 (HH:mm ~ HH:mm)
      */
     val formattedTime: String
-        get() = "${startTime.hour.toString().padStart(2, '0')}:${startTime.minute.toString().padStart(2, '0')} ~ ${endTime.hour.toString().padStart(2, '0')}:${endTime.minute.toString().padStart(2, '0')}"
+        get() = "${startTime.hour.toString().padStart(2, '0')}:${
+            startTime.minute.toString().padStart(2, '0')
+        } ~ ${endTime.hour.toString().padStart(2, '0')}:${
+            endTime.minute.toString().padStart(2, '0')
+        }"
 
     /**
      * 인원 정보 포맷팅 (현재인원/최대인원)

@@ -3,8 +3,9 @@ package com.luckydut97.feature_home_activity.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.luckydut97.feature_home_activity.data.model.Academy
-import com.luckydut97.feature_home_activity.data.repository.AcademyRepository
+import com.luckydut97.tennispark.core.domain.model.Academy
+import com.luckydut97.tennispark.core.domain.usecase.GetAcademiesUseCase
+import com.luckydut97.tennispark.core.domain.usecase.ApplyForAcademyUseCase
 import com.luckydut97.tennispark.core.data.model.Advertisement
 import com.luckydut97.tennispark.core.data.model.AdPosition
 import com.luckydut97.tennispark.core.data.network.NetworkModule
@@ -16,10 +17,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
- * 아카데미 신청을 위한 ViewModel
+ * 아카데미 신청을 위한 ViewModel (Clean Architecture)
+ * UseCase 기반으로 리팩토링됨
  */
 class AcademyApplicationViewModel(
-    private val repository: AcademyRepository
+    private val getAcademiesUseCase: GetAcademiesUseCase,
+    private val applyForAcademyUseCase: ApplyForAcademyUseCase
 ) : ViewModel() {
 
     private val tag = "🔍 디버깅: AcademyApplicationViewModel"
@@ -76,7 +79,7 @@ class AcademyApplicationViewModel(
     }
 
     /**
-     * 아카데미 목록 로드
+     * 아카데미 목록 로드 (UseCase 사용)
      */
     private fun loadAcademies() {
         viewModelScope.launch {
@@ -84,7 +87,7 @@ class AcademyApplicationViewModel(
             _error.value = null
             
             try {
-                repository.getAcademies().collect { academyList ->
+                getAcademiesUseCase().collect { academyList ->
                     _academies.value = academyList
                     _isLoading.value = false
                 }
@@ -152,12 +155,13 @@ class AcademyApplicationViewModel(
     }
 
     /**
-     * 아카데미 신청
+     * 아카데미 신청 (UseCase 사용)
      */
     fun applyForAcademy(academyId: String) {
         viewModelScope.launch {
             try {
-                val result = repository.applyForAcademy(academyId)
+                val result = applyForAcademyUseCase(academyId)
+
                 result.fold(
                     onSuccess = { message ->
                         _showDetailDialog.value = false
@@ -166,9 +170,9 @@ class AcademyApplicationViewModel(
                     },
                     onFailure = { exception ->
                         val errorMessage = exception.message ?: "신청 중 오류가 발생했습니다."
-                        if (errorMessage.contains("서버 오류가 발생했습니다") || errorMessage.contains("알 수 없는 오류") || errorMessage.contains(
-                                "이미 신청한 아카데미입니다"
-                            )
+                        if (errorMessage.contains("HTTP_500") ||
+                            errorMessage.contains("알 수 없는 오류") ||
+                            errorMessage.contains("이미 신청한 아카데미입니다")
                         ) {
                             _isDuplicateError.value = true
                             _showDetailDialog.value = false
@@ -181,9 +185,9 @@ class AcademyApplicationViewModel(
                 )
             } catch (e: Exception) {
                 val errorMessage = e.message ?: "신청 중 오류가 발생했습니다."
-                if (errorMessage.contains("서버 오류가 발생했습니다") || errorMessage.contains("알 수 없는 오류") || errorMessage.contains(
-                        "이미 신청한 아카데미입니다"
-                    )
+                if (errorMessage.contains("HTTP_500") ||
+                    errorMessage.contains("알 수 없는 오류") ||
+                    errorMessage.contains("이미 신청한 아카데미입니다")
                 ) {
                     _isDuplicateError.value = true
                     _showDetailDialog.value = false

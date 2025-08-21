@@ -21,16 +21,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.luckydut97.feature_home_activity.data.repository.AcademyRepositoryImpl
-import com.luckydut97.feature_home_activity.data.repository.WeeklyActivityRepositoryImpl
 import com.luckydut97.feature_home_activity.viewmodel.AppliedActivityViewModel
 import com.luckydut97.feature_home_activity.viewmodel.AcademyApplicationViewModel
 import com.luckydut97.feature_home_activity.viewmodel.WeeklyActivityViewModel
 import com.luckydut97.feature_home_activity.ui.components.AppliedActivityBottomSheet
 import com.luckydut97.feature_home_activity.ui.components.AcademyApplicationBottomSheet
 import com.luckydut97.feature_home_activity.ui.components.WeeklyActivityBottomSheet
-import com.luckydut97.feature_home_activity.data.repository.MockAppliedActivityRepository
 import com.luckydut97.tennispark.core.data.network.NetworkModule
+import com.luckydut97.tennispark.core.data.repository.ActivityRepositoryImpl
+import com.luckydut97.tennispark.core.data.repository.AcademyRepositoryImpl
+import com.luckydut97.tennispark.core.domain.usecase.GetActivitiesUseCase
+import com.luckydut97.tennispark.core.domain.usecase.ApplyForActivityUseCase
+import com.luckydut97.tennispark.core.domain.usecase.GetAcademiesUseCase
+import com.luckydut97.tennispark.core.domain.usecase.ApplyForAcademyUseCase
 import com.luckydut97.tennispark.feature.home.R
 import com.luckydut97.feature_home.main.ui.components.AdBanner
 import com.luckydut97.feature_home.main.ui.components.EventSection
@@ -69,19 +72,23 @@ fun HomeScreen(
         }
     }
 
-    // WeeklyActivity ViewModel 생성 (변경됨)
+    // WeeklyActivity ViewModel 생성 (Clean Architecture)
     val weeklyActivityViewModel: WeeklyActivityViewModel = viewModel {
-        WeeklyActivityViewModel(WeeklyActivityRepositoryImpl())
+        val activityRepository = ActivityRepositoryImpl(NetworkModule.apiService)
+        val getActivitiesUseCase = GetActivitiesUseCase(activityRepository)
+        val applyForActivityUseCase = ApplyForActivityUseCase(activityRepository)
+        WeeklyActivityViewModel(getActivitiesUseCase, applyForActivityUseCase)
     }
     val showWeeklyActivityBottomSheet by weeklyActivityViewModel.showBottomSheet.collectAsState()
 
-    // AppliedActivity ViewModel 생성 (신규)
+    // AppliedActivity ViewModel 생성 (Clean Architecture)
     val appliedActivityViewModel: AppliedActivityViewModel = viewModel {
-        AppliedActivityViewModel(MockAppliedActivityRepository())
+        val activityRepository = ActivityRepositoryImpl(NetworkModule.apiService)
+        AppliedActivityViewModel(activityRepository)
     }
     val showAppliedActivityBottomSheet by appliedActivityViewModel.showBottomSheet.collectAsState()
 
-    // PhotoUpload ViewModel 생성 (신규)
+    // PhotoUpload ViewModel 생성 (기존 유지)
     val photoUploadViewModel: PhotoUploadViewModel = viewModel {
         PhotoUploadViewModel(
             ActivityCertificationRepositoryImpl(NetworkModule.apiService)
@@ -90,9 +97,12 @@ fun HomeScreen(
     val showPhotoUploadBottomSheet by photoUploadViewModel.showBottomSheet.collectAsState()
     val showPhotoUploadSuccessDialog by photoUploadViewModel.showSuccessDialog.collectAsState()
 
-    // Academy ViewModel 생성 (실제 API 연동)
+    // Academy ViewModel 생성 (Clean Architecture)
     val academyApplicationViewModel: AcademyApplicationViewModel = viewModel {
-        AcademyApplicationViewModel(AcademyRepositoryImpl())
+        val academyRepository = AcademyRepositoryImpl(NetworkModule.apiService)
+        val getAcademiesUseCase = GetAcademiesUseCase(academyRepository)
+        val applyForAcademyUseCase = ApplyForAcademyUseCase(academyRepository)
+        AcademyApplicationViewModel(getAcademiesUseCase, applyForAcademyUseCase)
     }
     val showAcademyApplicationBottomSheet by academyApplicationViewModel.showBottomSheet.collectAsState()
 
@@ -117,7 +127,7 @@ fun HomeScreen(
             // 광고 배너
             AdBanner()
 
-            // 주간 신청서 섹션 - 바텀시트 연동 (기존)
+            // 주간 신청서 섹션 - 바텀시트 연동 (Clean Architecture)
             WeeklyApplicationSection(
                 onApplicationClick = {
                     weeklyActivityViewModel.showWeeklyApplicationSheet()
@@ -138,7 +148,7 @@ fun HomeScreen(
                 totalPages = 3,
                 onMembershipClick = onMembershipClick,
                 onAcademyClick = {
-                    // TODO: 아카데미 신청 바텀시트 표시
+                    // 아카데미 신청 바텀시트 표시 (Clean Architecture)
                     academyApplicationViewModel.showAcademyApplicationSheet()
                 },
                 onCourtIntroClick = {
@@ -152,7 +162,7 @@ fun HomeScreen(
         }
     }
 
-    // 주간 활동 신청 바텀시트 (기존)
+    // 주간 활동 신청 바텀시트 (Clean Architecture)
     WeeklyActivityBottomSheet(
         viewModel = weeklyActivityViewModel,
         isVisible = showWeeklyActivityBottomSheet,
@@ -161,7 +171,7 @@ fun HomeScreen(
         }
     )
 
-    // 활동인증 바텀시트 (신규)
+    // 활동인증 바텀시트 (Clean Architecture)
     AppliedActivityBottomSheet(
         viewModel = appliedActivityViewModel,
         isVisible = showAppliedActivityBottomSheet,
@@ -170,7 +180,7 @@ fun HomeScreen(
         }
     )
 
-    // 아카데미 신청 바텀시트 (신규 - TODO: ViewModel 구현 후 활성화)
+    // 아카데미 신청 바텀시트 (Clean Architecture)
     AcademyApplicationBottomSheet(
         viewModel = academyApplicationViewModel,
         isVisible = showAcademyApplicationBottomSheet,
@@ -179,7 +189,7 @@ fun HomeScreen(
         }
     )
 
-    // 사진 업로드 바텀시트 (신규)
+    // 사진 업로드 바텀시트 (기존 유지)
     PhotoUploadBottomSheet(
         viewModel = photoUploadViewModel,
         isVisible = showPhotoUploadBottomSheet,

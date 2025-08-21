@@ -1,24 +1,17 @@
-package com.luckydut97.feature_home_activity.data.mapper
+package com.luckydut97.tennispark.core.data.mapper
 
 import com.luckydut97.tennispark.core.data.model.AcademyResponse
-import com.luckydut97.feature_home_activity.data.model.Academy
-import com.luckydut97.feature_home_activity.data.model.AcademyStatus
-import java.time.LocalDate
+import com.luckydut97.tennispark.core.domain.model.Academy
+import com.luckydut97.tennispark.core.domain.model.AcademyStatus
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 /**
- * AcademyResponse를 Academy 도메인 모델로 변환
+ * AcademyResponse를 Academy 도메인 모델로 변환 (Core Mapper)
  */
 fun AcademyResponse.toAcademy(): Academy {
-    // 디버깅을 위한 로그
-
     // 날짜 형식 변환: "2025년 06월 24일 (화)" -> "06월 24일 (화)"
     val formattedDate = formatDateString(date)
-
-    // 시간 파싱: "10:00" -> LocalTime
-    val startTime = LocalTime.parse(startAt, DateTimeFormatter.ofPattern("HH:mm"))
-    val endTime = LocalTime.parse(endAt, DateTimeFormatter.ofPattern("HH:mm"))
 
     // 시간 범위를 문자열로 변환: "10:00 ~ 14:00"
     val timeRange = "${startAt} ~ ${endAt}"
@@ -37,7 +30,6 @@ fun AcademyResponse.toAcademy(): Academy {
         else -> AcademyStatus.AVAILABLE
     }
 
-
     return Academy(
         id = id.toString(),
         date = formattedDate,
@@ -47,7 +39,8 @@ fun AcademyResponse.toAcademy(): Academy {
         activityType = activityType,
         currentParticipants = participantCount,
         maxParticipants = capacity,
-        status = status
+        status = status,
+        actualAcademyId = id // 실제 서버 ID 저장
     )
 }
 

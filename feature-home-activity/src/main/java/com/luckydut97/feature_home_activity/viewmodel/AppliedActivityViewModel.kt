@@ -2,18 +2,19 @@ package com.luckydut97.feature_home_activity.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.luckydut97.feature_home_activity.data.repository.AppliedActivityRepository
-import com.luckydut97.feature_home_activity.domain.model.AppliedActivity
+import com.luckydut97.tennispark.core.domain.repository.ActivityRepository
+import com.luckydut97.tennispark.core.domain.model.AppliedActivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
- * 신청한 활동(활동인증) ViewModel - 단순 버전
+ * 신청한 활동(활동인증) ViewModel (Clean Architecture)
+ * Core 도메인 모델 사용
  */
 class AppliedActivityViewModel(
-    private val repository: AppliedActivityRepository
+    private val activityRepository: ActivityRepository
 ) : ViewModel() {
 
     // Bottom Sheet 표시 상태
@@ -55,7 +56,7 @@ class AppliedActivityViewModel(
             _isLoading.value = true
 
             try {
-                repository.getAppliedActivities().collect { activities ->
+                activityRepository.getAppliedActivities().collect { activities ->
                     _appliedActivities.value = activities
                 }
             } catch (e: Exception) {

@@ -127,7 +127,16 @@ class AcademyRepository {
                 }
 
                 val finalMessage = serverErrorMessage ?: when (response.code()) {
-                    400 -> "신청 인원이 초과되었습니다."
+                    400 -> {
+                        // 400 에러는 서버 메시지를 우선 사용 (중복 신청 등)
+                        if (serverErrorMessage?.contains("이미") == true) {
+                            "이미 신청한 아카데미입니다."
+                        } else if (serverErrorMessage?.contains("인원") == true) {
+                            "신청 인원이 초과되었습니다."
+                        } else {
+                            serverErrorMessage ?: "아카데미 신청에 실패했습니다."
+                        }
+                    }
                     401 -> "인증이 되지 않았습니다."
                     404 -> "해당 아카데미를 찾을 수 없습니다."
                     else -> "서버 오류가 발생했습니다."

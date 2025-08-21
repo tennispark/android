@@ -1,10 +1,10 @@
-package com.luckydut97.feature_home_activity.domain.model
+package com.luckydut97.tennispark.core.domain.model
 
 import java.time.LocalDate
 import java.time.LocalTime
 
 /**
- * 신청한 활동 도메인 모델
+ * 신청한 활동 도메인 모델 (Core Domain)
  */
 data class AppliedActivity(
     val id: String,
@@ -42,13 +42,19 @@ data class AppliedActivity(
      * 시간 포맷팅 (HH:mm ~ HH:mm)
      */
     val formattedTime: String
-        get() = "${startTime.hour.toString().padStart(2, '0')}:${startTime.minute.toString().padStart(2, '0')} ~ ${endTime.hour.toString().padStart(2, '0')}:${endTime.minute.toString().padStart(2, '0')}"
+        get() = "${startTime.hour.toString().padStart(2, '0')}:${
+            startTime.minute.toString().padStart(2, '0')
+        } ~ ${endTime.hour.toString().padStart(2, '0')}:${
+            endTime.minute.toString().padStart(2, '0')
+        }"
 
     /**
      * 신청일 포맷팅 (MM.dd 신청)
      */
     val formattedApplicationDate: String
-        get() = "${applicationDate.monthValue.toString().padStart(2, '0')}.${applicationDate.dayOfMonth.toString().padStart(2, '0')} 신청"
+        get() = "${
+            applicationDate.monthValue.toString().padStart(2, '0')
+        }.${applicationDate.dayOfMonth.toString().padStart(2, '0')} 신청"
 
     /**
      * 취소 가능 여부

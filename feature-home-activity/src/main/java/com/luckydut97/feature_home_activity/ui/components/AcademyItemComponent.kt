@@ -25,8 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.feature_home_activity.R
-import com.luckydut97.feature_home_activity.data.model.Academy
-import com.luckydut97.feature_home_activity.data.model.AcademyStatus
+import com.luckydut97.tennispark.core.domain.model.Academy
+import com.luckydut97.tennispark.core.domain.model.AcademyStatus
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 

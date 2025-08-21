@@ -1,7 +1,7 @@
-package com.luckydut97.feature_home_activity.data.model
+package com.luckydut97.tennispark.core.domain.model
 
 /**
- * 아카데미 데이터 모델
+ * 아카데미 도메인 모델 (Core Domain)
  */
 data class Academy(
     val id: String,
@@ -12,7 +12,8 @@ data class Academy(
     val activityType: String, // "A클래스"
     val currentParticipants: Int, // 현재 참가자 수
     val maxParticipants: Int,     // 최대 참가자 수
-    val status: AcademyStatus = AcademyStatus.AVAILABLE
+    val status: AcademyStatus = AcademyStatus.AVAILABLE,
+    val actualAcademyId: Long? = null // 실제 서버 Academy ID
 )
 
 /**
