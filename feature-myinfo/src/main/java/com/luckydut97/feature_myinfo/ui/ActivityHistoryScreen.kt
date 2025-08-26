@@ -121,20 +121,10 @@ fun ActivityHistoryScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "활동 신청 내역이 없습니다.",
+                                text = "신청하신 활동 내역이 없습니다.",
                                 fontSize = 16.sp,
                                 fontFamily = Pretendard,
                                 color = Color(0xFF8B9096),
-                                textAlign = TextAlign.Center
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "활동을 신청해보세요!",
-                                fontSize = 14.sp,
-                                fontFamily = Pretendard,
-                                color = Color(0xFFAAAAAA),
                                 textAlign = TextAlign.Center
                             )
                         }
