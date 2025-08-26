@@ -2,6 +2,7 @@ package com.luckydut97.tennispark.core.data.network
 
 import com.luckydut97.tennispark.core.data.model.AcademyListResponse
 import com.luckydut97.tennispark.core.data.model.ApiResponse
+import com.luckydut97.tennispark.core.data.model.ActivityApplicationListResponse
 import com.luckydut97.tennispark.core.data.model.MemberRegistrationRequest
 import com.luckydut97.tennispark.core.data.model.MemberRegistrationResponse
 import com.luckydut97.tennispark.core.data.model.PhoneVerificationRequest
@@ -19,6 +20,7 @@ import com.luckydut97.tennispark.core.data.model.ShopProductListResponse
 import com.luckydut97.tennispark.core.data.model.UpdateFcmTokenRequest
 import com.luckydut97.tennispark.core.data.model.AdvertisementListResponse
 import com.luckydut97.tennispark.core.data.model.ActivityImageListResponse
+import com.luckydut97.tennispark.core.data.model.NotificationListResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -115,4 +117,12 @@ interface ApiService {
     // 활동 이미지 API
     @GET("api/members/activities/images")
     suspend fun getActivityImages(): Response<ApiResponse<ActivityImageListResponse>>
+
+    // 활동 신청 내역 조회 API
+    @GET("api/members/activities/applications/me")
+    suspend fun getActivityApplications(): Response<ApiResponse<ActivityApplicationListResponse>>
+
+    // 알림 목록 조회 API
+    @GET("api/members/notifications/me")
+    suspend fun getNotifications(): Response<ApiResponse<NotificationListResponse>>
 }

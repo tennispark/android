@@ -114,8 +114,7 @@ fun HomeScreen(
         // 상단 앱바
         HomeTopAppBar(
             onNotificationClick = onNotificationClick,
-            onSearchClick = { /* 검색 클릭 이벤트 */ },
-            notificationCount = 155 // 테스트용 알림 개수 (8 → 50 → 128로 테스트 예정)
+            onSearchClick = { /* 검색 클릭 이벤트 */ }
         )
 
         // 스크롤 가능한 컨텐츠

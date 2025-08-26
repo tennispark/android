@@ -30,71 +30,35 @@ import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
 import com.luckydut97.feature.push.R
-
-/**
- * 푸시 알림 데이터 클래스
- */
-data class PushNotification(
-    val id: String,
-    val type: PushNotificationType,
-    val title: String,
-    val content: String,
-    val timeText: String,
-    val isExpanded: Boolean = false // 더보기 확장 상태 추가
-)
-
-/**
- * 푸시 알림 타입
- */
-enum class PushNotificationType {
-    MATCH,      // 매칭 안내 - ic_push_match
-    APPROVE,    // 승인 - ic_push_approve  
-    DENY,       // 거부 - ic_push_deny
-    RECRUIT     // 모집 - ic_push_recruit
-}
+import com.luckydut97.tennispark.core.domain.model.PushNotification
+import com.luckydut97.tennispark.core.domain.model.NotificationType
 
 /**
  * 푸시 알림 아이템 컴포넌트
  *
- * @param notification 알림 데이터
- * @param isSelected 선택 상태 (외부에서 관리)
- * @param onItemClick 아이템 클릭 콜백
+ * @param notification 알림 데이터 (Core 도메인 모델 사용)
+ * @param onItemClick 아이템 클릭 콜백 (사용하지 않음)
  * @param onMoreClick 더보기 클릭 콜백
  */
 @Composable
 fun PushNotificationItem(
     notification: PushNotification,
-    isSelected: Boolean = false, // 외부에서 선택 상태 관리
     onItemClick: (String) -> Unit = {},
     onMoreClick: (String) -> Unit = {}
 ) {
+    // 서버 알림 타입에 따른 아이콘 매핑
     val iconRes = when (notification.type) {
-        PushNotificationType.MATCH -> R.drawable.ic_push_match
-        PushNotificationType.APPROVE -> R.drawable.ic_push_approve
-        PushNotificationType.DENY -> R.drawable.ic_push_deny
-        PushNotificationType.RECRUIT -> R.drawable.ic_push_recruit
+        NotificationType.MATCHING_GUIDE -> R.drawable.ic_push_match      // 매칭 안내
+        NotificationType.ACTIVITY_GUIDE -> R.drawable.ic_push_approve    // 활동 안내 (승인/거부)
+        NotificationType.ANNOUNCEMENT -> R.drawable.ic_push_recruit      // 공지/모집
+        NotificationType.COMMUNITY -> R.drawable.ic_push_match          // 커뮤니티 (임시)
+        NotificationType.ETC -> R.drawable.ic_push_match               // 기타 (임시)
     }
 
-    // 내용이 2줄 이상인지 확인
-    val isMultiLine = notification.content.length > 30
     // 더보기 확장 상태에 따른 높이 결정
     val containerHeight = when {
         notification.isExpanded -> null // 확장시 높이 제한 없음
-        isMultiLine -> 140.dp // 2줄 + 더보기 버튼
-        else -> 114.dp // 1줄, 더보기 버튼
-    }
-
-    // 텍스트를 2줄까지와 나머지로 분리
-    val displayText = notification.content
-    val previewText = if (isMultiLine && !notification.isExpanded) {
-        // 2줄에 해당하는 텍스트만 표시 (대략적인 계산)
-        if (displayText.length > 60) {
-            displayText.take(60) + "..."
-        } else {
-            displayText
-        }
-    } else {
-        displayText
+        else -> 140.dp // 기본 높이 (2줄 + 더보기 버튼 공간)
     }
 
     Box(
@@ -108,7 +72,8 @@ fun PushNotificationItem(
                 }
             }
             .background(
-                color = if (isSelected) Color(0xFFF2FAF4) else Color.White,
+                // 신규 알림인 경우에만 연한 초록색 배경, 나머지는 흰색
+                color = if (notification.isNew) Color(0xFFF2FAF4) else Color.White,
                 shape = RoundedCornerShape(8.dp)
             )
             .clickable(
@@ -130,7 +95,7 @@ fun PushNotificationItem(
                 contentDescription = notification.title,
                 modifier = Modifier
                     .size(18.dp)
-                    .offset(y = 4.dp) // 아이콘을 2dp만큼 아래로 이동
+                    .offset(y = 4.dp) // 아이콘을 4dp만큼 아래로 이동
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -146,7 +111,7 @@ fun PushNotificationItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = notification.title,
+                        text = notification.title, // Core 모델의 title 사용
                         fontSize = 13.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.Normal,
@@ -156,7 +121,7 @@ fun PushNotificationItem(
                     )
 
                     Text(
-                        text = notification.timeText,
+                        text = notification.relativeTimeText, // Core 모델의 상대시간 사용
                         fontSize = 13.sp,
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.Normal,
@@ -167,44 +132,25 @@ fun PushNotificationItem(
 
                 Spacer(modifier = Modifier.height(5.dp))
 
-                // 두 번째 영역: 실제 내용 (고정 + 확장)
-                if (isMultiLine && !notification.isExpanded) {
-                    // 축약된 내용 (2줄) - 고정
-                    Text(
-                        text = previewText,
-                        fontSize = 18.sp,
-                        fontFamily = Pretendard,
-                        fontWeight = FontWeight.Normal,
-                        color = Color(0xFF6F6F6F),
-                        letterSpacing = (-0.5).sp,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        lineHeight = 26.sp
-                    )
-                } else {
-                    // 전체 내용 또는 1줄 내용
-                    Text(
-                        text = displayText,
-                        fontSize = 18.sp,
-                        fontFamily = Pretendard,
-                        fontWeight = FontWeight.Normal,
-                        color = Color(0xFF6F6F6F),
-                        letterSpacing = (-0.5).sp,
-                        maxLines = if (notification.isExpanded) Int.MAX_VALUE else 1,
-                        overflow = if (notification.isExpanded) TextOverflow.Visible else TextOverflow.Ellipsis,
-                        lineHeight = 26.sp
-                    )
-                }
+                // 두 번째 영역: 실제 내용 (접힌 상태: 2줄까지, 확장 상태: 전체)
+                Text(
+                    text = notification.content,
+                    fontSize = 18.sp,
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.Normal,
+                    color = Color(0xFF6F6F6F),
+                    letterSpacing = (-0.5).sp,
+                    maxLines = if (notification.isExpanded) Int.MAX_VALUE else 2,
+                    overflow = if (notification.isExpanded) TextOverflow.Visible else TextOverflow.Ellipsis,
+                    lineHeight = 26.sp
+                )
 
-                // 더보기 버튼 (모든 아이템에 표시) - 고정 위치
+                // 모든 알림에 더보기 버튼 표시
                 Spacer(modifier = Modifier.height(5.dp))
 
                 PressableComponent(
                     onClick = {
-                        // 2줄 이상일 때만 실제 동작
-                        if (isMultiLine) {
-                            onMoreClick(notification.id)
-                        }
+                        onMoreClick(notification.id)
                     }
                 ) {
                     Text(
@@ -213,8 +159,7 @@ fun PushNotificationItem(
                         fontFamily = Pretendard,
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFF359170),
-                        letterSpacing = (-0.5).sp,
-                        modifier = Modifier
+                        letterSpacing = (-0.5).sp
                     )
                 }
             }

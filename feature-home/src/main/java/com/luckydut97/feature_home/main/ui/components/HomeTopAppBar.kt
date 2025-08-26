@@ -17,9 +17,13 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,17 +32,23 @@ import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.feature.home.R
 import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.tennispark.core.utils.NotificationBadgeManager
 
 @Composable
 fun HomeTopAppBar(
     onNotificationClick: () -> Unit,
-    onSearchClick: () -> Unit,
-    notificationCount: Int = 8 // 알림 개수 파라미터 추가
+    onSearchClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val badgeManager = remember { NotificationBadgeManager.getInstance(context) }
+
+    // 🔥 StateFlow 기반 실시간 배지 감지
+    val notificationCount by badgeManager.badgeCount.collectAsState(initial = 0)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(55.dp) //44에서 임의로 바꿈.
+            .height(55.dp)
             .background(Color(0xFFF4F6F8))
             .padding(horizontal = 17.dp),
         verticalAlignment = Alignment.CenterVertically,

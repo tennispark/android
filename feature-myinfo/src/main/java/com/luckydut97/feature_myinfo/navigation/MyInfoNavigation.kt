@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -20,6 +21,10 @@ import com.luckydut97.feature_myinfo.ui.AppSettingsScreen
 import com.luckydut97.feature_myinfo.ui.PointHistoryScreen
 import com.luckydut97.feature_myinfo.ui.ActivityHistoryScreen
 import com.luckydut97.feature_myinfo.viewmodel.MyInfoViewModel
+import com.luckydut97.feature_myinfo.viewmodel.ActivityHistoryViewModel
+import com.luckydut97.tennispark.core.domain.usecase.GetActivityApplicationsUseCase
+import com.luckydut97.tennispark.core.data.repository.ActivityApplicationRepositoryImpl
+import com.luckydut97.tennispark.core.data.network.NetworkModule
 import kotlinx.coroutines.delay
 
 /**
@@ -64,6 +69,13 @@ fun MyInfoNavigation(
             delay(200) // 네비게이션 완료 대기 (좀 더 길게)
             viewModel.resetWithdrawState()
         }
+    }
+
+    // ActivityHistory ViewModel 의존성 주입
+    val activityHistoryViewModel = remember {
+        val repository = ActivityApplicationRepositoryImpl(NetworkModule.apiService)
+        val useCase = GetActivityApplicationsUseCase(repository)
+        ActivityHistoryViewModel(useCase)
     }
 
     NavHost(
@@ -276,7 +288,8 @@ fun MyInfoNavigation(
             }
         ) {
             ActivityHistoryScreen(
-                onBackClick = {
+                viewModel = activityHistoryViewModel,
+                onNavigateBack = {
                     navController.popBackStack()
                     onBottomNavVisibilityChange(true)
                 }

@@ -7,6 +7,7 @@ import com.luckydut97.tennispark.core.data.repository.AuthRepositoryImpl
 import com.luckydut97.tennispark.core.data.storage.TokenManagerImpl
 import com.luckydut97.tennispark.core.data.storage.NotificationPreferenceManager
 import com.luckydut97.tennispark.core.data.network.NetworkModule
+import com.luckydut97.tennispark.core.utils.NotificationBadgeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +32,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     private val notificationPreferenceManager: NotificationPreferenceManager by lazy {
         NotificationPreferenceManager(applicationContext)
+    }
+
+    // 알림 배지 매니저 추가
+    private val notificationBadgeManager: NotificationBadgeManager by lazy {
+        NotificationBadgeManager.getInstance(applicationContext)
     }
 
     /**
@@ -66,6 +72,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         try {
             val notificationHelper = NotificationHelper(applicationContext)
             notificationHelper.showNotification(title, body, data)
+
+            // 배지 카운트 증가 
+            notificationBadgeManager.incrementBadge()
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
