@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -234,6 +234,49 @@ fun AppNavigation(
                 }
             )
         }
+
+        // 활동 신청 화면
+        composable(
+            "activity_application",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(300)
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            }
+        ) {
+            com.luckydut97.feature_home_activity.ui.ActivityApplicationScreen(
+                onBackClick = {
+                    val canGoBack = navController.previousBackStackEntry != null
+                    if (canGoBack) {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate("main") {
+                            popUpTo("main") { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -350,6 +393,12 @@ fun MainScreenWithBottomNav(
                     onNotificationClick = {
                         try {
                             mainNavController.navigate("app_push")
+                        } catch (e: Exception) {
+                        }
+                    },
+                    onActivityApplicationClick = {
+                        try {
+                            mainNavController.navigate("activity_application")
                         } catch (e: Exception) {
                         }
                     }

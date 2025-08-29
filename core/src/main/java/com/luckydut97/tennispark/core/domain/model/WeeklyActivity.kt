@@ -20,7 +20,7 @@ data class WeeklyActivity(
     val actualActivityId: Long? = null // 실제 서버 ActivityId (null이면 신청 불가)
 ) {
     /**
-     * 마감임박 여부 확인 (최대인원 - 현재인원 = 1)
+     * 마감 임박 여부 확인 (최대인원 - 현재인원 = 1)
      */
     val isAlmostFull: Boolean
         get() = maxParticipants - currentParticipants == 1 && status == ActivityStatus.RECRUITING
@@ -56,10 +56,10 @@ data class WeeklyActivity(
         }"
 
     /**
-     * 인원 정보 포맷팅 (현재인원/최대인원)
+     * 인원 정보 포맷팅 (현재인원 / 최대인원)
      */
     val participantInfo: String
-        get() = "$currentParticipants/$maxParticipants"
+        get() = "$currentParticipants / $maxParticipants"
 }
 
 /**
@@ -67,7 +67,7 @@ data class WeeklyActivity(
  */
 enum class ActivityStatus {
     RECRUITING,     // 모집 중
-    ALMOST_FULL,    // 마감임박
-    FULL,          // 모집완료
+    ALMOST_FULL,    // 마감 임박
+    FULL,          // 모집 완료
     UNAVAILABLE    // 신청 불가 (서버 데이터 오류)
 }

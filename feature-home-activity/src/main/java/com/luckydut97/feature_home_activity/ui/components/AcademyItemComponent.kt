@@ -52,8 +52,8 @@ fun AcademyItemComponent(
         else -> Color(0xFF145F44)
     }
     val statusText = when {
-        isDisabled -> "모집완료"
-        isAlmostFull -> "마감임박"
+        isDisabled -> "모집 완료"
+        isAlmostFull -> "마감 임박"
         else -> "모집 중"
     }
     val statusTextColor = when {
