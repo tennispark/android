@@ -21,6 +21,7 @@ import com.luckydut97.tennispark.core.data.model.UpdateFcmTokenRequest
 import com.luckydut97.tennispark.core.data.model.AdvertisementListResponse
 import com.luckydut97.tennispark.core.data.model.ActivityImageListResponse
 import com.luckydut97.tennispark.core.data.model.NotificationListResponse
+import com.luckydut97.tennispark.core.data.model.UnreadCountResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -28,6 +29,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
@@ -125,4 +127,12 @@ interface ApiService {
     // 알림 목록 조회 API
     @GET("api/members/notifications/me")
     suspend fun getNotifications(): Response<ApiResponse<NotificationListResponse>>
+
+    // 미읽은 알림 수 조회 API
+    @GET("api/members/notifications/unread-count")
+    suspend fun getUnreadNotificationCount(): Response<ApiResponse<UnreadCountResponse>>
+
+    // 알림 전체 읽음 처리 API
+    @PATCH("api/members/notifications/read")
+    suspend fun markAllNotificationsAsRead(): Response<ApiResponse<Any>>
 }

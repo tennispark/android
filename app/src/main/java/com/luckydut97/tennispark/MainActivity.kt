@@ -3,6 +3,7 @@ package com.luckydut97.tennispark
 import android.Manifest
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -27,6 +28,7 @@ import com.luckydut97.tennispark.core.data.network.NetworkModule
 import com.luckydut97.tennispark.core.data.storage.NotificationPreferenceManager
 import com.luckydut97.tennispark.core.fcm.FcmTokenManager
 import com.luckydut97.tennispark.core.fcm.NotificationHelper
+import com.luckydut97.tennispark.core.fcm.MyFirebaseMessagingService
 import com.luckydut97.tennispark.core.ui.theme.TennisParkTheme
 import kotlinx.coroutines.launch
 
@@ -102,6 +104,24 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * 앱이 포그라운드로 돌아올 때 호출됩니다
+     */
+    override fun onResume() {
+        super.onResume()
+
+        // HomeTopAppBar에 배지 갱신 알림 (브로드캐스트)
+        sendBadgeRefreshBroadcast()
+    }
+
+    /**
+     * HomeTopAppBar에 배지 갱신을 알리는 브로드캐스트 전송
+     */
+    private fun sendBadgeRefreshBroadcast() {
+        val intent = Intent(MyFirebaseMessagingService.ACTION_NOTIFICATION_RECEIVED)
+        sendBroadcast(intent)
     }
 
     /**

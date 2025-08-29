@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.luckydut97.tennispark.core.domain.model.PushNotification
 import com.luckydut97.tennispark.core.domain.usecase.GetNotificationsUseCase
+import com.luckydut97.tennispark.core.domain.usecase.MarkAllNotificationsAsReadUseCase
 import com.luckydut97.tennispark.core.data.repository.NotificationRepositoryImpl
 import com.luckydut97.tennispark.core.data.network.NetworkModule
-import com.luckydut97.tennispark.core.utils.NotificationBadgeManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,9 +20,9 @@ class AppPushViewModel : ViewModel() {
 
     private val tag = "🔍 AppPushViewModel"
 
-    // UseCase는 Context가 필요하므로 lazy 초기화
+    // UseCase는 Context 의존성 제거됨
     private var getNotificationsUseCase: GetNotificationsUseCase? = null
-    private var notificationBadgeManager: NotificationBadgeManager? = null
+    private var markAllNotificationsAsReadUseCase: MarkAllNotificationsAsReadUseCase? = null
 
     // 알림 목록 상태
     private val _notifications = MutableStateFlow<List<PushNotification>>(emptyList())
@@ -45,13 +45,13 @@ class AppPushViewModel : ViewModel() {
      */
     fun initializeWithContext(context: Context) {
         if (getNotificationsUseCase == null) {
-            notificationBadgeManager = NotificationBadgeManager.getInstance(context)
-
-            // UseCase 초기화 (Context 전달)
+            // UseCase 초기화 (Context 의존성 제거)
             val repository = NotificationRepositoryImpl(NetworkModule.apiService)
-            getNotificationsUseCase = GetNotificationsUseCase(repository, context)
+            getNotificationsUseCase = GetNotificationsUseCase(repository)
+            markAllNotificationsAsReadUseCase = MarkAllNotificationsAsReadUseCase(repository)
 
             loadNotifications()
+        } else {
         }
     }
 
@@ -64,7 +64,11 @@ class AppPushViewModel : ViewModel() {
             _error.value = null
 
             try {
-                getNotificationsUseCase?.invoke()?.collect { notifications ->
+                // 🔥 HomeTopAppBar에서 미리 조회한 배지 수 사용
+                val preloadedBadgeCount =
+                    com.luckydut97.tennispark.core.utils.BadgeCountManager.getBadgeCount()
+
+                getNotificationsUseCase?.invoke(preloadedBadgeCount)?.collect { notifications ->
                     _notifications.value = notifications
                 }
             } catch (e: Exception) {
@@ -82,9 +86,22 @@ class AppPushViewModel : ViewModel() {
 
     /**
      * 모든 알림 읽음 처리 (화면 진입 시 호출)
+     * 서버 기반 읽음 처리만 수행하며 로컬 배지 관리 로직은 제거됨
      */
     fun markAllAsRead() {
-        notificationBadgeManager?.clearBadge()
+        viewModelScope.launch {
+            try {
+                val result = markAllNotificationsAsReadUseCase?.invoke()
+                if (result?.isSuccess == true) {
+                    val currentNotifications = _notifications.value
+                    val updatedNotifications = currentNotifications.map { notification ->
+                        notification.copy(isNew = false)
+                    }
+                    _notifications.value = updatedNotifications
+                }
+            } catch (e: Exception) {
+            }
+        }
     }
 
     /**
@@ -93,9 +110,9 @@ class AppPushViewModel : ViewModel() {
     fun toggleNotificationExpansion(notificationId: String) {
         val currentExpanded = _expandedNotificationIds.value
         _expandedNotificationIds.value = if (currentExpanded.contains(notificationId)) {
-            currentExpanded - notificationId // 접기
+            currentExpanded - notificationId
         } else {
-            currentExpanded + notificationId // 확장
+            currentExpanded + notificationId
         }
     }
 

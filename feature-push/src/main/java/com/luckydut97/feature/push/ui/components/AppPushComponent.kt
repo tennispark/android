@@ -49,10 +49,10 @@ fun PushNotificationItem(
     // 서버 알림 타입에 따른 아이콘 매핑
     val iconRes = when (notification.type) {
         NotificationType.MATCHING_GUIDE -> R.drawable.ic_push_match      // 매칭 안내
-        NotificationType.ACTIVITY_GUIDE -> R.drawable.ic_push_approve    // 활동 안내 (승인/거부)
+        NotificationType.ACTIVITY_GUIDE -> R.drawable.ic_push_activity   // 활동 안내 (승인 상태 알림)
         NotificationType.ANNOUNCEMENT -> R.drawable.ic_push_recruit      // 공지/모집
-        NotificationType.COMMUNITY -> R.drawable.ic_push_match          // 커뮤니티 (임시)
-        NotificationType.ETC -> R.drawable.ic_push_match               // 기타 (임시)
+        NotificationType.COMMUNITY -> R.drawable.ic_push_recruit         // 커뮤니티 댓글 알림
+        NotificationType.ETC -> R.drawable.ic_push_etc                  // 기타
     }
 
     // 더보기 확장 상태에 따른 높이 결정

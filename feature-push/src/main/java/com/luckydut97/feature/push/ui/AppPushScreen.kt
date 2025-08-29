@@ -48,10 +48,10 @@ fun AppPushScreen(
     val error by viewModel.error.collectAsState()
     val expandedNotificationIds by viewModel.expandedNotificationIds.collectAsState()
 
-    // 화면 진입 시 초기화 및 배지 초기화
+    // 화면 진입 시 초기화 및 서버 기반 읽음 처리
     LaunchedEffect(Unit) {
         viewModel.initializeWithContext(context)
-        viewModel.markAllAsRead() // 🔥 모든 알림 읽음 처리 & 배지 초기화
+        viewModel.markAllAsRead() // 🔥 모든 알림 읽음 처리 (서버 기반)
     }
 
     // 최상위 레벨 화면이므로 직접 시스템바 처리 필요

@@ -13,4 +13,14 @@ interface NotificationRepository {
      * 서버에서 날짜 내림차순으로 정렬된 알림 목록 반환
      */
     suspend fun getNotifications(): Flow<List<PushNotification>>
+
+    /**
+     * 미읽은 알림 수 조회
+     */
+    suspend fun getUnreadCount(): Int
+
+    /**
+     * 모든 알림을 읽음 처리
+     */
+    suspend fun markAllAsRead(): Result<Unit>
 }

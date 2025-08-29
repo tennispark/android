@@ -13,8 +13,8 @@ android {
         applicationId = "com.luckydut97.tennispark"
         minSdk = 26
         targetSdk = 35
-        versionCode = 21
-        versionName = "3.0.1"
+        versionCode = 22
+        versionName = "3.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

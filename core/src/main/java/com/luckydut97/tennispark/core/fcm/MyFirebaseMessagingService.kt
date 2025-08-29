@@ -1,5 +1,6 @@
 package com.luckydut97.tennispark.core.fcm
 
+import android.content.Intent
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.luckydut97.tennispark.core.data.repository.AuthRepository
@@ -7,7 +8,6 @@ import com.luckydut97.tennispark.core.data.repository.AuthRepositoryImpl
 import com.luckydut97.tennispark.core.data.storage.TokenManagerImpl
 import com.luckydut97.tennispark.core.data.storage.NotificationPreferenceManager
 import com.luckydut97.tennispark.core.data.network.NetworkModule
-import com.luckydut97.tennispark.core.utils.NotificationBadgeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
-        private const val TAG = "MyFirebaseMessaging 디버깅"
+        const val ACTION_NOTIFICATION_RECEIVED = "com.luckydut97.tennispark.NOTIFICATION_RECEIVED"
     }
 
     private val authRepository: AuthRepository by lazy {
@@ -32,11 +32,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     private val notificationPreferenceManager: NotificationPreferenceManager by lazy {
         NotificationPreferenceManager(applicationContext)
-    }
-
-    // 알림 배지 매니저 추가
-    private val notificationBadgeManager: NotificationBadgeManager by lazy {
-        NotificationBadgeManager.getInstance(applicationContext)
     }
 
     /**
@@ -73,12 +68,20 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val notificationHelper = NotificationHelper(applicationContext)
             notificationHelper.showNotification(title, body, data)
 
-            // 배지 카운트 증가 
-            notificationBadgeManager.incrementBadge()
+            // HomeTopAppBar에 배지 갱신 알림 (브로드캐스트)
+            sendBadgeUpdateBroadcast()
 
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    /**
+     * HomeTopAppBar에 배지 갱신을 알리는 브로드캐스트 전송
+     */
+    private fun sendBadgeUpdateBroadcast() {
+        val intent = Intent(ACTION_NOTIFICATION_RECEIVED)
+        sendBroadcast(intent)
     }
 
     /**
