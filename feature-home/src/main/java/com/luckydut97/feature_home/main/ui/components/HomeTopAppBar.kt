@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -94,7 +95,11 @@ fun HomeTopAppBar(
         }
 
         val intentFilter = IntentFilter(MyFirebaseMessagingService.ACTION_NOTIFICATION_RECEIVED)
-        context.registerReceiver(receiver, intentFilter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            context.registerReceiver(receiver, intentFilter)
+        }
 
         onDispose {
             context.unregisterReceiver(receiver)
