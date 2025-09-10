@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -59,6 +60,17 @@ fun WeeklyApplicationSection(
 fun WeeklyApplicationCard(
     onClick: () -> Unit
 ) {
+    // 화면 크기에 따른 반응형 폰트 크기 계산
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+
+    // 기준: 393dp (일반적인 안드로이드 화면), 갤럭시 S25는 약 360dp 정도  
+    val fontScale = (screenWidth / 393f).coerceIn(0.85f, 1.0f) // 최소 85%, 최대 100%
+    val descriptionFontSize = (14 * fontScale).sp // 14sp → 13sp (작은 화면에서)
+    val titleFontSize = (15 * fontScale).sp // 15sp
+    val subtitleFontSize = (18 * fontScale).sp // 18sp
+    val mainTitleFontSize = (20 * fontScale).sp // 20sp
+
     PressableComponent(
         onClick = onClick,
         modifier = Modifier
@@ -86,7 +98,7 @@ fun WeeklyApplicationCard(
                 ) {
                     Text(
                         text = "이번주 활동 신청",
-                        fontSize = 15.sp,
+                        fontSize = titleFontSize,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = Pretendard,
                         color = Color.Black
@@ -127,7 +139,7 @@ fun WeeklyApplicationCard(
                                     append("\n신청 가능합니다.")
                                 }
                             },
-                            fontSize = 18.sp,
+                            fontSize = subtitleFontSize,
                             fontWeight = FontWeight.Bold,
                             fontFamily = Pretendard,
                             lineHeight = 26.sp
@@ -137,7 +149,7 @@ fun WeeklyApplicationCard(
 
                         Text(
                             text = "멤버십, 게스트 모두 신청 가능합니다.",
-                            fontSize = 14.sp,
+                            fontSize = descriptionFontSize,
                             fontFamily = Pretendard,
                             color = Color(0xFF8B9096)
                         )

@@ -1,5 +1,6 @@
 package com.luckydut97.feature_home_activity.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -25,18 +26,25 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import com.luckydut97.tennispark.core.domain.model.WeeklyActivity
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
 
 /**
  * 고정형 드래그 가능한 바텀시트
- * 간단하고 안정적인 구현
+ * 달력을 가리지 않는 반응형 높이 계산
  */
 @Composable
 fun NewActivityApplicationBottomSheet(
@@ -48,26 +56,118 @@ fun NewActivityApplicationBottomSheet(
     modifier: Modifier = Modifier
 ) {
     val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
     val screenHeight = configuration.screenHeightDp.dp
 
-    // 활동 개수별 고정 높이 설정 (상단 여백 10dp 추가)
-    val targetHeight = when (activities.size) {
-        0 -> 158.dp // 148 + 10
-        1 -> 158.dp // 148 + 10
-        2 -> 240.dp // 230 + 10
-        3 -> 322.dp // 312 + 10
-        4 -> 404.dp // 394 + 10
-        else -> 488.dp // 478 + 10 (5개 이상, 최대 + 스크롤)
+    // 실제 StatusBar 높이 계산 (기기별로 다름)
+    val statusBarHeight = with(density) {
+        WindowInsets.systemBars.getTop(density).toDp()
+    }
+    val topBarHeight = 56.dp // TopBar 높이
+    val calendarHeaderHeight = 44.dp // CalendarHeader (IconButton 크기)
+    val calendarHeaderSpacing = 20.dp // 헤더-요일 간격
+    val calendarWeekHeaderHeight = 25.dp // 요일 헤더 ("일월화수목금토")
+    val calendarDividerSpacing = 19.dp // 요일-구분선-그리드 간격 (9+1+9)
+    val calendarGridHeight = 274.dp // CalendarGrid 고정 높이
+    val calendarBottomMargin = 20.dp // 달력 하단 여백 (여유분)
+
+    // 전체 달력 높이 계산 (StatusBar 포함)
+    val totalCalendarHeight =
+        statusBarHeight + topBarHeight + calendarHeaderHeight + calendarHeaderSpacing +
+            calendarWeekHeaderHeight + calendarDividerSpacing +
+            calendarGridHeight + calendarBottomMargin
+
+    // 달력을 가리지 않는 최대 높이 계산 (마지막 주차 직후까지)
+    val availableHeight = screenHeight - totalCalendarHeight
+
+    // 기본 컴포넌트 높이
+    val headerHeight = 30.dp
+    val topPadding = 10.dp
+    val bottomPadding = 36.dp
+    val itemHeight = 79.dp
+    val itemSpacing = 8.dp
+
+    // 필수 고정 높이 (헤더 + 패딩들)
+    val fixedHeight = headerHeight + topPadding + bottomPadding
+
+    // 활동 개수별 컨텐츠 높이 계산
+    val contentHeight = when (activities.size) {
+        0 -> 60.dp // 빈 상태 메시지 공간
+        1 -> itemHeight
+        else -> {
+            val totalItemsHeight = (activities.size * itemHeight.value).dp
+            val totalSpacingHeight = ((activities.size - 1) * itemSpacing.value).dp
+            totalItemsHeight + totalSpacingHeight
+        }
     }
 
-    val maxHeight = 488.dp
+    // 이상적인 높이 (고정 + 컨텐츠)
+    val idealHeight = fixedHeight + contentHeight
 
-    // 드래그 상태 관리
+    // 실제 타겟 높이 (달력을 가리지 않도록 제한)
+    val targetHeight = when {
+        idealHeight <= availableHeight -> idealHeight // 이상적 높이가 가능하면 사용
+        activities.size <= 1 -> idealHeight.coerceAtMost(availableHeight) // 1개 이하는 무조건 보여주기
+        else -> {
+            // 여러 개일 때는 최대 높이 사용 (스크롤로 모든 활동 접근 가능)
+            availableHeight
+        }
+    }
+
+    Log.d("🔍 BottomSheet", "=== 바텀시트 높이 계산 ===")
+    Log.d("🔍 BottomSheet", "screenHeight: $screenHeight")
+    Log.d("🔍 BottomSheet", "실제 statusBarHeight: $statusBarHeight (동적 계산)")
+    Log.d("🔍 BottomSheet", "topBarHeight: $topBarHeight")
+    Log.d("🔍 BottomSheet", "totalCalendarHeight: $totalCalendarHeight")
+    Log.d("🔍 BottomSheet", "  └─ 실제 statusBarHeight: $statusBarHeight")
+    Log.d("🔍 BottomSheet", "  └─ topBarHeight: $topBarHeight")
+    Log.d("🔍 BottomSheet", "  └─ calendarHeaderHeight: $calendarHeaderHeight")
+    Log.d("🔍 BottomSheet", "  └─ calendarHeaderSpacing: $calendarHeaderSpacing")
+    Log.d("🔍 BottomSheet", "  └─ calendarWeekHeaderHeight: $calendarWeekHeaderHeight")
+    Log.d("🔍 BottomSheet", "  └─ calendarDividerSpacing: $calendarDividerSpacing")
+    Log.d("🔍 BottomSheet", "  └─ calendarGridHeight: $calendarGridHeight")
+    Log.d("🔍 BottomSheet", "  └─ calendarBottomMargin: $calendarBottomMargin")
+    Log.d("🔍 BottomSheet", "availableHeight: $availableHeight")
+    Log.d("🔍 BottomSheet", "activities.size: ${activities.size}")
+    Log.d("🔍 BottomSheet", "idealHeight: $idealHeight")
+    Log.d("🔍 BottomSheet", "targetHeight: $targetHeight")
+    Log.d("🔍 BottomSheet", "=== 계산 완료 ===")
+    Log.d("🔍 BottomSheet", "📱 기기별 차이 - statusBar 높이가 핵심!")
+
+    // 드래그 상태 관리 - 드래그 상태는 영구 유지, 높이는 LaunchedEffect에서 관리
     var currentHeight by remember { mutableStateOf(targetHeight) }
+    var userHasDragged by remember { mutableStateOf(false) }
 
-    // 활동 개수가 변경될 때마다 목표 높이로 자동 업데이트
-    if (currentHeight != targetHeight) {
-        currentHeight = targetHeight
+    // 최소/최대 높이 제한 (반응형)
+    val minHeight = (fixedHeight + 60.dp).coerceAtMost(availableHeight * 0.3f) // 최소 30%
+    val maxHeight = availableHeight.coerceAtMost(screenHeight * 0.7f) // 최대 70%
+
+    // 활동 목록이 변경될 때마다 높이 재조정 - 개선된 로직
+    LaunchedEffect(activities, targetHeight) {
+        if (!userHasDragged) {
+            // 드래그 안했으면 항상 새로운 targetHeight로 조정
+            currentHeight = targetHeight
+        } else {
+            // 드래그 했어도 활동 개수가 크게 변했으면 자동 조정
+            val activityCountDiff =
+                kotlin.math.abs(activities.size - (currentHeight.value - fixedHeight.value) / (itemHeight.value + itemSpacing.value))
+
+            when {
+                // 활동이 0개가 되면 무조건 작게 조정
+                activities.isEmpty() -> {
+                    currentHeight = targetHeight
+                    userHasDragged = false // 빈 상태에서는 드래그 상태 리셋
+                }
+                // 활동 개수가 크게 변했으면 (3개 이상 차이) 자동 조정
+                activityCountDiff >= 3 -> {
+                    currentHeight = targetHeight
+                }
+                // 현재 높이가 새로운 범위를 벗어나면 조정
+                currentHeight < minHeight -> currentHeight = minHeight
+                currentHeight > maxHeight -> currentHeight = maxHeight
+                // 그 외에는 사용자 설정 유지
+            }
+        }
     }
 
     val animatedHeight by animateDpAsState(
@@ -100,18 +200,19 @@ fun NewActivityApplicationBottomSheet(
                     .pointerInput(Unit) {
                         detectDragGestures(
                             onDragEnd = {
-                                // 드래그 종료 시 스냅
-                                val halfWay = (targetHeight.value + maxHeight.value) / 2
-                                currentHeight = if (currentHeight.value < halfWay) {
-                                    targetHeight
-                                } else {
-                                    maxHeight
-                                }
+                                userHasDragged = true
+                                // 드래그 종료 시 스냅 (제거)
+                                // val halfWay = (targetHeight.value + maxHeight.value) / 2
+                                // currentHeight = if (currentHeight.value < halfWay) {
+                                //     targetHeight
+                                // } else {
+                                //     maxHeight
+                                // }
                             }
                         ) { _, dragAmount ->
                             val newHeightValue = currentHeight.value - (dragAmount.y / 2)
                             currentHeight = when {
-                                newHeightValue < targetHeight.value -> targetHeight
+                                newHeightValue < minHeight.value -> minHeight
                                 newHeightValue > maxHeight.value -> maxHeight
                                 else -> newHeightValue.dp
                             }
@@ -171,12 +272,12 @@ fun NewActivityApplicationBottomSheet(
                     activities.isEmpty() -> {
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(),
+                                .fillMaxSize()
+                                .offset(y = (-10).dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "선택 가능한 활동이 없습니다.",
+                                text = "선택 가능한 활동이 없습니다",
                                 fontSize = 16.sp,
                                 fontFamily = Pretendard,
                                 color = Color(0xFF8B9096),
@@ -194,7 +295,7 @@ fun NewActivityApplicationBottomSheet(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 36.dp),
-                                verticalArrangement = Arrangement.spacedBy(5.dp)
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 items(activities) { activity ->
                                     NewActivityItemComponent(

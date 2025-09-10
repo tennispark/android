@@ -27,7 +27,7 @@ fun CalendarWeekHeader(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        weekDays.forEach { dayOfWeek ->
+        weekDays.forEachIndexed { index, dayOfWeek ->
             Box(
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
@@ -37,7 +37,7 @@ fun CalendarWeekHeader(
                     fontSize = 18.sp,
                     fontFamily = Pretendard,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF8B9096) // 기존 AssistiveColor 사용
+                    color = if (index == 0) Color(0xFFEF3629) else Color(0xFF8B9096) // 일요일만 빨간색
                 )
             }
         }

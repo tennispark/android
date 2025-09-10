@@ -5,9 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -15,7 +20,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.feature_home_activity.ui.components.ActivityCompleteBottomSheet
 import com.luckydut97.feature_home_activity.ui.components.ActivityDetailBottomSheet
@@ -48,6 +55,7 @@ fun ActivityApplicationScreen(
     // 상태 수집
     val currentYearMonth by viewModel.currentYearMonth.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
+    val allActivities by viewModel.allActivities.collectAsState() // 전체 활동 데이터
     val filteredActivities by viewModel.filteredActivities.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -56,15 +64,18 @@ fun ActivityApplicationScreen(
     val showCompleteDialog by viewModel.showCompleteDialog.collectAsState()
     val isDuplicateError by viewModel.isDuplicateError.collectAsState()
 
+    // 활동이 있는 날짜들의 Set 생성
+    val activitiesDateSet = allActivities.map { it.date }.toSet()
+
     Scaffold(
         containerColor = Color.White,
+        modifier = modifier.statusBarsPadding(),
         topBar = {
             TopBar(
                 title = "활동 신청",
                 onBackClick = onBackClick
             )
-        },
-        modifier = modifier
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -80,8 +91,9 @@ fun ActivityApplicationScreen(
                 CalendarComponent(
                     currentYearMonth = currentYearMonth,
                     selectedDate = selectedDate,
+                    activitiesDateSet = activitiesDateSet, // 전체 활동 데이터에서 activitiesDateSet을 생성하고 전달
                     onDateSelected = { date ->
-                        viewModel.selectDate(date)
+                        viewModel.selectDate(date) // 모든 날짜 선택 가능
                     },
                     onPreviousMonth = {
                         viewModel.goToPreviousMonth()
@@ -138,6 +150,7 @@ fun ActivityApplicationScreen(
         )
     }
 
+
     // 에러 처리
     LaunchedEffect(error) {
         if (error != null) {
@@ -146,3 +159,4 @@ fun ActivityApplicationScreen(
         }
     }
 }
+

@@ -93,6 +93,7 @@ object CalendarUtils {
 
     /**
      * 달력 그리드용 날짜 데이터 생성
+     * 실제 필요한 주차만 생성 (4-6주 가변)
      */
     fun generateCalendarData(yearMonth: YearMonth): List<CalendarDateInfo> {
         val firstDayOfMonth = yearMonth.atDay(1)
@@ -125,10 +126,15 @@ object CalendarUtils {
             currentDate = currentDate.plusDays(1)
         }
 
-        // 다음 달 날짜들 (6주 완성)
+        // 현재까지의 날짜 개수로 필요한 주차 계산
+        val currentSize = calendarData.size
+        val currentWeeks = (currentSize + 6) / 7 // 올림 계산
+        val targetSize = currentWeeks * 7 // 4주(28), 5주(35), 6주(42)
+
+        // 다음 달 날짜들 (필요한 만큼만)
         val nextMonth = yearMonth.plusMonths(1)
         var nextMonthDate = nextMonth.atDay(1)
-        while (calendarData.size < 42) { // 6주 * 7일 = 42
+        while (calendarData.size < targetSize) {
             calendarData.add(
                 CalendarDateInfo(
                     date = nextMonthDate,
@@ -146,6 +152,56 @@ object CalendarUtils {
      */
     fun formatYearMonth(yearMonth: YearMonth): String {
         return "${yearMonth.year}년 ${yearMonth.monthValue}월"
+    }
+
+    /**
+     * 활동 신청 활성화 날짜 범위 계산
+     * 월~목: 오늘 ~ 이번주 일요일
+     * 금~일: 오늘 ~ 다음주 일요일
+     */
+    fun getActiveDateRange(): Pair<LocalDate, LocalDate> {
+        val today = LocalDate.now()
+        val dayOfWeek = today.dayOfWeek.value // 1(월) ~ 7(일)
+
+        return if (dayOfWeek <= 4) { // 월~목
+            // 오늘부터 이번주 일요일까지
+            val thisWeekSunday = today.with(DayOfWeek.SUNDAY)
+            today to thisWeekSunday
+        } else { // 금~일
+            // 오늘부터 다음주 일요일까지
+            val nextWeekSunday = today.with(DayOfWeek.SUNDAY).plusWeeks(1)
+            today to nextWeekSunday
+        }
+    }
+
+    /**
+     * 특정 날짜가 활동 신청 활성화 범위에 포함되는지 확인
+     */
+    fun isInActiveDateRange(date: LocalDate): Boolean {
+        val (startDate, endDate) = getActiveDateRange()
+        return !date.isBefore(startDate) && !date.isAfter(endDate)
+    }
+
+    /**
+     * 특정 날짜가 비활성화 날짜인지 확인 (과거 또는 미래)
+     */
+    fun isInactiveDate(date: LocalDate): Boolean {
+        return !isInActiveDateRange(date)
+    }
+
+    /**
+     * 특정 날짜가 과거 날짜인지 확인
+     */
+    fun isPastDate(date: LocalDate): Boolean {
+        return date.isBefore(LocalDate.now())
+    }
+
+    /**
+     * 특정 날짜가 미래의 비활성화 날짜인지 확인
+     */
+    fun isFutureInactiveDate(date: LocalDate): Boolean {
+        val (_, endDate) = getActiveDateRange()
+        return date.isAfter(endDate)
     }
 }
 

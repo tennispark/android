@@ -45,7 +45,12 @@ fun EventSection(
     onAcademyClick: () -> Unit,
     onCourtIntroClick: () -> Unit
 ) {
-    val pagerState = rememberPagerState(pageCount = { totalPages })
+    // 무한 스크롤을 위한 매우 큰 페이지 수 설정
+    val infinitePageCount = Int.MAX_VALUE
+    val pagerState = rememberPagerState(
+        initialPage = infinitePageCount / 2 - (infinitePageCount / 2) % totalPages, // 첫 번째 페이지부터 시작
+        pageCount = { infinitePageCount }
+    )
 
     val currentMonth = remember {
         ZonedDateTime.now(ZoneId.of("Asia/Seoul")).monthValue
@@ -54,10 +59,13 @@ fun EventSection(
     LaunchedEffect(key1 = Unit) {
         while (true) {
             delay(5000)
-            if (pagerState.currentPage < totalPages - 1) {
-                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-            } else {
-                pagerState.animateScrollToPage(0)
+            // 스크롤 중이 아닐 때만 자동 넘김
+            if (!pagerState.isScrollInProgress) {
+                try {
+                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                } catch (e: Exception) {
+                    // 애니메이션 충돌 시 무시
+                }
             }
         }
     }
@@ -81,27 +89,27 @@ fun EventSection(
             state = pagerState,
             modifier = Modifier.fillMaxWidth()
         ) { page ->
-            when (page) {
+            val pageIndex = page % totalPages // 실제 페이지 인덱스 계산
+            when (pageIndex) {
                 0 -> EventCard(
                     iconRes = R.drawable.ic_member,
                     title = "멤버십 등록하기",
                     subtitle = "${(currentMonth % 12) + 1}월 정기 멤버십 등록",
-                    pageIndicator = "${page + 1} / $totalPages",
+                    pageIndicator = "${pageIndex + 1} / $totalPages",
                     onClick = onMembershipClick
                 )
                 1 -> EventCard(
                     iconRes = R.drawable.ic_tennis,
                     title = "아카데미 등록하기",
-                    //subtitle = "${currentMonth}월 아카데미 등록",
                     subtitle = "아카데미 바로 신청하기",
-                    pageIndicator = "${page + 1} / $totalPages",
+                    pageIndicator = "${pageIndex + 1} / $totalPages",
                     onClick = onAcademyClick
                 )
                 2 -> EventCard(
                     iconRes = R.drawable.ic_tennis,
                     title = "활동 코트 소개",
                     subtitle = "각 코트별 소개",
-                    pageIndicator = "${page + 1} / $totalPages",
+                    pageIndicator = "${pageIndex + 1} / $totalPages",
                     onClick = onCourtIntroClick
                 )
             }

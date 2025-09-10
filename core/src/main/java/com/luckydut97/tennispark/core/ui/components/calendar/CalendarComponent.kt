@@ -23,6 +23,7 @@ import java.time.YearMonth
 fun CalendarComponent(
     currentYearMonth: YearMonth,
     selectedDate: LocalDate?,
+    activitiesDateSet: Set<LocalDate> = emptySet(), // 활동이 있는 날짜들
     onDateSelected: (LocalDate) -> Unit,
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
@@ -64,6 +65,7 @@ fun CalendarComponent(
         CalendarGrid(
             calendarData = calendarData,
             selectedDate = selectedDate,
+            activitiesDateSet = activitiesDateSet, // activitiesDateSet 전달
             onDateSelected = onDateSelected
         )
     }

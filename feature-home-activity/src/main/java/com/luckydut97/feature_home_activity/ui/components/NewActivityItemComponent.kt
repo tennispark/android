@@ -23,8 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.feature_home_activity.R
@@ -35,7 +37,7 @@ import com.luckydut97.tennispark.core.ui.theme.Pretendard
 
 /**
  * 새로운 활동 아이템 컴포넌트 (71dp 높이)
- * 좌우 분할 레이아웃과 상태별 색상 테마
+ * 좌우 분할 레이아웃과 상태별 색상 테마 + 반응형 폰트
  */
 @Composable
 fun NewActivityItemComponent(
@@ -44,6 +46,19 @@ fun NewActivityItemComponent(
     modifier: Modifier = Modifier
 ) {
     val theme = getActivityTheme(activity.status)
+
+    // 화면 크기에 따른 반응형 폰트 크기 계산
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+
+    // 기준: 393dp (일반적인 안드로이드 화면), 갤럭시 S25는 약 360dp 정도
+    val fontScale = (screenWidth / 393f).coerceIn(0.85f, 1.0f) // 최소 85%, 최대 100%
+
+    val gameCodeFontSize: TextUnit = (14 * fontScale).sp
+    val dateTimeFontSize: TextUnit = (14 * fontScale).sp
+    val locationFontSize: TextUnit = (12 * fontScale).sp
+    val participantInfoFontSize: TextUnit = (13 * fontScale).sp
+    val statusFontSize: TextUnit = (12 * fontScale).sp
 
     PressableComponent(
         onClick = { onActivityClick(activity) },
@@ -76,7 +91,9 @@ fun NewActivityItemComponent(
                 LeftSection(
                     participantInfo = activity.participantInfo,
                     status = activity.status,
-                    theme = theme
+                    theme = theme,
+                    participantInfoFontSize = participantInfoFontSize,
+                    statusFontSize = statusFontSize
                 )
 
                 // 우측 영역
@@ -86,7 +103,10 @@ fun NewActivityItemComponent(
                     formattedTime = activity.formattedTime,
                     location = activity.location,
                     court = activity.court,
-                    theme = theme
+                    theme = theme,
+                    gameCodeFontSize = gameCodeFontSize,
+                    dateTimeFontSize = dateTimeFontSize,
+                    locationFontSize = locationFontSize
                 )
             }
         }
@@ -97,7 +117,9 @@ fun NewActivityItemComponent(
 private fun LeftSection(
     participantInfo: String,
     status: ActivityStatus,
-    theme: ActivityItemTheme
+    theme: ActivityItemTheme,
+    participantInfoFontSize: TextUnit,
+    statusFontSize: TextUnit
 ) {
     Box(
         modifier = Modifier
@@ -113,15 +135,15 @@ private fun LeftSection(
             // 인원 표시 박스
             Box(
                 modifier = Modifier
-                    .width(59.dp)
-                    .height(29.dp)
+                    .width(54.dp)
+                    .height(24.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(theme.participantBoxColor),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = participantInfo,
-                    fontSize = 14.sp,
+                    fontSize = participantInfoFontSize,
                     fontFamily = Pretendard,
                     fontWeight = FontWeight.Normal,
                     letterSpacing = (-0.5).sp,
@@ -139,7 +161,7 @@ private fun LeftSection(
                     ActivityStatus.FULL -> "모집 완료"
                     else -> "모집 중"
                 },
-                fontSize = 12.sp,
+                fontSize = statusFontSize,
                 fontFamily = Pretendard,
                 fontWeight = FontWeight.SemiBold,
                 color = theme.statusTextColor
@@ -155,7 +177,10 @@ private fun RightSection(
     formattedTime: String,
     location: String,
     court: String,
-    theme: ActivityItemTheme
+    theme: ActivityItemTheme,
+    gameCodeFontSize: TextUnit,
+    dateTimeFontSize: TextUnit,
+    locationFontSize: TextUnit
 ) {
     Box(
         modifier = Modifier
@@ -172,7 +197,7 @@ private fun RightSection(
                 // 게임코드 (SemiBold)
                 Text(
                     text = gameCode,
-                    fontSize = 14.sp,
+                    fontSize = gameCodeFontSize,
                     fontFamily = Pretendard,
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = (-0.5).sp,
@@ -184,7 +209,7 @@ private fun RightSection(
                 // 날짜 + 시간 (Medium)
                 Text(
                     text = "$formattedDate $formattedTime",
-                    fontSize = 14.sp,
+                    fontSize = dateTimeFontSize,
                     fontFamily = Pretendard,
                     fontWeight = FontWeight.Medium,
                     letterSpacing = (-0.5).sp,
@@ -217,9 +242,9 @@ private fun RightSection(
 
                 Text(
                     text = "$location $court",
-                    fontSize = 12.sp,
+                    fontSize = locationFontSize,
                     fontFamily = Pretendard,
-                    fontWeight = FontWeight.SemiBold, // Normal에서 SemiBold로 변경
+                    fontWeight = FontWeight.SemiBold,
                     color = theme.locationTextColor
                 )
             }
