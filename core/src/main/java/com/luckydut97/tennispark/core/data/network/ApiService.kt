@@ -22,7 +22,13 @@ import com.luckydut97.tennispark.core.data.model.AdvertisementListResponse
 import com.luckydut97.tennispark.core.data.model.ActivityImageListResponse
 import com.luckydut97.tennispark.core.data.model.NotificationListResponse
 import com.luckydut97.tennispark.core.data.model.UnreadCountResponse
+import com.luckydut97.tennispark.core.data.model.CommunityHomeResponse
+import com.luckydut97.tennispark.core.data.model.CommunityPostDetailResponse
+import com.luckydut97.tennispark.core.data.model.CommunityCommentsResponse
+import com.luckydut97.tennispark.core.data.model.CommunityPostCreateRequest
+import com.luckydut97.tennispark.core.data.model.CommunityPostCreateResponse
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -135,4 +141,34 @@ interface ApiService {
     // 알림 전체 읽음 처리 API
     @PATCH("api/members/notifications/read")
     suspend fun markAllNotificationsAsRead(): Response<ApiResponse<Any>>
+
+    // 커뮤니티 관련 API
+    @GET("api/members/community/posts/home")
+    suspend fun getCommunityPosts(
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 20
+    ): Response<ApiResponse<CommunityHomeResponse>>
+
+    @GET("api/members/community/posts/{postId}")
+    suspend fun getCommunityPostDetail(@Path("postId") postId: Int): Response<ApiResponse<CommunityPostDetailResponse>>
+
+    @GET("api/members/community/posts/{postId}/comments")
+    suspend fun getCommunityPostComments(@Path("postId") postId: Int): Response<CommunityCommentsResponse>
+
+    // 커뮤니티 댓글 작성 API
+    @Multipart
+    @POST("api/members/community/posts/{postId}/comments")
+    suspend fun createCommunityComment(
+        @Path("postId") postId: Int,
+        @Part("data") data: RequestBody, // JSON 형태 (Content-Type: application/json)
+        @Part photo: MultipartBody.Part? // 선택적 이미지 (최대 1장)
+    ): Response<ApiResponse<Any>>
+
+    // 커뮤니티 게시글 작성 API
+    @Multipart
+    @POST("api/members/community/posts")
+    suspend fun createCommunityPost(
+        @Part("data") data: RequestBody, // JSON 형태 (Content-Type: application/json)
+        @Part photos: List<MultipartBody.Part> // 최대 3장의 이미지
+    ): Response<ApiResponse<CommunityPostCreateResponse>>
 }

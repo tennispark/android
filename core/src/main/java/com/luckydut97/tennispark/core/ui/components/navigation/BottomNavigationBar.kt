@@ -33,6 +33,7 @@ import com.luckydut97.tennispark.core.ui.theme.Pretendard
 enum class BottomNavigationItem(val route: String, val label: String) {
     HOME("home", "홈"),
     SHOP("shop", "상품 구매"),
+    COMMUNITY("community", "커뮤니티"),
     PROFILE("profile", "내 정보")
 }
 
@@ -77,6 +78,14 @@ fun BottomNavigationBar(
                 modifier = Modifier.weight(1f)
             )
 
+            // 커뮤니티 버튼
+            BottomNavItem(
+                item = BottomNavigationItem.COMMUNITY,
+                isSelected = currentRoute == BottomNavigationItem.COMMUNITY.route,
+                onClick = { onItemClick(BottomNavigationItem.COMMUNITY.route) },
+                modifier = Modifier.weight(1f)
+            )
+
             // 내 정보 버튼
             BottomNavItem(
                 item = BottomNavigationItem.PROFILE,
@@ -98,6 +107,7 @@ fun BottomNavItem(
     val iconRes = when (item) {
         BottomNavigationItem.HOME -> if (isSelected) R.drawable.ic_home_active else R.drawable.ic_home_deactive
         BottomNavigationItem.SHOP -> if (isSelected) R.drawable.ic_buy_active else R.drawable.ic_buy_deactive
+        BottomNavigationItem.COMMUNITY -> if (isSelected) R.drawable.ic_community_active else R.drawable.ic_community_deactive
         BottomNavigationItem.PROFILE -> if (isSelected) R.drawable.ic_info_active else R.drawable.ic_info_deactive
     }
 

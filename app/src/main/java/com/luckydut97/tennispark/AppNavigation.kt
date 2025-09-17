@@ -3,7 +3,9 @@ package com.luckydut97.tennispark
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -12,6 +14,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,7 +30,9 @@ import com.luckydut97.feature_myinfo.navigation.MyInfoNavigation
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationBar
 import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationItem
 import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
-
+import com.luckydut97.feature_community.ui.CommunityDetailScreen
+import com.luckydut97.feature_community.ui.CommunityHomeScreen
+import com.luckydut97.feature_community.ui.CommunityWriteScreen
 
 /**
  * 탭 순서에 따른 슬라이드 방향 결정
@@ -35,11 +42,12 @@ fun getTabOrder(route: String): Int {
         route == BottomNavigationItem.HOME.route -> 0
         route == BottomNavigationItem.SHOP.route -> 1
         route.startsWith("shop_detail") -> 1 // 상품 상세 화면도 상품구매 탭으로 처리
-        route == BottomNavigationItem.PROFILE.route -> 2
+        route == BottomNavigationItem.COMMUNITY.route -> 2
+        route == BottomNavigationItem.PROFILE.route -> 3
         // 내정보 탭의 하위 화면들
         route == "myinfo" || route == "settings" || route == "notice" ||
                 route == "app_settings" || route == "faq" || route == "terms" ||
-                route == "version_info" || route == "withdrawal" -> 2
+                route == "version_info" || route == "withdrawal" -> 3
         else -> 0
     }
 }
@@ -277,6 +285,68 @@ fun AppNavigation(
                 }
             )
         }
+
+        // 커뮤니티 상세 화면
+        composable(
+            "community_detail/{postId}",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            }
+        ) { backStackEntry ->
+            val postId = backStackEntry.arguments?.getString("postId")?.toIntOrNull() ?: 0
+
+            CommunityDetailScreen(
+                postId = postId,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                /*onSearchClick = {
+                    // TODO: 검색 화면으로 이동
+                },*/
+                onAlarmClick = {
+                    try {
+                        navController.navigate("app_push")
+                    } catch (e: Exception) {
+                    }
+                }
+            )
+        }
+
+        // 커뮤니티 글쓰기 화면
+        composable(
+            "community_write",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            }
+        ) {
+            CommunityWriteScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onCompleteClick = { title, content, images ->
+                    // TODO: 게시글 등록 API 연동 (이미지 포함)
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }
 
@@ -294,18 +364,19 @@ fun MainScreenWithBottomNav(
     // 바텀 네비게이션 표시/숨김 상태
     var isBottomNavVisible by remember { mutableStateOf(true) }
 
-    // 상품 상세 화면에서도 상품구매 탭이 활성화되도록 라우트 매핑
+    // 4개 탭 구조에서 탭/비탭 화면에 따라 바텀네비 탭 강조 및 숨김 로직 적용
     val bottomNavRoute = when {
-        currentRoute.startsWith("shop_detail") -> BottomNavigationItem.SHOP.route
-        // 내정보 하위 화면들에서도 내정보 탭 활성화 (point_history 제외)
-        currentRoute == "myinfo" || currentRoute == "settings" || currentRoute == "notice" ||
-                currentRoute == "app_settings" || currentRoute == "faq" || currentRoute == "terms" ||
-                currentRoute == "version_info" || currentRoute == "withdrawal" -> BottomNavigationItem.PROFILE.route
-        // 포인트 내역 화면에서는 바텀 네비게이션 숨김
-        currentRoute == "point_history" -> null
-        // 푸시 알림 화면에서는 바텀 네비게이션 숨김
-        currentRoute == "app_push" -> null
-        else -> currentRoute
+        // 각 탭의 메인/서브 화면 라우트 매핑
+        currentRoute == BottomNavigationItem.HOME.route -> BottomNavigationItem.HOME.route
+        currentRoute == BottomNavigationItem.SHOP.route || currentRoute.startsWith("shop_detail") -> BottomNavigationItem.SHOP.route
+        currentRoute == BottomNavigationItem.COMMUNITY.route -> BottomNavigationItem.COMMUNITY.route
+        // 내정보 하위 screen은 모두 내정보 탭 강조 (except point_history)
+        currentRoute == BottomNavigationItem.PROFILE.route || currentRoute == "myinfo" || currentRoute == "settings" ||
+                currentRoute == "notice" || currentRoute == "app_settings" || currentRoute == "faq" ||
+                currentRoute == "terms" || currentRoute == "version_info" || currentRoute == "withdrawal" -> BottomNavigationItem.PROFILE.route
+        // 탭 외 화면에서 바텀네비 숨김
+        currentRoute == "point_history" || currentRoute == "app_push" -> null
+        else -> null
     }
 
     // 이전 라우트 추적을 위한 상태
@@ -528,6 +599,68 @@ fun MainScreenWithBottomNav(
                     item = shopItem,
                     onBackClick = {
                         navController.popBackStack()
+                    }
+                )
+            }
+
+            // 커뮤니티 화면
+            composable(
+                BottomNavigationItem.COMMUNITY.route,
+                enterTransition = {
+                    val initialRoute = initialState.destination.route ?: ""
+                    val initialOrder = getTabOrder(initialRoute)
+                    val targetOrder = getTabOrder(BottomNavigationItem.COMMUNITY.route)
+
+                    if (initialOrder > targetOrder) {
+                        // 오른쪽에서 왼쪽으로 (내정보 -> 커뮤니티)
+                        slideInHorizontally(
+                            initialOffsetX = { -it },
+                            animationSpec = tween(300)
+                        )
+                    } else {
+                        // 왼쪽에서 오른쪽으로 (홈/상품구매 -> 커뮤니티)
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(300)
+                        )
+                    }
+                },
+                exitTransition = {
+                    val targetRoute = targetState.destination.route ?: ""
+                    val initialOrder = getTabOrder(BottomNavigationItem.COMMUNITY.route)
+                    val targetOrder = getTabOrder(targetRoute)
+
+                    if (targetOrder > initialOrder) {
+                        // 왼쪽으로 나가기 (커뮤니티 -> 내정보)
+                        slideOutHorizontally(
+                            targetOffsetX = { -it },
+                            animationSpec = tween(300)
+                        )
+                    } else {
+                        // 오른쪽으로 나가기 (커뮤니티 -> 홈/상품구매)
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(300)
+                        )
+                    }
+                }
+            ) {
+                CommunityHomeScreen(
+                    onPostClick = { postId ->
+                        mainNavController.navigate("community_detail/$postId")
+                    },
+                    onSearchClick = {
+                        // TODO: 검색 화면으로 이동
+                    },
+                    onAlarmClick = {
+                        // TODO: 알림 화면으로 이동
+                        try {
+                            mainNavController.navigate("app_push")
+                        } catch (e: Exception) {
+                        }
+                    },
+                    onWriteClick = {
+                        mainNavController.navigate("community_write")
                     }
                 )
             }

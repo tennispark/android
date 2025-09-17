@@ -66,7 +66,10 @@ fun UnifiedAdBanner(
     val coroutineScope = rememberCoroutineScope()
 
     val tag = "🔍 디버깅: UnifiedAdBanner"
-    Log.d(tag, "[UnifiedAdBanner] rendering with ${bannerList.size} local banners")
+    Log.d(
+        tag,
+        "[UnifiedAdBanner] rendering with ${bannerList.size} local banners"
+    )
 
     Box(
         modifier = modifier
@@ -81,7 +84,10 @@ fun UnifiedAdBanner(
             val banner = bannerList[bannerIndex]
             PressableComponent(
                 onClick = {
-                    Log.d(tag, "[UnifiedAdBanner] banner clicked: url=${banner.url}")
+                    Log.d(
+                        tag,
+                        "[UnifiedAdBanner] banner clicked: url=${banner.url}"
+                    )
                     context.launchUrl(banner.url)
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -159,7 +165,10 @@ fun UnifiedAdBannerApi(
     val coroutineScope = rememberCoroutineScope()
 
     val tag = "🔍 디버깅: UnifiedAdBannerApi"
-    Log.d(tag, "[UnifiedAdBannerApi] rendering with ${advertisements.size} API banners")
+    Log.d(
+        tag,
+        "[UnifiedAdBannerApi] rendering with ${advertisements.size} API banners"
+    )
 
     Box(
         modifier = modifier
@@ -187,10 +196,7 @@ fun UnifiedAdBannerApi(
                     modifier = Modifier.fillMaxWidth(),
                     contentScale = ContentScale.FillWidth,
                     onSuccess = {
-                        Log.d(
-                            tag,
-                            "[UnifiedAdBannerApi] image loaded successfully: ${advertisement.imageUrl}"
-                        )
+                        // 이미지 로드 성공 (로그 제거)
                     },
                     onError = {
                         Log.e(

@@ -13,8 +13,8 @@ android {
         applicationId = "com.luckydut97.tennispark"
         minSdk = 26
         targetSdk = 35
-        versionCode = 25
-        versionName = "1.2.1"
+        versionCode = 26
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -100,6 +100,7 @@ dependencies {
     implementation(project(":feature-home-activity"))
     implementation(project(":feature-attendance"))
     implementation(project(":feature-push"))
+    implementation(project(":feature_community"))
 
     implementation("androidx.appcompat:appcompat:1.6.1")
 }

@@ -35,4 +35,25 @@ object TimeUtils {
             }
         }
     }
+
+    /**
+     * ISO 8601 형식의 문자열을 LocalDateTime으로 파싱
+     * 예: "2025-09-07T02:32:59.122272"
+     */
+    fun parseIsoDateTime(dateTimeString: String): LocalDateTime {
+        return LocalDateTime.parse(dateTimeString)
+    }
+
+    /**
+     * 커뮤니티 게시글용 시간 표시 함수
+     * ISO 8601 형식의 문자열을 받아서 상대 시간 문자열로 변환
+     */
+    fun getCommunityTimeString(createdAt: String): String {
+        return try {
+            val dateTime = parseIsoDateTime(createdAt)
+            getRelativeTimeString(dateTime)
+        } catch (e: Exception) {
+            "시간 정보 없음"
+        }
+    }
 }
