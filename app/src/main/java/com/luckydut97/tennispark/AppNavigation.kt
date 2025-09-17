@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,6 +36,7 @@ import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
 import com.luckydut97.feature_community.ui.CommunityDetailScreen
 import com.luckydut97.feature_community.ui.CommunityHomeScreen
 import com.luckydut97.feature_community.ui.CommunityWriteScreen
+import com.luckydut97.feature_community.viewmodel.CommunityHomeViewModel
 
 /**
  * 탭 순서에 따른 슬라이드 방향 결정
@@ -341,8 +345,11 @@ fun AppNavigation(
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onCompleteClick = { title, content, images ->
-                    // TODO: 게시글 등록 API 연동 (이미지 포함)
+                onPostCreated = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "community_refresh",
+                        true
+                    )
                     navController.popBackStack()
                 }
             )
@@ -644,7 +651,23 @@ fun MainScreenWithBottomNav(
                         )
                     }
                 }
-            ) {
+            ) { backStackEntry ->
+                val communityViewModel: CommunityHomeViewModel = viewModel(backStackEntry)
+                val parentEntry = remember(backStackEntry) {
+                    mainNavController.getBackStackEntry("main")
+                }
+                val refreshFlow = remember(parentEntry) {
+                    parentEntry.savedStateHandle.getStateFlow("community_refresh", false)
+                }
+                val shouldRefresh by refreshFlow.collectAsState()
+
+                LaunchedEffect(shouldRefresh) {
+                    if (shouldRefresh) {
+                        communityViewModel.loadCommunityPosts()
+                        parentEntry.savedStateHandle["community_refresh"] = false
+                    }
+                }
+
                 CommunityHomeScreen(
                     onPostClick = { postId ->
                         mainNavController.navigate("community_detail/$postId")
@@ -661,7 +684,8 @@ fun MainScreenWithBottomNav(
                     },
                     onWriteClick = {
                         mainNavController.navigate("community_write")
-                    }
+                    },
+                    viewModel = communityViewModel
                 )
             }
 

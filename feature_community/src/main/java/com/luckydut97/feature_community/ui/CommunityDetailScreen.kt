@@ -204,7 +204,7 @@ fun CommunityDetailScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "첫 번째 댓글을 작성해보세요!",
+                                    text = "첫 번째 댓글을 작성해보세요.",
                                     color = Color.Gray
                                 )
                             }

@@ -26,7 +26,6 @@ import com.luckydut97.tennispark.core.data.model.CommunityHomeResponse
 import com.luckydut97.tennispark.core.data.model.CommunityPostDetailResponse
 import com.luckydut97.tennispark.core.data.model.CommunityCommentsResponse
 import com.luckydut97.tennispark.core.data.model.CommunityPostCreateRequest
-import com.luckydut97.tennispark.core.data.model.CommunityPostCreateResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -170,5 +169,5 @@ interface ApiService {
     suspend fun createCommunityPost(
         @Part("data") data: RequestBody, // JSON 형태 (Content-Type: application/json)
         @Part photos: List<MultipartBody.Part> // 최대 3장의 이미지
-    ): Response<ApiResponse<CommunityPostCreateResponse>>
+    ): Response<ApiResponse<Any>>
 }

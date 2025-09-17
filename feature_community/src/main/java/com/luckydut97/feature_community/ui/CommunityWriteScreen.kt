@@ -42,7 +42,7 @@ import com.luckydut97.tennispark.core.ui.components.community.PhotoAttachmentBar
 @Composable
 fun CommunityWriteScreen(
     onBackClick: () -> Unit,
-    onCompleteClick: (String, String, List<Uri>) -> Unit,
+    onPostCreated: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CommunityHomeViewModel = viewModel()
 ) {
@@ -83,9 +83,12 @@ fun CommunityWriteScreen(
     // 게시글 작성 성공/실패 처리
     LaunchedEffect(uiState.createPostSuccess) {
         if (uiState.createPostSuccess) {
+            title = ""
+            content = ""
+            selectedImages = emptyList()
+            keyboardController?.hide()
             viewModel.clearCreatePostState()
-            viewModel.loadCommunityPosts() // 새 게시글 포함해서 목록 새로고침
-            onBackClick() // 성공시 이전 화면으로 돌아가기
+            onPostCreated()
         }
     }
 
@@ -107,7 +110,6 @@ fun CommunityWriteScreen(
                 onBackClick = onBackClick,
                 onCompleteClick = {
                     viewModel.createPost(title.trim(), content.trim(), selectedImages)
-                    onCompleteClick(title.trim(), content.trim(), selectedImages)
                 },
                 isCompleteEnabled = isCompleteEnabled
             )

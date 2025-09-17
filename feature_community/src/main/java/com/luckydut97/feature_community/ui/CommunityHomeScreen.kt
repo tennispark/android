@@ -7,12 +7,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.feature_community.viewmodel.CommunityHomeViewModel
 import com.luckydut97.tennispark.core.ui.components.community.CommunityTopBar
 import com.luckydut97.tennispark.core.ui.components.community.CommunityPostCard
@@ -28,10 +29,12 @@ fun CommunityHomeScreen(
     onSearchClick: () -> Unit = {},
     onAlarmClick: () -> Unit = {},
     onWriteClick: () -> Unit = {},
-    viewModel: CommunityHomeViewModel = viewModel()
+    viewModel: CommunityHomeViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
+    val pullToRefreshState = rememberPullToRefreshState()
+    val indicatorColor = Color(0xFF1C7756)
 
     // 무한 스크롤: 리스트 끝 감지
     val shouldLoadMore = remember {
@@ -86,7 +89,17 @@ fun CommunityHomeScreen(
             PullToRefreshBox(
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = { viewModel.refresh() },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                state = pullToRefreshState,
+                indicator = {
+                    PullToRefreshDefaults.Indicator(
+                        state = pullToRefreshState,
+                        isRefreshing = uiState.isRefreshing,
+                        modifier = Modifier.align(Alignment.TopCenter),
+                        color = Color.White,
+                        containerColor = indicatorColor
+                    )
+                }
             ) {
                 when {
                     uiState.isLoading && uiState.posts.isEmpty() -> {
@@ -144,7 +157,7 @@ fun CommunityHomeScreen(
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = "첫 번째 게시글을 작성해보세요!",
+                                    text = "첫 번째 게시글을 작성해보세요.",
                                     color = Color.LightGray
                                 )
                             }
