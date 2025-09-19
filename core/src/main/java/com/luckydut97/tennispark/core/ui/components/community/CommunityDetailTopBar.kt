@@ -36,7 +36,7 @@ fun CommunityDetailTopBar(
                 painter = painterResource(id = R.drawable.ic_left_arrow),
                 contentDescription = "뒤로가기",
                 tint = Color.Black,
-                modifier = Modifier.size(27.dp)
+                modifier = Modifier.size(15.dp)
             )
         }
 

@@ -51,6 +51,25 @@ interface CommunityRepository {
     ): Result<Unit>
 
     /**
+     * 게시글 댓글 수정
+     */
+    suspend fun updateComment(
+        postId: Int,
+        commentId: Int,
+        content: String,
+        deletePhoto: Boolean,
+        newImageUri: Uri? = null
+    ): Result<Unit>
+
+    /**
+     * 게시글 댓글 삭제
+     */
+    suspend fun deleteComment(
+        postId: Int,
+        commentId: Int
+    ): Result<Unit>
+
+    /**
      * 게시글 작성
      *
      * @param title 게시글 제목
@@ -63,4 +82,26 @@ interface CommunityRepository {
         content: String,
         images: List<Uri> = emptyList()
     ): Result<Unit>
+
+    /**
+     * 게시글 수정
+     *
+     * @param postId 게시글 ID
+     * @param title 게시글 제목
+     * @param content 게시글 내용
+     * @param deleteIndexes 삭제할 기존 사진 인덱스 목록
+     * @param newImages 새로 첨부할 이미지 목록 (최대 3장)
+     */
+    suspend fun updatePost(
+        postId: Int,
+        title: String,
+        content: String,
+        deleteIndexes: List<Int> = emptyList(),
+        newImages: List<Uri> = emptyList()
+    ): Result<Unit>
+
+    /**
+     * 게시글 삭제
+     */
+    suspend fun deletePost(postId: Int): Result<Unit>
 }

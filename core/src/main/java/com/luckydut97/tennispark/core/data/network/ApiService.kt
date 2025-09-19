@@ -36,6 +36,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -163,6 +164,23 @@ interface ApiService {
         @Part photo: MultipartBody.Part? // 선택적 이미지 (최대 1장)
     ): Response<ApiResponse<Any>>
 
+    // 커뮤니티 댓글 수정 API
+    @Multipart
+    @PUT("api/members/community/posts/{postId}/comments/{commentId}")
+    suspend fun updateCommunityComment(
+        @Path("postId") postId: Int,
+        @Path("commentId") commentId: Int,
+        @Part("data") data: RequestBody,
+        @Part photo: MultipartBody.Part? = null
+    ): Response<ApiResponse<Any>>
+
+    // 커뮤니티 댓글 삭제 API
+    @DELETE("api/members/community/posts/{postId}/comments/{commentId}")
+    suspend fun deleteCommunityComment(
+        @Path("postId") postId: Int,
+        @Path("commentId") commentId: Int
+    ): Response<ApiResponse<Any>>
+
     // 커뮤니티 게시글 작성 API
     @Multipart
     @POST("api/members/community/posts")
@@ -170,4 +188,17 @@ interface ApiService {
         @Part("data") data: RequestBody, // JSON 형태 (Content-Type: application/json)
         @Part photos: List<MultipartBody.Part> // 최대 3장의 이미지
     ): Response<ApiResponse<Any>>
+
+    // 커뮤니티 게시글 수정 API
+    @Multipart
+    @PUT("api/members/community/posts/{postId}")
+    suspend fun updateCommunityPost(
+        @Path("postId") postId: Int,
+        @Part("data") data: RequestBody,
+        @Part photos: List<MultipartBody.Part> = emptyList()
+    ): Response<ApiResponse<Any>>
+
+    // 커뮤니티 게시글 삭제 API
+    @DELETE("api/members/community/posts/{postId}")
+    suspend fun deleteCommunityPost(@Path("postId") postId: Int): Response<ApiResponse<Any>>
 }

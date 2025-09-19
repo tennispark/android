@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -35,14 +36,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.components.community.CommunityWriteTopBar
 import com.luckydut97.tennispark.core.ui.components.community.PhotoAttachmentBar
@@ -52,13 +57,16 @@ fun CommentEditScreen(
     initialContent: String,
     initialImageUrl: String? = null,
     onBackClick: () -> Unit,
-    onSubmit: (String, List<Uri>) -> Unit,
+    onSubmit: (String, Boolean, Uri?) -> Unit,
+    isSaving: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     var content by remember(initialContent) { mutableStateOf(initialContent) }
     var selectedImage by remember { mutableStateOf<Uri?>(null) }
     var initialImageRemoved by remember { mutableStateOf(initialImageUrl == null) }
     val scrollState = rememberScrollState()
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
 
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -73,40 +81,48 @@ fun CommentEditScreen(
         initialImageRemoved = initialImageUrl == null
     }
 
-    val isCompleteEnabled = content.isNotBlank() && content.length <= 300
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        containerColor = Color.White,
-        topBar = {
+    val isCompleteEnabled = content.isNotBlank() && content.length <= 300 && !isSaving
+
+    Box(modifier = modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = Color.White,
+            topBar = {
             CommunityWriteTopBar(
                 onBackClick = onBackClick,
                 onCompleteClick = {
                     if (content.length > 300) {
                         Toast.makeText(context, "댓글은 300자까지 작성할 수 있습니다.", Toast.LENGTH_SHORT).show()
                     } else {
-                        val images = selectedImage?.let { listOf(it) } ?: emptyList()
-                        onSubmit(content.trim(), images)
+                        val deletePhoto = initialImageUrl != null && initialImageRemoved
+                        onSubmit(content.trim(), deletePhoto, selectedImage)
                     }
                 },
                 isCompleteEnabled = isCompleteEnabled,
                 titleText = "댓글 수정"
             )
-        },
-        bottomBar = {
+            },
+            bottomBar = {
             PhotoAttachmentBar(
                 onPhotoClick = {
                     val hasExistingImage = initialImageUrl != null && !initialImageRemoved
                     val hasNewImage = selectedImage != null
-                    if (!hasExistingImage && !hasNewImage) {
-                        galleryLauncher.launch("image/*")
-                    } else {
-                        Toast.makeText(context, "이미지는 최대 1장만 등록할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                    if (!isSaving) {
+                        if (!hasExistingImage && !hasNewImage) {
+                            galleryLauncher.launch("image/*")
+                        } else {
+                            Toast.makeText(context, "이미지는 최대 1장만 등록할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             )
-        }
-    ) { innerPadding ->
+            }
+        ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -137,14 +153,16 @@ fun CommentEditScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(4.dp),
+                        .padding(4.dp)
+                        .focusRequester(focusRequester),
                     textStyle = TextStyle(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Normal,
                         color = Color(0xFF202020),
                         lineHeight = 24.sp,
                         letterSpacing = (-0.5).sp
-                    )
+                    ),
+                    cursorBrush = SolidColor(Color(0xFF1C7756))
                 )
             }
 
@@ -178,6 +196,18 @@ fun CommentEditScreen(
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+        }
+
+        if (isSaving) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Black.copy(alpha = 0.2f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFF5AB97D))
             }
         }
     }

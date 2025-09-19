@@ -8,6 +8,7 @@ import com.luckydut97.tennispark.core.domain.model.CommunityComment
 import com.luckydut97.tennispark.core.domain.usecase.GetCommunityPostDetailUseCase
 import com.luckydut97.tennispark.core.domain.usecase.ToggleCommunityLikeUseCase
 import com.luckydut97.tennispark.core.domain.usecase.CreateCommentUseCase
+import com.luckydut97.tennispark.core.domain.usecase.DeleteCommentUseCase
 import com.luckydut97.tennispark.core.data.repository.CommunityRepositoryImpl
 import com.luckydut97.tennispark.core.data.network.NetworkModule
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,10 @@ data class CommunityDetailUiState(
     val isLoadingComments: Boolean = false,
     val isCreatingComment: Boolean = false, // 댓글 작성 중 상태
     val createCommentSuccess: Boolean = false, // 댓글 작성 성공 상태
-    val createCommentError: String? = null // 댓글 작성 에러 메시지
+    val createCommentError: String? = null, // 댓글 작성 에러 메시지
+    val isDeletingComment: Boolean = false,
+    val deleteCommentSuccess: Boolean = false,
+    val deleteCommentError: String? = null
 )
 
 /**
@@ -43,6 +47,7 @@ class CommunityDetailViewModel : ViewModel() {
     private val getCommunityPostDetailUseCase = GetCommunityPostDetailUseCase(communityRepository)
     private val toggleCommunityLikeUseCase = ToggleCommunityLikeUseCase(communityRepository)
     private val createCommentUseCase = CreateCommentUseCase(communityRepository)
+    private val deleteCommentUseCase = DeleteCommentUseCase(communityRepository)
 
     private val _uiState = MutableStateFlow(CommunityDetailUiState())
     val uiState: StateFlow<CommunityDetailUiState> = _uiState.asStateFlow()
@@ -186,12 +191,56 @@ class CommunityDetailViewModel : ViewModel() {
     }
 
     /**
+     * 댓글 삭제
+     */
+    fun deleteComment(postId: Int, commentId: Int) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isDeletingComment = true,
+                deleteCommentError = null,
+                deleteCommentSuccess = false
+            )
+
+            try {
+                val result = deleteCommentUseCase(postId, commentId)
+                if (result.isSuccess) {
+                    _uiState.value = _uiState.value.copy(
+                        isDeletingComment = false,
+                        deleteCommentSuccess = true
+                    )
+                    loadComments(postId)
+                } else {
+                    val errorMessage = result.exceptionOrNull()?.message ?: "댓글 삭제에 실패했습니다."
+                    _uiState.value = _uiState.value.copy(
+                        isDeletingComment = false,
+                        deleteCommentSuccess = false,
+                        deleteCommentError = errorMessage
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isDeletingComment = false,
+                    deleteCommentSuccess = false,
+                    deleteCommentError = e.message ?: "네트워크 오류가 발생했습니다."
+                )
+            }
+        }
+    }
+
+    /**
      * 댓글 작성 상태 초기화
      */
     fun clearCreateCommentState() {
         _uiState.value = _uiState.value.copy(
             createCommentSuccess = false,
             createCommentError = null
+        )
+    }
+
+    fun clearDeleteCommentState() {
+        _uiState.value = _uiState.value.copy(
+            deleteCommentSuccess = false,
+            deleteCommentError = null
         )
     }
 

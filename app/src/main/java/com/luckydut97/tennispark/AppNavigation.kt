@@ -4,6 +4,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,11 +17,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.lifecycle.viewmodel.compose.viewModel
 import android.net.Uri
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -40,7 +46,10 @@ import com.luckydut97.feature_community.ui.CommunityDetailScreen
 import com.luckydut97.feature_community.ui.CommunityHomeScreen
 import com.luckydut97.feature_community.ui.CommunityWriteScreen
 import com.luckydut97.feature_community.ui.CommentEditScreen
+import com.luckydut97.feature_community.viewmodel.CommunityCommentEditViewModel
+import com.luckydut97.feature_community.viewmodel.CommunityDetailViewModel
 import com.luckydut97.feature_community.viewmodel.CommunityHomeViewModel
+import com.luckydut97.feature_community.viewmodel.CommunityPostEditViewModel
 
 /**
  * 탭 순서에 따른 슬라이드 방향 결정
@@ -311,6 +320,43 @@ fun AppNavigation(
             }
         ) { backStackEntry ->
             val postId = backStackEntry.arguments?.getString("postId")?.toIntOrNull() ?: 0
+            val detailViewModel: CommunityDetailViewModel = viewModel(backStackEntry)
+            val editViewModel: CommunityPostEditViewModel = viewModel(backStackEntry)
+            val detailUiState by detailViewModel.uiState.collectAsState()
+            val editUiState by editViewModel.uiState.collectAsState()
+            val context = LocalContext.current
+
+            val refreshFlow = remember(backStackEntry) {
+                backStackEntry.savedStateHandle.getStateFlow("community_refresh", false)
+            }
+            val shouldRefresh by refreshFlow.collectAsState()
+
+            LaunchedEffect(shouldRefresh) {
+                if (shouldRefresh) {
+                    detailViewModel.loadPostDetail(postId)
+                    backStackEntry.savedStateHandle["community_refresh"] = false
+                }
+            }
+
+            LaunchedEffect(editUiState.deleteSuccess) {
+                if (editUiState.deleteSuccess) {
+                    editViewModel.consumeDeleteState()
+                    navController.previousBackStackEntry?.savedStateHandle?.set("community_refresh", true)
+                    runCatching {
+                        val mainEntry = navController.getBackStackEntry("main")
+                        mainEntry.savedStateHandle["community_refresh"] = true
+                    }
+                    navController.popBackStack()
+                    Toast.makeText(context, "게시글이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            LaunchedEffect(editUiState.deleteError) {
+                editUiState.deleteError?.let { message ->
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    editViewModel.consumeDeleteState()
+                }
+            }
 
             CommunityDetailScreen(
                 postId = postId,
@@ -324,25 +370,54 @@ fun AppNavigation(
                     }
                 },
                 onEditPost = { post ->
-                    val photoList = (listOfNotNull(post.mainImage) + post.sortedPhotos).distinct()
+                    if (!post.authoredByMe) {
+                        Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
+                        return@CommunityDetailScreen
+                    }
                     val encodedTitle = Uri.encode(post.title)
                     val encodedContent = Uri.encode(post.content)
-                    val photosParam = photoList.joinToString("|") { Uri.encode(it) }
+                    val photoPairs = post.photos
+                        .mapNotNull { (indexStr, url) ->
+                            indexStr.toIntOrNull()?.let { it to url }
+                        }
+                        .sortedBy { it.first }
+                    val fallback = if (photoPairs.isNotEmpty()) photoPairs
+                    else post.sortedPhotos.mapIndexed { index, url -> index to url }
+                    val photosParam = fallback.joinToString("|") { pair ->
+                        "${pair.first}:${Uri.encode(pair.second)}"
+                    }
                     navController.navigate("community_edit/${post.id}?title=$encodedTitle&content=$encodedContent&photos=$photosParam")
                 },
-                onDeletePost = { _ ->
-                    // TODO: 게시글 삭제 동작 연결 예정
+                onDeletePost = { post ->
+                    if (!post.authoredByMe) {
+                        Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
+                        return@CommunityDetailScreen
+                    }
+                    if (!editUiState.isDeleting) {
+                        editViewModel.deletePost(post.id)
+                    }
                 },
                 onEditComment = { comment ->
+                    if (!comment.authoredByMe) {
+                        Toast.makeText(context, "작성자가 아닙니다.라고", Toast.LENGTH_SHORT).show()
+                        return@CommunityDetailScreen
+                    }
                     val encodedContent = Uri.encode(comment.content)
                     val encodedPhoto = Uri.encode(comment.photoUrl ?: "")
                     navController.navigate(
                         "community_comment_edit/$postId/${comment.id}?content=$encodedContent&photoUrl=$encodedPhoto"
                     )
                 },
-                onDeleteComment = { _ ->
-                    // TODO: 댓글 삭제 동작 연결 예정
-                }
+                onDeleteComment = { comment ->
+                    if (!comment.authoredByMe) {
+                        Toast.makeText(context, "작성자가 아닙니다.라고", Toast.LENGTH_SHORT).show()
+                        return@CommunityDetailScreen
+                    }
+                    if (!detailUiState.isDeletingComment) {
+                        detailViewModel.deleteComment(postId, comment.id)
+                    }
+                },
+                viewModel = detailViewModel
             )
         }
 
@@ -398,28 +473,76 @@ fun AppNavigation(
                 )
             }
         ) { backStackEntry ->
+            val postId = backStackEntry.arguments?.getInt("postId") ?: 0
             val title = backStackEntry.arguments?.getString("title") ?: ""
             val content = backStackEntry.arguments?.getString("content") ?: ""
             val photosArg = backStackEntry.arguments?.getString("photos") ?: ""
-            val photoUrls = photosArg
+            val photoPairs = photosArg
                 .takeIf { it.isNotBlank() }
                 ?.split("|")
-                ?.filter { it.isNotBlank() }
+                ?.mapNotNull { token ->
+                    val parts = token.split(":", limit = 2)
+                    if (parts.size == 2) {
+                        parts[0].toIntOrNull()?.let { index ->
+                            index to Uri.decode(parts[1])
+                        }
+                    } else {
+                        null
+                    }
+                }
+                ?.filter { it.second.isNotBlank() }
                 ?: emptyList()
 
-            CommunityWriteScreen(
-                onBackClick = { navController.popBackStack() },
-                onPostCreated = {
+            val editViewModel: CommunityPostEditViewModel = viewModel()
+            val editUiState by editViewModel.uiState.collectAsState()
+            val editContext = LocalContext.current
+
+            LaunchedEffect(editUiState.saveSuccess) {
+                if (editUiState.saveSuccess) {
+                    editViewModel.consumeSaveState()
+                    navController.previousBackStackEntry?.savedStateHandle?.set("community_refresh", true)
+                    runCatching {
+                        val mainEntry = navController.getBackStackEntry("main")
+                        mainEntry.savedStateHandle["community_refresh"] = true
+                    }
                     navController.popBackStack()
-                },
-                isEditMode = true,
-                initialTitle = title,
-                initialContent = content,
-                initialImageUrls = photoUrls,
-                onSubmit = { _, _, _, _ ->
-                    // TODO: 게시글 수정 API 연동 예정
+                    Toast.makeText(editContext, "게시글이 수정되었습니다.", Toast.LENGTH_SHORT).show()
                 }
-            )
+            }
+
+            LaunchedEffect(editUiState.saveError) {
+                editUiState.saveError?.let { message ->
+                    Toast.makeText(editContext, message, Toast.LENGTH_LONG).show()
+                    editViewModel.consumeSaveState()
+                }
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                CommunityWriteScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onPostCreated = { /* handled on success */ },
+                    isEditMode = true,
+                    initialTitle = title,
+                    initialContent = content,
+                    initialImages = photoPairs,
+                    onSubmit = { updatedTitle, updatedContent, deleteIndexes, newImages ->
+                        if (!editUiState.isSaving) {
+                            editViewModel.updatePost(postId, updatedTitle, updatedContent, deleteIndexes, newImages)
+                        }
+                    }
+                )
+
+                if (editUiState.isSaving) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.2f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = Color(0xFF145F44))
+                    }
+                }
+            }
         }
 
         // 커뮤니티 댓글 수정 화면 (UI 전용)
@@ -444,18 +567,51 @@ fun AppNavigation(
                 )
             }
         ) { backStackEntry ->
-            val content = backStackEntry.arguments?.getString("content") ?: ""
-            val photoUrl = backStackEntry.arguments?.getString("photoUrl")
+            val postId = backStackEntry.arguments?.getInt("postId") ?: 0
+            val commentId = backStackEntry.arguments?.getInt("commentId") ?: 0
+            val encodedContent = backStackEntry.arguments?.getString("content") ?: ""
+            val encodedPhotoUrl = backStackEntry.arguments?.getString("photoUrl")
                 ?.takeIf { it.isNotBlank() }
 
-            CommentEditScreen(
-                initialContent = content,
-                initialImageUrl = photoUrl,
-                onBackClick = { navController.popBackStack() },
-                onSubmit = { _, _ ->
-                    // TODO: 댓글 수정 API 연동 예정
+            val initialContent = Uri.decode(encodedContent)
+            val initialPhotoUrl = encodedPhotoUrl?.let { Uri.decode(it) }
+
+            val commentEditViewModel: CommunityCommentEditViewModel = viewModel(backStackEntry)
+            val commentEditUiState by commentEditViewModel.uiState.collectAsState()
+            val context = LocalContext.current
+
+            LaunchedEffect(commentEditUiState.saveSuccess) {
+                if (commentEditUiState.saveSuccess) {
+                    commentEditViewModel.consumeSaveState()
+                    navController.previousBackStackEntry?.savedStateHandle?.set("community_refresh", true)
+                    Toast.makeText(context, "댓글이 수정되었습니다.", Toast.LENGTH_SHORT).show()
                     navController.popBackStack()
                 }
+            }
+
+            LaunchedEffect(commentEditUiState.saveError) {
+                commentEditUiState.saveError?.let { message ->
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    commentEditViewModel.consumeSaveState()
+                }
+            }
+
+            CommentEditScreen(
+                initialContent = initialContent,
+                initialImageUrl = initialPhotoUrl,
+                onBackClick = { navController.popBackStack() },
+                onSubmit = { content, deletePhoto, newImage ->
+                    if (!commentEditUiState.isSaving) {
+                        commentEditViewModel.updateComment(
+                            postId = postId,
+                            commentId = commentId,
+                            content = content,
+                            deletePhoto = deletePhoto,
+                            newImageUri = newImage
+                        )
+                    }
+                },
+                isSaving = commentEditUiState.isSaving
             )
         }
     }
@@ -757,6 +913,7 @@ fun MainScreenWithBottomNav(
                 }
             ) { backStackEntry ->
                 val communityViewModel: CommunityHomeViewModel = viewModel(backStackEntry)
+                val postEditViewModel: CommunityPostEditViewModel = viewModel(backStackEntry)
                 val parentEntry = remember(backStackEntry) {
                     mainNavController.getBackStackEntry("main")
                 }
@@ -764,11 +921,28 @@ fun MainScreenWithBottomNav(
                     parentEntry.savedStateHandle.getStateFlow("community_refresh", false)
                 }
                 val shouldRefresh by refreshFlow.collectAsState()
+                val editState by postEditViewModel.uiState.collectAsState()
+                val context = LocalContext.current
 
                 LaunchedEffect(shouldRefresh) {
                     if (shouldRefresh) {
                         communityViewModel.loadCommunityPosts()
                         parentEntry.savedStateHandle["community_refresh"] = false
+                    }
+                }
+
+                LaunchedEffect(editState.deleteSuccess) {
+                    if (editState.deleteSuccess) {
+                        postEditViewModel.consumeDeleteState()
+                        communityViewModel.refresh()
+                        Toast.makeText(context, "게시글이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                LaunchedEffect(editState.deleteError) {
+                    editState.deleteError?.let { message ->
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                        postEditViewModel.consumeDeleteState()
                     }
                 }
 
@@ -791,14 +965,39 @@ fun MainScreenWithBottomNav(
                     },
                     viewModel = communityViewModel,
                     onEditPost = { post ->
+                        if (!post.authoredByMe) {
+                            Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
+                            return@CommunityHomeScreen
+                        }
                         val encodedTitle = Uri.encode(post.title)
                         val encodedContent = Uri.encode(post.content)
-                        val photoList = (listOfNotNull(post.mainImage) + post.sortedPhotos).distinct()
-                        val photosParam = photoList.joinToString("|") { Uri.encode(it) }
+                        val photoMapPairs = post.photos
+                            .mapNotNull { (indexStr, url) ->
+                                indexStr.toIntOrNull()?.let { it to url }
+                            }
+                            .sortedBy { it.first }
+
+                        val fallbackPairs = if (photoMapPairs.isNotEmpty()) {
+                            photoMapPairs
+                        } else if (post.sortedPhotos.isNotEmpty()) {
+                            post.sortedPhotos.mapIndexed { index, url -> index to url }
+                        } else {
+                            post.mainImage?.let { listOf(0 to it) } ?: emptyList()
+                        }
+
+                        val photosParam = fallbackPairs.joinToString("|") { pair ->
+                            "${pair.first}:${Uri.encode(pair.second)}"
+                        }
                         mainNavController.navigate("community_edit/${post.id}?title=$encodedTitle&content=$encodedContent&photos=$photosParam")
                     },
-                    onDeletePost = { _ ->
-                        // TODO: 게시글 삭제 동작 연결 예정
+                    onDeletePost = { post ->
+                        if (!post.authoredByMe) {
+                            Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
+                            return@CommunityHomeScreen
+                        }
+                        if (!editState.isDeleting) {
+                            postEditViewModel.deletePost(post.id)
+                        }
                     }
                 )
             }

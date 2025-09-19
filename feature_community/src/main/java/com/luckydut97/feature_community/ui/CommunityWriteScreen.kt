@@ -48,13 +48,14 @@ fun CommunityWriteScreen(
     isEditMode: Boolean = false,
     initialTitle: String = "",
     initialContent: String = "",
-    initialImageUrls: List<String> = emptyList(),
-    onSubmit: ((String, String, List<Uri>, List<String>) -> Unit)? = null
+    initialImages: List<Pair<Int, String>> = emptyList(),
+    onSubmit: ((String, String, List<Int>, List<Uri>) -> Unit)? = null
 ) {
     var title by remember(initialTitle) { mutableStateOf(initialTitle) }
     var content by remember(initialContent) { mutableStateOf(initialContent) }
     var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
-    var existingImageUrls by remember(initialImageUrls) { mutableStateOf(initialImageUrls) }
+    val originalImages = remember(initialImages) { initialImages }
+    var existingImages by remember(initialImages) { mutableStateOf(initialImages) }
     val scrollState = rememberScrollState()
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -86,9 +87,9 @@ fun CommunityWriteScreen(
     // 완료 버튼 활성화 조건
     val isCompleteEnabled = title.isNotBlank() && content.isNotBlank() && (if (isEditMode) true else !(uiState?.isCreatingPost ?: false))
 
-    LaunchedEffect(initialTitle, initialContent, initialImageUrls) {
+    LaunchedEffect(initialTitle, initialContent, initialImages) {
         focusRequester.requestFocus()
-        existingImageUrls = initialImageUrls
+        existingImages = initialImages
     }
 
     // 게시글 작성 성공/실패 처리
@@ -98,7 +99,7 @@ fun CommunityWriteScreen(
                 title = ""
                 content = ""
                 selectedImages = emptyList()
-                existingImageUrls = emptyList()
+                existingImages = emptyList()
                 keyboardController?.hide()
                 viewModel?.clearCreatePostState()
                 onPostCreated()
@@ -113,8 +114,8 @@ fun CommunityWriteScreen(
         }
     }
 
-    val submitAction: (String, String, List<Uri>, List<String>) -> Unit = onSubmit
-        ?: { submitTitle, submitContent, submitImages, _ ->
+    val submitAction: (String, String, List<Int>, List<Uri>) -> Unit = onSubmit
+        ?: { submitTitle, submitContent, _, submitImages ->
             viewModel?.createPost(submitTitle, submitContent, submitImages)
         }
 
@@ -130,7 +131,11 @@ fun CommunityWriteScreen(
                 onCompleteClick = {
                     val trimmedTitle = title.trim()
                     val trimmedContent = content.trim()
-                    submitAction(trimmedTitle, trimmedContent, selectedImages, existingImageUrls)
+                    val remainingIndexes = existingImages.map { it.first }
+                    val deleteIndexes = originalImages.map { it.first }
+                        .filter { it !in remainingIndexes }
+                        .sorted()
+                    submitAction(trimmedTitle, trimmedContent, deleteIndexes, selectedImages)
                     if (isEditMode) {
                         keyboardController?.hide()
                         onPostCreated()
@@ -223,10 +228,10 @@ fun CommunityWriteScreen(
                 }
 
                 // 기존 이미지들 (편집 모드)
-                if (existingImageUrls.isNotEmpty()) {
+                if (existingImages.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    existingImageUrls.forEachIndexed { index, url ->
+                    existingImages.forEachIndexed { displayIndex, (_, url) ->
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -249,7 +254,9 @@ fun CommunityWriteScreen(
                                         shape = CircleShape
                                     )
                                     .clickable {
-                                        existingImageUrls = existingImageUrls.filterIndexed { i, _ -> i != index }
+                                        val mutable = existingImages.toMutableList()
+                                        mutable.removeAt(displayIndex)
+                                        existingImages = mutable
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
@@ -321,7 +328,7 @@ fun CommunityWriteScreen(
             // 키보드 위에 절대 위치로 고정되는 사진 첨부 바
             PhotoAttachmentBar(
                 onPhotoClick = {
-                    val totalImages = existingImageUrls.size + selectedImages.size
+                    val totalImages = existingImages.size + selectedImages.size
                     if (totalImages < 3) {
                         galleryLauncher.launch("image/*")
                     } else {

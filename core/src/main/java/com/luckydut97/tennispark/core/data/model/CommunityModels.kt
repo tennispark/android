@@ -112,3 +112,11 @@ data class CommunityPostCreateResponse(
 data class CommunityCommentCreateRequest(
     val content: String // 내용 (3000자 제한)
 )
+
+/**
+ * 커뮤니티 댓글 수정 요청 모델
+ */
+data class CommunityCommentUpdateRequest(
+    val content: String,
+    val deletePhoto: Boolean = false
+)
