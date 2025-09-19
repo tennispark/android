@@ -21,6 +21,7 @@ fun CommunityWriteTopBar(
     onBackClick: () -> Unit,
     onCompleteClick: () -> Unit,
     isCompleteEnabled: Boolean,
+    titleText: String,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -48,7 +49,7 @@ fun CommunityWriteTopBar(
 
         // 제목 (정중앙)
         Text(
-            text = "게시글 작성",
+            text = titleText,
             fontSize = 19.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.Black,

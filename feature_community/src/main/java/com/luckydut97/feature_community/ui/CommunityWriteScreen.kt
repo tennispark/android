@@ -44,11 +44,17 @@ fun CommunityWriteScreen(
     onBackClick: () -> Unit,
     onPostCreated: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CommunityHomeViewModel = viewModel()
+    viewModel: CommunityHomeViewModel? = viewModel(),
+    isEditMode: Boolean = false,
+    initialTitle: String = "",
+    initialContent: String = "",
+    initialImageUrls: List<String> = emptyList(),
+    onSubmit: ((String, String, List<Uri>, List<String>) -> Unit)? = null
 ) {
-    var title by remember { mutableStateOf("") }
-    var content by remember { mutableStateOf("") }
+    var title by remember(initialTitle) { mutableStateOf(initialTitle) }
+    var content by remember(initialContent) { mutableStateOf(initialContent) }
     var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    var existingImageUrls by remember(initialImageUrls) { mutableStateOf(initialImageUrls) }
     val scrollState = rememberScrollState()
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -70,34 +76,47 @@ fun CommunityWriteScreen(
     }
 
     // ViewModel 상태 구독
-    val uiState by viewModel.uiState.collectAsState()
+    val uiStateState = if (!isEditMode && viewModel != null) {
+        viewModel.uiState.collectAsState()
+    } else {
+        null
+    }
+    val uiState = uiStateState?.value
 
     // 완료 버튼 활성화 조건
-    val isCompleteEnabled = title.isNotBlank() && content.isNotBlank() && !uiState.isCreatingPost
+    val isCompleteEnabled = title.isNotBlank() && content.isNotBlank() && (if (isEditMode) true else !(uiState?.isCreatingPost ?: false))
 
-    // 화면 진입 시 키보드 자동 올리기
-    LaunchedEffect(Unit) {
+    LaunchedEffect(initialTitle, initialContent, initialImageUrls) {
         focusRequester.requestFocus()
+        existingImageUrls = initialImageUrls
     }
 
     // 게시글 작성 성공/실패 처리
-    LaunchedEffect(uiState.createPostSuccess) {
-        if (uiState.createPostSuccess) {
-            title = ""
-            content = ""
-            selectedImages = emptyList()
-            keyboardController?.hide()
-            viewModel.clearCreatePostState()
-            onPostCreated()
+    if (!isEditMode && uiStateState != null) {
+        LaunchedEffect(uiState?.createPostSuccess) {
+            if (uiState?.createPostSuccess == true) {
+                title = ""
+                content = ""
+                selectedImages = emptyList()
+                existingImageUrls = emptyList()
+                keyboardController?.hide()
+                viewModel?.clearCreatePostState()
+                onPostCreated()
+            }
+        }
+
+        LaunchedEffect(uiState?.createPostError) {
+            uiState?.createPostError?.let { error ->
+                Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                viewModel?.clearCreatePostState()
+            }
         }
     }
 
-    LaunchedEffect(uiState.createPostError) {
-        uiState.createPostError?.let { error ->
-            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
-            viewModel.clearCreatePostState()
+    val submitAction: (String, String, List<Uri>, List<String>) -> Unit = onSubmit
+        ?: { submitTitle, submitContent, submitImages, _ ->
+            viewModel?.createPost(submitTitle, submitContent, submitImages)
         }
-    }
 
     Scaffold(
         modifier = modifier
@@ -109,9 +128,16 @@ fun CommunityWriteScreen(
             CommunityWriteTopBar(
                 onBackClick = onBackClick,
                 onCompleteClick = {
-                    viewModel.createPost(title.trim(), content.trim(), selectedImages)
+                    val trimmedTitle = title.trim()
+                    val trimmedContent = content.trim()
+                    submitAction(trimmedTitle, trimmedContent, selectedImages, existingImageUrls)
+                    if (isEditMode) {
+                        keyboardController?.hide()
+                        onPostCreated()
+                    }
                 },
-                isCompleteEnabled = isCompleteEnabled
+                isCompleteEnabled = isCompleteEnabled,
+                titleText = if (isEditMode) "게시글 수정" else "게시글 작성"
             )
         }
     ) { paddingValues ->
@@ -196,7 +222,52 @@ fun CommunityWriteScreen(
                     )
                 }
 
-                // 선택된 이미지들 (맨 밑에 표시)
+                // 기존 이미지들 (편집 모드)
+                if (existingImageUrls.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    existingImageUrls.forEachIndexed { index, url ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                        ) {
+                            AsyncImage(
+                                model = url,
+                                contentDescription = "첨부된 이미지",
+                                modifier = Modifier.fillMaxWidth(),
+                                contentScale = ContentScale.FillWidth
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(top = 18.dp, end = 18.dp)
+                                    .size(18.dp)
+                                    .background(
+                                        color = Color.Black.copy(alpha = 0.5f),
+                                        shape = CircleShape
+                                    )
+                                    .clickable {
+                                        existingImageUrls = existingImageUrls.filterIndexed { i, _ -> i != index }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "×",
+                                    color = Color.White,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.offset(x = 0.6.dp, y = (-3).dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+
+                // 새로 선택한 이미지들 (맨 밑에 표시)
                 if (selectedImages.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -250,7 +321,8 @@ fun CommunityWriteScreen(
             // 키보드 위에 절대 위치로 고정되는 사진 첨부 바
             PhotoAttachmentBar(
                 onPhotoClick = {
-                    if (selectedImages.size < 3) {
+                    val totalImages = existingImageUrls.size + selectedImages.size
+                    if (totalImages < 3) {
                         galleryLauncher.launch("image/*")
                     } else {
                         Toast

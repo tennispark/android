@@ -15,9 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.luckydut97.feature_community.viewmodel.CommunityHomeViewModel
+import com.luckydut97.tennispark.core.domain.model.CommunityPost
 import com.luckydut97.tennispark.core.ui.components.community.CommunityTopBar
 import com.luckydut97.tennispark.core.ui.components.community.CommunityPostCard
 import com.luckydut97.tennispark.core.ui.components.community.FloatingWriteButton
+import com.luckydut97.tennispark.core.ui.components.community.ConfirmDeleteDialog
 
 /**
  * 커뮤니티 홈 화면
@@ -29,12 +31,15 @@ fun CommunityHomeScreen(
     onSearchClick: () -> Unit = {},
     onAlarmClick: () -> Unit = {},
     onWriteClick: () -> Unit = {},
-    viewModel: CommunityHomeViewModel
+    viewModel: CommunityHomeViewModel,
+    onEditPost: (CommunityPost) -> Unit = {},
+    onDeletePost: (CommunityPost) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
     val pullToRefreshState = rememberPullToRefreshState()
     val indicatorColor = Color(0xFF1C7756)
+    var pendingDeletePost by remember { mutableStateOf<CommunityPost?>(null) }
 
     // 무한 스크롤: 리스트 끝 감지
     val shouldLoadMore = remember {
@@ -176,7 +181,8 @@ fun CommunityHomeScreen(
                                     onLikeClick = { viewModel.toggleLike(post.id) },
                                     onCommentClick = { onPostClick(post.id) },
                                     onAlarmClick = onAlarmClick,
-                                    onMoreClick = { /* TODO: 더보기 메뉴 */ }
+                                    onEditClick = onEditPost,
+                                    onDeleteClick = { pendingDeletePost = it }
                                 )
 
                                 // 게시글 구분선
@@ -238,6 +244,16 @@ fun CommunityHomeScreen(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 18.dp, bottom = 18.dp)
+        )
+    }
+
+    pendingDeletePost?.let { post ->
+        ConfirmDeleteDialog(
+            onConfirm = {
+                onDeletePost(post)
+                pendingDeletePost = null
+            },
+            onDismiss = { pendingDeletePost = null }
         )
     }
 }

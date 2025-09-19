@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
@@ -30,10 +31,12 @@ fun CommunityPostCard(
     onLikeClick: () -> Unit,
     onCommentClick: () -> Unit,
     onAlarmClick: () -> Unit,
-    onMoreClick: () -> Unit,
+    onEditClick: (CommunityPost) -> Unit,
+    onDeleteClick: (CommunityPost) -> Unit,
     isDetailView: Boolean = false, // 상세 화면 여부
     modifier: Modifier = Modifier
 ) {
+    var showMenu by remember { mutableStateOf(false) }
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -63,7 +66,7 @@ fun CommunityPostCard(
                         letterSpacing = (-0.5).sp
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(0.dp))
 
                     // 작성 시간
                     Text(
@@ -91,16 +94,38 @@ fun CommunityPostCard(
                         )
                     }
 
-                    IconButton(
-                        onClick = onMoreClick,
-                        modifier = Modifier.size(20.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_detail_card),
-                            contentDescription = "더보기",
-                            tint = Color(0xFF8B9096),
+                    Box {
+                        IconButton(
+                            onClick = { showMenu = true },
                             modifier = Modifier.size(20.dp)
-                        )
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_detail_card),
+                                contentDescription = "더보기",
+                                tint = Color(0xFF8B9096),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false },
+                            containerColor = Color.Transparent,
+                            tonalElevation = 0.dp,
+                            shadowElevation = 0.dp,
+                            shape = RectangleShape
+                        ) {
+                            CommunityOverflowMenu(
+                                onEditClick = {
+                                    showMenu = false
+                                    onEditClick(post)
+                                },
+                                onDeleteClick = {
+                                    showMenu = false
+                                    onDeleteClick(post)
+                                }
+                            )
+                        }
                     }
                 }
             }

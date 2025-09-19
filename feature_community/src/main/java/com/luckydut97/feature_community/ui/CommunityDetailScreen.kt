@@ -17,10 +17,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.feature_community.viewmodel.CommunityDetailViewModel
+import com.luckydut97.tennispark.core.domain.model.CommunityComment
+import com.luckydut97.tennispark.core.domain.model.CommunityPost
 import com.luckydut97.tennispark.core.ui.components.community.CommunityDetailTopBar
 import com.luckydut97.tennispark.core.ui.components.community.CommunityPostCard
 import com.luckydut97.tennispark.core.ui.components.community.CommentItem
 import com.luckydut97.tennispark.core.ui.components.community.CommentInputBox
+import com.luckydut97.tennispark.core.ui.components.community.ConfirmDeleteDialog
 
 /**
  * 커뮤니티 게시글 상세 화면
@@ -30,12 +33,18 @@ fun CommunityDetailScreen(
     postId: Int,
     onBackClick: () -> Unit,
     onAlarmClick: () -> Unit,
+    onEditPost: (CommunityPost) -> Unit = {},
+    onDeletePost: (CommunityPost) -> Unit = {},
+    onEditComment: (CommunityComment) -> Unit = {},
+    onDeleteComment: (CommunityComment) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: CommunityDetailViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedImage by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
+    var pendingPostDelete by remember { mutableStateOf<CommunityPost?>(null) }
+    var pendingCommentDelete by remember { mutableStateOf<CommunityComment?>(null) }
 
     // 갤러리 선택 런처
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -154,7 +163,10 @@ fun CommunityDetailScreen(
                             onLikeClick = { viewModel.toggleLike() },
                             onCommentClick = { /* 이미 상세 화면이므로 무시 */ },
                             onAlarmClick = onAlarmClick,
-                            onMoreClick = { /* TODO: 더보기 메뉴 */ },
+                            onEditClick = onEditPost,
+                            onDeleteClick = {
+                                pendingPostDelete = it
+                            },
                             isDetailView = true
                         )
                     }
@@ -190,7 +202,10 @@ fun CommunityDetailScreen(
                     items(uiState.comments) { comment ->
                         CommentItem(
                             comment = comment,
-                            onMoreClick = { /* TODO: 댓글 더보기 메뉴 */ }
+                            onEditClick = onEditComment,
+                            onDeleteClick = {
+                                pendingCommentDelete = it
+                            }
                         )
                     }
 
@@ -218,5 +233,25 @@ fun CommunityDetailScreen(
                 }
             }
         }
+    }
+
+    pendingPostDelete?.let { post ->
+        ConfirmDeleteDialog(
+            onConfirm = {
+                onDeletePost(post)
+                pendingPostDelete = null
+            },
+            onDismiss = { pendingPostDelete = null }
+        )
+    }
+
+    pendingCommentDelete?.let { comment ->
+        ConfirmDeleteDialog(
+            onConfirm = {
+                onDeleteComment(comment)
+                pendingCommentDelete = null
+            },
+            onDismiss = { pendingCommentDelete = null }
+        )
     }
 }

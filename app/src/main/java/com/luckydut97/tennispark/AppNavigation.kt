@@ -20,11 +20,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
+import android.net.Uri
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.luckydut97.feature_home.main.ui.HomeScreen
 import com.luckydut97.feature_home_shop.data.model.ShopItem
 import com.luckydut97.feature_home_shop.ui.ShopDetailScreen
@@ -36,6 +39,7 @@ import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
 import com.luckydut97.feature_community.ui.CommunityDetailScreen
 import com.luckydut97.feature_community.ui.CommunityHomeScreen
 import com.luckydut97.feature_community.ui.CommunityWriteScreen
+import com.luckydut97.feature_community.ui.CommentEditScreen
 import com.luckydut97.feature_community.viewmodel.CommunityHomeViewModel
 
 /**
@@ -313,14 +317,31 @@ fun AppNavigation(
                 onBackClick = {
                     navController.popBackStack()
                 },
-                /*onSearchClick = {
-                    // TODO: 검색 화면으로 이동
-                },*/
                 onAlarmClick = {
                     try {
                         navController.navigate("app_push")
                     } catch (e: Exception) {
                     }
+                },
+                onEditPost = { post ->
+                    val photoList = (listOfNotNull(post.mainImage) + post.sortedPhotos).distinct()
+                    val encodedTitle = Uri.encode(post.title)
+                    val encodedContent = Uri.encode(post.content)
+                    val photosParam = photoList.joinToString("|") { Uri.encode(it) }
+                    navController.navigate("community_edit/${post.id}?title=$encodedTitle&content=$encodedContent&photos=$photosParam")
+                },
+                onDeletePost = { _ ->
+                    // TODO: 게시글 삭제 동작 연결 예정
+                },
+                onEditComment = { comment ->
+                    val encodedContent = Uri.encode(comment.content)
+                    val encodedPhoto = Uri.encode(comment.photoUrl ?: "")
+                    navController.navigate(
+                        "community_comment_edit/$postId/${comment.id}?content=$encodedContent&photoUrl=$encodedPhoto"
+                    )
+                },
+                onDeleteComment = { _ ->
+                    // TODO: 댓글 삭제 동작 연결 예정
                 }
             )
         }
@@ -350,6 +371,89 @@ fun AppNavigation(
                         "community_refresh",
                         true
                     )
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // 커뮤니티 게시글 수정 화면 (UI 전용, API 연동 예정)
+        composable(
+            route = "community_edit/{postId}?title={title}&content={content}&photos={photos}",
+            arguments = listOf(
+                navArgument("postId") { type = NavType.IntType },
+                navArgument("title") { type = NavType.StringType; defaultValue = "" },
+                navArgument("content") { type = NavType.StringType; defaultValue = "" },
+                navArgument("photos") { type = NavType.StringType; defaultValue = "" }
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            }
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val photosArg = backStackEntry.arguments?.getString("photos") ?: ""
+            val photoUrls = photosArg
+                .takeIf { it.isNotBlank() }
+                ?.split("|")
+                ?.filter { it.isNotBlank() }
+                ?: emptyList()
+
+            CommunityWriteScreen(
+                onBackClick = { navController.popBackStack() },
+                onPostCreated = {
+                    navController.popBackStack()
+                },
+                isEditMode = true,
+                initialTitle = title,
+                initialContent = content,
+                initialImageUrls = photoUrls,
+                onSubmit = { _, _, _, _ ->
+                    // TODO: 게시글 수정 API 연동 예정
+                }
+            )
+        }
+
+        // 커뮤니티 댓글 수정 화면 (UI 전용)
+        composable(
+            route = "community_comment_edit/{postId}/{commentId}?content={content}&photoUrl={photoUrl}",
+            arguments = listOf(
+                navArgument("postId") { type = NavType.IntType },
+                navArgument("commentId") { type = NavType.IntType },
+                navArgument("content") { type = NavType.StringType; defaultValue = "" },
+                navArgument("photoUrl") { type = NavType.StringType; defaultValue = "" }
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            }
+        ) { backStackEntry ->
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val photoUrl = backStackEntry.arguments?.getString("photoUrl")
+                ?.takeIf { it.isNotBlank() }
+
+            CommentEditScreen(
+                initialContent = content,
+                initialImageUrl = photoUrl,
+                onBackClick = { navController.popBackStack() },
+                onSubmit = { _, _ ->
+                    // TODO: 댓글 수정 API 연동 예정
                     navController.popBackStack()
                 }
             )
@@ -685,7 +789,17 @@ fun MainScreenWithBottomNav(
                     onWriteClick = {
                         mainNavController.navigate("community_write")
                     },
-                    viewModel = communityViewModel
+                    viewModel = communityViewModel,
+                    onEditPost = { post ->
+                        val encodedTitle = Uri.encode(post.title)
+                        val encodedContent = Uri.encode(post.content)
+                        val photoList = (listOfNotNull(post.mainImage) + post.sortedPhotos).distinct()
+                        val photosParam = photoList.joinToString("|") { Uri.encode(it) }
+                        mainNavController.navigate("community_edit/${post.id}?title=$encodedTitle&content=$encodedContent&photos=$photosParam")
+                    },
+                    onDeletePost = { _ ->
+                        // TODO: 게시글 삭제 동작 연결 예정
+                    }
                 )
             }
 

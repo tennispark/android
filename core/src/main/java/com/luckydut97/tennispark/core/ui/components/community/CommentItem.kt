@@ -3,11 +3,12 @@ package com.luckydut97.tennispark.core.ui.components.community
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,9 +24,11 @@ import com.luckydut97.tennispark.core.R
 @Composable
 fun CommentItem(
     comment: CommunityComment,
-    onMoreClick: () -> Unit,
+    onEditClick: (CommunityComment) -> Unit,
+    onDeleteClick: (CommunityComment) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showMenu by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -62,16 +65,38 @@ fun CommentItem(
             }
 
             // 더보기 버튼
-            IconButton(
-                onClick = onMoreClick,
-                modifier = Modifier.size(20.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_detail_card),
-                    contentDescription = "더보기",
-                    tint = Color(0xFF8B9096),
+            Box {
+                IconButton(
+                    onClick = { showMenu = true },
                     modifier = Modifier.size(20.dp)
-                )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_detail_card),
+                        contentDescription = "더보기",
+                        tint = Color(0xFF8B9096),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false },
+                    containerColor = Color.Transparent,
+                    tonalElevation = 0.dp,
+                    shadowElevation = 0.dp,
+                    shape = RectangleShape
+                ) {
+                    CommunityOverflowMenu(
+                        onEditClick = {
+                            showMenu = false
+                            onEditClick(comment)
+                        },
+                        onDeleteClick = {
+                            showMenu = false
+                            onDeleteClick(comment)
+                        }
+                    )
+                }
             }
         }
 
