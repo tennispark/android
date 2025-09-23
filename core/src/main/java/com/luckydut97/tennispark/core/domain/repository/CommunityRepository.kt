@@ -70,6 +70,28 @@ interface CommunityRepository {
     ): Result<Unit>
 
     /**
+     * 게시글 신고
+     */
+    suspend fun reportPost(
+        postId: Int,
+        reason: String
+    ): Result<Unit>
+
+    /**
+     * 게시글 댓글 신고
+     */
+    suspend fun reportComment(
+        postId: Int,
+        commentId: Int,
+        reason: String
+    ): Result<Unit>
+
+    /**
+     * 게시글 알림 토글
+     */
+    suspend fun togglePostNotification(postId: Int): Result<Boolean>
+
+    /**
      * 게시글 작성
      *
      * @param title 게시글 제목

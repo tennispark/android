@@ -22,6 +22,7 @@ import androidx.compose.ui.input.pointer.pointerInput
  * @param enabled 활성화 여부 (기본값: true)
  * @param content 내용 컴포저블
  */
+
 @Composable
 fun PressableComponent(
     onClick: () -> Unit,

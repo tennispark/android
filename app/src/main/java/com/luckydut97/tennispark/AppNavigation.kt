@@ -399,7 +399,7 @@ fun AppNavigation(
                 },
                 onEditComment = { comment ->
                     if (!comment.authoredByMe) {
-                        Toast.makeText(context, "작성자가 아닙니다.라고", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
                         return@CommunityDetailScreen
                     }
                     val encodedContent = Uri.encode(comment.content)
@@ -410,12 +410,15 @@ fun AppNavigation(
                 },
                 onDeleteComment = { comment ->
                     if (!comment.authoredByMe) {
-                        Toast.makeText(context, "작성자가 아닙니다.라고", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
                         return@CommunityDetailScreen
                     }
                     if (!detailUiState.isDeletingComment) {
                         detailViewModel.deleteComment(postId, comment.id)
                     }
+                },
+                onToggleLike = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set("community_refresh", true)
                 },
                 viewModel = detailViewModel
             )

@@ -26,6 +26,9 @@ import com.luckydut97.tennispark.core.data.model.CommunityHomeResponse
 import com.luckydut97.tennispark.core.data.model.CommunityPostDetailResponse
 import com.luckydut97.tennispark.core.data.model.CommunityCommentsResponse
 import com.luckydut97.tennispark.core.data.model.CommunityPostCreateRequest
+import com.luckydut97.tennispark.core.data.model.CommunityPostLikeResponse
+import com.luckydut97.tennispark.core.data.model.CommunityReportRequest
+import com.luckydut97.tennispark.core.data.model.CommunityNotificationToggleResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -154,6 +157,33 @@ interface ApiService {
 
     @GET("api/members/community/posts/{postId}/comments")
     suspend fun getCommunityPostComments(@Path("postId") postId: Int): Response<CommunityCommentsResponse>
+
+    // 커뮤니티 게시글 좋아요 토글 API
+    @POST("api/members/community/posts/{postId}/likes")
+    suspend fun toggleCommunityLike(
+        @Path("postId") postId: Int
+    ): Response<ApiResponse<CommunityPostLikeResponse>>
+
+    // 커뮤니티 게시글 신고 API
+    @POST("api/members/community/posts/{postId}/reports")
+    suspend fun reportCommunityPost(
+        @Path("postId") postId: Int,
+        @Body request: CommunityReportRequest
+    ): Response<ApiResponse<String>>
+
+    // 커뮤니티 댓글 신고 API
+    @POST("api/members/community/posts/{postId}/comments/{commentId}/reports")
+    suspend fun reportCommunityComment(
+        @Path("postId") postId: Int,
+        @Path("commentId") commentId: Int,
+        @Body request: CommunityReportRequest
+    ): Response<ApiResponse<String>>
+
+    // 커뮤니티 게시글 알림 토글 API
+    @PATCH("api/members/community/posts/{postId}/notifications")
+    suspend fun toggleCommunityPostNotification(
+        @Path("postId") postId: Int
+    ): Response<ApiResponse<CommunityNotificationToggleResponse>>
 
     // 커뮤니티 댓글 작성 API
     @Multipart

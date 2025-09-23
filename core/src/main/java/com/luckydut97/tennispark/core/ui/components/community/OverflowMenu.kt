@@ -21,35 +21,53 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun CommunityOverflowMenu(
-    onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit,
+    isAuthor: Boolean,
+    onEditClick: (() -> Unit)? = null,
+    onDeleteClick: (() -> Unit)? = null,
+    onReportClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .width(61.dp)
-            .background(Color.Transparent),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        MenuItem(
-            text = "수정",
-            onClick = onEditClick,
-            shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
-        )
+    if (isAuthor) {
+        Column(
+            modifier = modifier
+                .width(61.dp)
+                .background(Color.Transparent),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            MenuItem(
+                text = "수정",
+                onClick = { onEditClick?.invoke() },
+                shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
+            )
 
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(0.7.dp)
-                .background(Color(0xFFE3E3E3))
-        )
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(0.7.dp)
+                    .background(Color(0xFFE3E3E3))
+            )
 
-        MenuItem(
-            text = "삭제",
-            onClick = onDeleteClick,
-            shape = RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp)
-        )
+            MenuItem(
+                text = "삭제",
+                onClick = { onDeleteClick?.invoke() },
+                shape = RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp)
+            )
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .width(61.dp)
+                .background(Color.Transparent),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            MenuItem(
+                text = "신고",
+                onClick = { onReportClick?.invoke() },
+                shape = RoundedCornerShape(4.dp)
+            )
+        }
     }
 }
 

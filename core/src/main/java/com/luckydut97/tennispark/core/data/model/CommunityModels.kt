@@ -14,7 +14,8 @@ data class CommunityPost(
     val commentCount: Int?,
     val viewCount: Int?,
     val likedByMe: Boolean?,
-    val authoredByMe: Boolean?
+    val authoredByMe: Boolean?,
+    val notificationEnabled: Boolean?
 )
 
 /**
@@ -119,4 +120,26 @@ data class CommunityCommentCreateRequest(
 data class CommunityCommentUpdateRequest(
     val content: String,
     val deletePhoto: Boolean = false
+)
+
+/**
+ * 커뮤니티 게시글 좋아요 응답 모델
+ */
+data class CommunityPostLikeResponse(
+    val liked: Boolean,
+    val likeCount: Int
+)
+
+/**
+ * 커뮤니티 게시글 신고 요청 모델
+ */
+data class CommunityReportRequest(
+    val reason: String
+)
+
+/**
+ * 게시글 알림 토글 응답 모델
+ */
+data class CommunityNotificationToggleResponse(
+    val notificationEnabled: Boolean
 )

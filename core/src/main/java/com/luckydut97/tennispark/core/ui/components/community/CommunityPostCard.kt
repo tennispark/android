@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.domain.model.CommunityPost
 import com.luckydut97.tennispark.core.R
+import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 
 /**
  * 커뮤니티 게시글 카드 컴포넌트
@@ -33,7 +34,9 @@ fun CommunityPostCard(
     onAlarmClick: () -> Unit,
     onEditClick: (CommunityPost) -> Unit,
     onDeleteClick: (CommunityPost) -> Unit,
+    onReportClick: (CommunityPost) -> Unit = {},
     isDetailView: Boolean = false, // 상세 화면 여부
+    isNotificationToggling: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -82,29 +85,51 @@ fun CommunityPostCard(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    IconButton(
-                        onClick = onAlarmClick,
-                        modifier = Modifier.size(20.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_alarm_card),
-                            contentDescription = "알림",
-                            tint = Color(0xFF8B9096),
-                            modifier = Modifier.size(20.dp)
-                        )
+                    if (post.notificationEnabled != null) {
+                        val alarmIconRes = if (post.notificationEnabled == true) {
+                            R.drawable.ic_alarm_card_on
+                        } else {
+                            R.drawable.ic_alarm_card
+                        }
+                        PressableComponent(
+                            onClick = {
+                                if (!isNotificationToggling) {
+                                    onAlarmClick()
+                                }
+                            },
+                            modifier = Modifier.size(20.dp),
+                            enabled = !isNotificationToggling
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = alarmIconRes),
+                                    contentDescription = "알림",
+                                    tint = Color.Unspecified,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
                     }
 
                     Box {
-                        IconButton(
+                        PressableComponent(
                             onClick = { showMenu = true },
                             modifier = Modifier.size(20.dp)
                         ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_detail_card),
-                                contentDescription = "더보기",
-                                tint = Color(0xFF8B9096),
-                                modifier = Modifier.size(20.dp)
-                            )
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_detail_card),
+                                    contentDescription = "더보기",
+                                    tint = Color(0xFF8B9096),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         }
 
                         DropdownMenu(
@@ -116,6 +141,7 @@ fun CommunityPostCard(
                             shape = RectangleShape
                         ) {
                             CommunityOverflowMenu(
+                                isAuthor = post.authoredByMe,
                                 onEditClick = {
                                     showMenu = false
                                     onEditClick(post)
@@ -123,6 +149,10 @@ fun CommunityPostCard(
                                 onDeleteClick = {
                                     showMenu = false
                                     onDeleteClick(post)
+                                },
+                                onReportClick = {
+                                    showMenu = false
+                                    onReportClick(post)
                                 }
                             )
                         }

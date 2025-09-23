@@ -26,6 +26,7 @@ fun CommentItem(
     comment: CommunityComment,
     onEditClick: (CommunityComment) -> Unit,
     onDeleteClick: (CommunityComment) -> Unit,
+    onReportClick: (CommunityComment) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -87,6 +88,7 @@ fun CommentItem(
                     shape = RectangleShape
                 ) {
                     CommunityOverflowMenu(
+                        isAuthor = comment.authoredByMe,
                         onEditClick = {
                             showMenu = false
                             onEditClick(comment)
@@ -94,6 +96,10 @@ fun CommentItem(
                         onDeleteClick = {
                             showMenu = false
                             onDeleteClick(comment)
+                        },
+                        onReportClick = {
+                            showMenu = false
+                            onReportClick(comment)
                         }
                     )
                 }

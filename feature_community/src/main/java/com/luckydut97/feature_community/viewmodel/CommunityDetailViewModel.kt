@@ -9,6 +9,9 @@ import com.luckydut97.tennispark.core.domain.usecase.GetCommunityPostDetailUseCa
 import com.luckydut97.tennispark.core.domain.usecase.ToggleCommunityLikeUseCase
 import com.luckydut97.tennispark.core.domain.usecase.CreateCommentUseCase
 import com.luckydut97.tennispark.core.domain.usecase.DeleteCommentUseCase
+import com.luckydut97.tennispark.core.domain.usecase.ReportCommunityPostUseCase
+import com.luckydut97.tennispark.core.domain.usecase.ReportCommunityCommentUseCase
+import com.luckydut97.tennispark.core.domain.usecase.TogglePostNotificationUseCase
 import com.luckydut97.tennispark.core.data.repository.CommunityRepositoryImpl
 import com.luckydut97.tennispark.core.data.network.NetworkModule
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +34,10 @@ data class CommunityDetailUiState(
     val createCommentError: String? = null, // 댓글 작성 에러 메시지
     val isDeletingComment: Boolean = false,
     val deleteCommentSuccess: Boolean = false,
-    val deleteCommentError: String? = null
+    val deleteCommentError: String? = null,
+    val isTogglingNotification: Boolean = false,
+    val notificationError: String? = null,
+    val notificationToggleSuccess: Boolean? = null
 )
 
 /**
@@ -48,6 +54,9 @@ class CommunityDetailViewModel : ViewModel() {
     private val toggleCommunityLikeUseCase = ToggleCommunityLikeUseCase(communityRepository)
     private val createCommentUseCase = CreateCommentUseCase(communityRepository)
     private val deleteCommentUseCase = DeleteCommentUseCase(communityRepository)
+    private val reportCommunityPostUseCase = ReportCommunityPostUseCase(communityRepository)
+    private val reportCommunityCommentUseCase = ReportCommunityCommentUseCase(communityRepository)
+    private val togglePostNotificationUseCase = TogglePostNotificationUseCase(communityRepository)
 
     private val _uiState = MutableStateFlow(CommunityDetailUiState())
     val uiState: StateFlow<CommunityDetailUiState> = _uiState.asStateFlow()
@@ -57,7 +66,13 @@ class CommunityDetailViewModel : ViewModel() {
      */
     fun loadPostDetail(postId: Int) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                errorMessage = null,
+                isTogglingNotification = false,
+                notificationError = null,
+                notificationToggleSuccess = null
+            )
 
             try {
                 getCommunityPostDetailUseCase(postId)
@@ -71,19 +86,22 @@ class CommunityDetailViewModel : ViewModel() {
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             post = post,
-                            errorMessage = null
+                            errorMessage = null,
+                            isTogglingNotification = false,
+                            notificationToggleSuccess = null
                         )
 
                         // 게시글 로드 후 댓글도 로드
                         loadComments(postId)
                     }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = e.message ?: "네트워크 오류가 발생했습니다."
-                )
-            }
+        } catch (e: Exception) {
+            _uiState.value = _uiState.value.copy(
+                isLoading = false,
+                errorMessage = e.message ?: "네트워크 오류가 발생했습니다.",
+                isTogglingNotification = false
+            )
         }
+    }
     }
 
     /**
@@ -249,5 +267,57 @@ class CommunityDetailViewModel : ViewModel() {
      */
     fun clearError() {
         _uiState.value = _uiState.value.copy(errorMessage = null)
+    }
+
+    suspend fun reportPost(postId: Int, reason: String): Result<Unit> {
+        return reportCommunityPostUseCase(postId, reason)
+    }
+
+    suspend fun reportComment(postId: Int, commentId: Int, reason: String): Result<Unit> {
+        return reportCommunityCommentUseCase(postId, commentId, reason)
+    }
+
+    fun clearNotificationError() {
+        _uiState.value = _uiState.value.copy(notificationError = null)
+    }
+
+    fun consumeNotificationToggleSuccess() {
+        _uiState.value = _uiState.value.copy(notificationToggleSuccess = null)
+    }
+
+    fun toggleNotification(postId: Int) {
+        if (_uiState.value.isTogglingNotification) return
+        val currentPost = _uiState.value.post ?: return
+        val currentFlag = currentPost.notificationEnabled ?: return
+
+        viewModelScope.launch {
+            val originalPost = currentPost
+            val optimisticFlag = !currentFlag
+
+            _uiState.value = _uiState.value.copy(
+                isTogglingNotification = true,
+                notificationError = null,
+                notificationToggleSuccess = null,
+                post = originalPost.copy(notificationEnabled = optimisticFlag)
+            )
+
+            val result = togglePostNotificationUseCase(postId)
+            if (result.isSuccess) {
+                val actualFlag = result.getOrNull() ?: optimisticFlag
+                val currentStatePost = _uiState.value.post ?: originalPost
+                _uiState.value = _uiState.value.copy(
+                    isTogglingNotification = false,
+                    notificationToggleSuccess = actualFlag,
+                    post = currentStatePost.copy(notificationEnabled = actualFlag)
+                )
+            } else {
+                _uiState.value = _uiState.value.copy(
+                    isTogglingNotification = false,
+                    notificationError = result.exceptionOrNull()?.message
+                        ?: "알림 설정을 변경할 수 없습니다.",
+                    post = originalPost
+                )
+            }
+        }
     }
 }

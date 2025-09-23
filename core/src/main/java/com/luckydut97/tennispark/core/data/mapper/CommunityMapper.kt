@@ -31,7 +31,7 @@ object CommunityMapper {
             viewCount = this.viewCount ?: 0, // null 체크
             likedByMe = this.likedByMe ?: false, // null 체크
             authoredByMe = this.authoredByMe ?: false, // null 체크
-            notificationEnabled = null // 홈 API에서는 notificationEnabled 없음
+            notificationEnabled = this.notificationEnabled
         )
     }
 

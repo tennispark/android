@@ -10,16 +10,21 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import android.widget.Toast
 import com.luckydut97.feature_community.viewmodel.CommunityHomeViewModel
 import com.luckydut97.tennispark.core.domain.model.CommunityPost
 import com.luckydut97.tennispark.core.ui.components.community.CommunityTopBar
 import com.luckydut97.tennispark.core.ui.components.community.CommunityPostCard
 import com.luckydut97.tennispark.core.ui.components.community.FloatingWriteButton
 import com.luckydut97.tennispark.core.ui.components.community.ConfirmDeleteDialog
+import com.luckydut97.feature_community.ui.components.ReportDialog
+import kotlinx.coroutines.launch
 
 /**
  * 커뮤니티 홈 화면
@@ -40,6 +45,9 @@ fun CommunityHomeScreen(
     val pullToRefreshState = rememberPullToRefreshState()
     val indicatorColor = Color(0xFF1C7756)
     var pendingDeletePost by remember { mutableStateOf<CommunityPost?>(null) }
+    var reportingPost by remember { mutableStateOf<CommunityPost?>(null) }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     // 무한 스크롤: 리스트 끝 감지
     val shouldLoadMore = remember {
@@ -73,6 +81,13 @@ fun CommunityHomeScreen(
     LaunchedEffect(shouldLoadMore.value) {
         if (shouldLoadMore.value) {
             viewModel.loadNextPage()
+        }
+    }
+
+    LaunchedEffect(uiState.notificationError) {
+        uiState.notificationError?.let { message ->
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            viewModel.clearNotificationError()
         }
     }
 
@@ -180,9 +195,15 @@ fun CommunityHomeScreen(
                                     onPostClick = { onPostClick(post.id) },
                                     onLikeClick = { viewModel.toggleLike(post.id) },
                                     onCommentClick = { onPostClick(post.id) },
-                                    onAlarmClick = onAlarmClick,
+                                    onAlarmClick = {
+                                        if (post.notificationEnabled != null) {
+                                            viewModel.toggleNotification(post.id)
+                                        }
+                                    },
                                     onEditClick = onEditPost,
-                                    onDeleteClick = { pendingDeletePost = it }
+                                    onDeleteClick = { pendingDeletePost = it },
+                                    onReportClick = { reportingPost = it },
+                                    isNotificationToggling = uiState.notificationUpdatingPostIds.contains(post.id)
                                 )
 
                                 // 게시글 구분선
@@ -221,7 +242,7 @@ fun CommunityHomeScreen(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
-                                            text = "모든 게시글을 불러왔습니다",
+                                            text = " ",
                                             color = Color.Gray
                                         )
                                     }
@@ -254,6 +275,36 @@ fun CommunityHomeScreen(
                 pendingDeletePost = null
             },
             onDismiss = { pendingDeletePost = null }
+        )
+    }
+
+    reportingPost?.let { post ->
+        ReportDialog(
+            onConfirm = { reason ->
+                val trimmed = reason.trim()
+                if (trimmed.isEmpty()) {
+                    Toast.makeText(context, "신고 사유를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    return@ReportDialog
+                }
+                if (trimmed.length > 1000) {
+                    Toast.makeText(context, "신고 사유는 1,000자 이하여야 합니다.", Toast.LENGTH_SHORT).show()
+                    return@ReportDialog
+                }
+                coroutineScope.launch {
+                    val result = viewModel.reportPost(post.id, trimmed)
+                    if (result.isSuccess) {
+                        Toast.makeText(context, "신고가 접수되었습니다.", Toast.LENGTH_SHORT).show()
+                        reportingPost = null
+                    } else {
+                        Toast.makeText(
+                            context,
+                            result.exceptionOrNull()?.message ?: "신고 처리에 실패했습니다.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            },
+            onDismiss = { reportingPost = null }
         )
     }
 }

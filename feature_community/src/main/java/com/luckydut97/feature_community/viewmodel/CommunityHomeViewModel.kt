@@ -7,6 +7,8 @@ import com.luckydut97.tennispark.core.domain.model.CommunityPost
 import com.luckydut97.tennispark.core.domain.usecase.GetCommunityPostsUseCase
 import com.luckydut97.tennispark.core.domain.usecase.ToggleCommunityLikeUseCase
 import com.luckydut97.tennispark.core.domain.usecase.CreateCommunityPostUseCase
+import com.luckydut97.tennispark.core.domain.usecase.ReportCommunityPostUseCase
+import com.luckydut97.tennispark.core.domain.usecase.TogglePostNotificationUseCase
 import com.luckydut97.tennispark.core.data.repository.CommunityRepositoryImpl
 import com.luckydut97.tennispark.core.data.network.NetworkModule
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +31,9 @@ data class CommunityHomeUiState(
     val currentPage: Int = 0, // 현재 페이지
     val hasNextPage: Boolean = false, // 다음 페이지 존재 여부
     val isLoadingMore: Boolean = false, // 추가 로딩 중
-    val canLoadMore: Boolean = true // 더 불러올 수 있는지
+    val canLoadMore: Boolean = true, // 더 불러올 수 있는지
+    val notificationError: String? = null,
+    val notificationUpdatingPostIds: Set<Int> = emptySet()
 )
 
 /**
@@ -45,6 +49,8 @@ class CommunityHomeViewModel : ViewModel() {
     private val getCommunityPostsUseCase = GetCommunityPostsUseCase(communityRepository)
     private val toggleCommunityLikeUseCase = ToggleCommunityLikeUseCase(communityRepository)
     private val createCommunityPostUseCase = CreateCommunityPostUseCase(communityRepository)
+    private val reportCommunityPostUseCase = ReportCommunityPostUseCase(communityRepository)
+    private val togglePostNotificationUseCase = TogglePostNotificationUseCase(communityRepository)
 
     private val _uiState = MutableStateFlow(CommunityHomeUiState())
     val uiState: StateFlow<CommunityHomeUiState> = _uiState.asStateFlow()
@@ -63,7 +69,9 @@ class CommunityHomeViewModel : ViewModel() {
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
                 errorMessage = null,
-                currentPage = 0
+                currentPage = 0,
+                notificationError = null,
+                notificationUpdatingPostIds = emptySet()
             )
 
             try {
@@ -81,13 +89,15 @@ class CommunityHomeViewModel : ViewModel() {
                             errorMessage = null,
                             currentPage = 0,
                             hasNextPage = hasNext,
-                            canLoadMore = hasNext
+                            canLoadMore = hasNext,
+                            notificationUpdatingPostIds = emptySet()
                         )
                     }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = e.message ?: "네트워크 오류가 발생했습니다."
+                    errorMessage = e.message ?: "네트워크 오류가 발생했습니다.",
+                    notificationUpdatingPostIds = emptySet()
                 )
             }
         }
@@ -100,7 +110,8 @@ class CommunityHomeViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isRefreshing = true,
-                currentPage = 0
+                currentPage = 0,
+                notificationError = null
             )
 
             try {
@@ -118,7 +129,8 @@ class CommunityHomeViewModel : ViewModel() {
                             errorMessage = null,
                             currentPage = 0,
                             hasNextPage = hasNext,
-                            canLoadMore = hasNext
+                            canLoadMore = hasNext,
+                            notificationUpdatingPostIds = emptySet()
                         )
                     }
             } catch (e: Exception) {
@@ -258,5 +270,67 @@ class CommunityHomeViewModel : ViewModel() {
             createPostSuccess = false,
             createPostError = null
         )
+    }
+
+    suspend fun reportPost(postId: Int, reason: String): Result<Unit> {
+        return reportCommunityPostUseCase(postId, reason)
+    }
+
+    fun clearNotificationError() {
+        _uiState.value = _uiState.value.copy(notificationError = null)
+    }
+
+    fun toggleNotification(postId: Int) {
+        viewModelScope.launch {
+            if (_uiState.value.notificationUpdatingPostIds.contains(postId)) return@launch
+            val currentState = _uiState.value
+            val index = currentState.posts.indexOfFirst { it.id == postId }
+            if (index == -1) return@launch
+
+            val post = currentState.posts[index]
+            val currentFlag = post.notificationEnabled ?: return@launch
+
+            val optimisticFlag = !currentFlag
+            val optimisticPosts = currentState.posts.toMutableList().apply {
+                this[index] = post.copy(notificationEnabled = optimisticFlag)
+            }
+
+            _uiState.value = currentState.copy(
+                posts = optimisticPosts,
+                notificationError = null,
+                notificationUpdatingPostIds = currentState.notificationUpdatingPostIds + postId
+            )
+
+            val result = togglePostNotificationUseCase(postId)
+            val stateAfterCall = _uiState.value
+            if (result.isSuccess) {
+                val actualFlag = result.getOrNull() ?: optimisticFlag
+                val successPosts = stateAfterCall.posts.toMutableList().apply {
+                    val successIndex = indexOfFirst { it.id == postId }
+                    if (successIndex != -1) {
+                        val currentPostState = this[successIndex]
+                        this[successIndex] = currentPostState.copy(notificationEnabled = actualFlag)
+                    }
+                }
+                _uiState.value = stateAfterCall.copy(
+                    posts = successPosts,
+                    notificationUpdatingPostIds = stateAfterCall.notificationUpdatingPostIds - postId
+                )
+            } else {
+                val revertedPosts = stateAfterCall.posts.toMutableList().apply {
+                    val failureIndex = indexOfFirst { it.id == postId }
+                    if (failureIndex != -1) {
+                        val currentPostState = this[failureIndex]
+                        this[failureIndex] = currentPostState.copy(notificationEnabled = currentFlag)
+                    }
+                }
+                _uiState.value = stateAfterCall.copy(
+                    posts = revertedPosts,
+                    notificationUpdatingPostIds = stateAfterCall.notificationUpdatingPostIds - postId,
+                    notificationError = result.exceptionOrNull()?.message
+                        ?: "알림 설정을 변경할 수 없습니다."
+                )
+            }
+        }
     }
 }

@@ -13,6 +13,7 @@ import com.luckydut97.tennispark.core.domain.model.CommunityPost
 import com.luckydut97.tennispark.core.domain.model.CommunityComment
 import com.luckydut97.tennispark.core.domain.model.CommunityPostUpdateRequest
 import com.luckydut97.tennispark.core.domain.repository.CommunityRepository
+import com.luckydut97.tennispark.core.data.model.CommunityReportRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -65,7 +66,19 @@ class CommunityRepositoryImpl(
         }
     }
 
-    override suspend fun toggleLike(postId: Int): Result<Unit> = Result.success(Unit)
+    override suspend fun toggleLike(postId: Int): Result<Unit> {
+        return try {
+            val response = apiService.toggleCommunityLike(postId)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Result.success(Unit)
+            } else {
+                val message = response.body()?.error?.message ?: "좋아요 처리에 실패했습니다."
+                Result.failure(Exception(message))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("네트워크 오류가 발생했습니다: ${e.message}"))
+        }
+    }
 
     override suspend fun getPostComments(postId: Int): Flow<List<CommunityComment>> = flow {
         try {
@@ -168,6 +181,66 @@ class CommunityRepositoryImpl(
                 Result.success(Unit)
             } else {
                 val errorMessage = response.body()?.error?.message ?: "댓글 삭제에 실패했습니다."
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("네트워크 오류가 발생했습니다: ${e.message}"))
+        }
+    }
+
+    override suspend fun reportPost(postId: Int, reason: String): Result<Unit> {
+        return try {
+            val trimmed = reason.trim()
+            if (trimmed.isEmpty()) {
+                return Result.failure(Exception("신고 사유는 필수입니다."))
+            }
+            if (trimmed.length > 1000) {
+                return Result.failure(Exception("신고 사유는 1,000자 이하여야 합니다."))
+            }
+
+            val request = CommunityReportRequest(trimmed)
+            val response = apiService.reportCommunityPost(postId, request)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Result.success(Unit)
+            } else {
+                val errorMessage = response.body()?.error?.message ?: "신고 처리에 실패했습니다."
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("네트워크 오류가 발생했습니다: ${e.message}"))
+        }
+    }
+
+    override suspend fun reportComment(postId: Int, commentId: Int, reason: String): Result<Unit> {
+        return try {
+            val trimmed = reason.trim()
+            if (trimmed.isEmpty()) {
+                return Result.failure(Exception("신고 사유는 필수입니다."))
+            }
+            if (trimmed.length > 1000) {
+                return Result.failure(Exception("신고 사유는 1,000자 이하여야 합니다."))
+            }
+
+            val request = CommunityReportRequest(trimmed)
+            val response = apiService.reportCommunityComment(postId, commentId, request)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Result.success(Unit)
+            } else {
+                val errorMessage = response.body()?.error?.message ?: "신고 처리에 실패했습니다."
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("네트워크 오류가 발생했습니다: ${e.message}"))
+        }
+    }
+
+    override suspend fun togglePostNotification(postId: Int): Result<Boolean> {
+        return try {
+            val response = apiService.toggleCommunityPostNotification(postId)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Result.success(response.body()?.response?.notificationEnabled ?: false)
+            } else {
+                val errorMessage = response.body()?.error?.message ?: "알림 설정을 변경할 수 없습니다."
                 Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {

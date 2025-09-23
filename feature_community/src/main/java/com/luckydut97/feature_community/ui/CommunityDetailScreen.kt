@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.feature_community.viewmodel.CommunityDetailViewModel
 import com.luckydut97.tennispark.core.domain.model.CommunityComment
@@ -27,6 +28,8 @@ import com.luckydut97.tennispark.core.ui.components.community.CommentItem
 import com.luckydut97.tennispark.core.ui.components.community.CommentInputBox
 import com.luckydut97.tennispark.core.ui.components.community.ConfirmDeleteDialog
 import com.luckydut97.tennispark.core.ui.theme.Pretendard
+import com.luckydut97.feature_community.ui.components.ReportDialog
+import kotlinx.coroutines.launch
 
 /**
  * 커뮤니티 게시글 상세 화면
@@ -40,6 +43,7 @@ fun CommunityDetailScreen(
     onDeletePost: (CommunityPost) -> Unit = {},
     onEditComment: (CommunityComment) -> Unit = {},
     onDeleteComment: (CommunityComment) -> Unit = {},
+    onToggleLike: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: CommunityDetailViewModel = viewModel()
 ) {
@@ -48,6 +52,9 @@ fun CommunityDetailScreen(
     val context = LocalContext.current
     var pendingPostDelete by remember { mutableStateOf<CommunityPost?>(null) }
     var pendingCommentDelete by remember { mutableStateOf<CommunityComment?>(null) }
+    var reportingPost by remember { mutableStateOf<CommunityPost?>(null) }
+    var reportingComment by remember { mutableStateOf<CommunityComment?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     // 갤러리 선택 런처
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -87,6 +94,20 @@ fun CommunityDetailScreen(
         uiState.deleteCommentError?.let { error ->
             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
             viewModel.clearDeleteCommentState()
+        }
+    }
+
+    LaunchedEffect(uiState.notificationError) {
+        uiState.notificationError?.let { error ->
+            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+            viewModel.clearNotificationError()
+        }
+    }
+
+    LaunchedEffect(uiState.notificationToggleSuccess) {
+        uiState.notificationToggleSuccess?.let {
+            onToggleLike()
+            viewModel.consumeNotificationToggleSuccess()
         }
     }
 
@@ -168,63 +189,77 @@ fun CommunityDetailScreen(
                 }
 
                 uiState.post != null -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                    ) {
                         // 게시글 카드 (더보기 없이 전체 내용 표시)
                         item {
-                        CommunityPostCard(
-                            post = uiState.post!!,
-                            onPostClick = { /* 이미 상세 화면이므로 무시 */ },
-                            onLikeClick = { viewModel.toggleLike() },
-                            onCommentClick = { /* 이미 상세 화면이므로 무시 */ },
-                            onAlarmClick = onAlarmClick,
-                            onEditClick = { post ->
-                                if (post.authoredByMe) {
-                                    onEditPost(post)
-                                } else {
-                                    Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            onDeleteClick = { post ->
-                                if (post.authoredByMe) {
-                                    pendingPostDelete = post
-                                } else {
-                                    Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            isDetailView = true
-                        )
-                    }
+                            CommunityPostCard(
+                                post = uiState.post!!,
+                                onPostClick = { /* 이미 상세 화면이므로 무시 */ },
+                                onLikeClick = {
+                                    viewModel.toggleLike()
+                                    onToggleLike()
+                                },
+                                onCommentClick = { /* 이미 상세 화면이므로 무시 */ },
+                                onAlarmClick = {
+                                    uiState.post?.let { post ->
+                                        if (post.notificationEnabled != null) {
+                                            viewModel.toggleNotification(post.id)
+                                        }
+                                    }
+                                },
+                                onEditClick = { post ->
+                                    if (post.authoredByMe) {
+                                        onEditPost(post)
+                                    } else {
+                                        Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                onDeleteClick = { post ->
+                                    if (post.authoredByMe) {
+                                        pendingPostDelete = post
+                                    } else {
+                                        Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                onReportClick = { post ->
+                                    reportingPost = post
+                                },
+                                isDetailView = true,
+                                isNotificationToggling = uiState.isTogglingNotification
+                            )
+                        }
 
                         // 구분선
                         item {
-                        Spacer(
-                            modifier = Modifier
-                                .height(18.dp)
-                                .fillMaxWidth()
-                                .background(Color(0xFFF5F5F5))
-                        )
-                    }
-
-                    item {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            Spacer(modifier = Modifier.height(18.dp))
-                            Text(
-                                text = "댓글 ${uiState.comments.size}",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Normal,
-                                letterSpacing = (-0.5).sp,
-                                color = Color(0xFF8B9096),
-                                fontFamily = Pretendard,
-                                modifier = Modifier.padding(horizontal = 18.dp)
+                            Spacer(
+                                modifier = Modifier
+                                    .height(18.dp)
+                                    .fillMaxWidth()
+                                    .background(Color(0xFFF5F5F5))
                             )
                         }
-                    }
 
-                    // 댓글 로딩 표시
+                        item {
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                Spacer(modifier = Modifier.height(18.dp))
+                                Text(
+                                    text = "댓글 ${uiState.comments.size}",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    letterSpacing = (-0.5).sp,
+                                    color = Color(0xFF8B9096),
+                                    fontFamily = Pretendard,
+                                    modifier = Modifier.padding(horizontal = 18.dp)
+                                )
+                                Spacer(modifier = Modifier.height(18.dp))
+                            }
+                        }
+
+                        // 댓글 로딩 표시
                         if (uiState.isLoadingComments) {
                             item {
                                 Box(
@@ -249,16 +284,17 @@ fun CommunityDetailScreen(
                                     if (comment.authoredByMe) {
                                         onEditComment(comment)
                                     } else {
-                                        Toast.makeText(context, "작성자가 아닙니다.라고", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
                                     }
                                 },
                                 onDeleteClick = {
                                     if (comment.authoredByMe) {
                                         pendingCommentDelete = comment
                                     } else {
-                                        Toast.makeText(context, "작성자가 아닙니다.라고", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
                                     }
-                                }
+                                },
+                                onReportClick = { reportingComment = it }
                             )
                         }
 
@@ -317,6 +353,66 @@ fun CommunityDetailScreen(
                 pendingCommentDelete = null
             },
             onDismiss = { pendingCommentDelete = null }
+        )
+    }
+
+    reportingPost?.let { post ->
+        ReportDialog(
+            onConfirm = { reason ->
+                val trimmed = reason.trim()
+                if (trimmed.isEmpty()) {
+                    Toast.makeText(context, "신고 사유를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    return@ReportDialog
+                }
+                if (trimmed.length > 1000) {
+                    Toast.makeText(context, "신고 사유는 1,000자 이하여야 합니다.", Toast.LENGTH_SHORT).show()
+                    return@ReportDialog
+                }
+                coroutineScope.launch {
+                    val result = viewModel.reportPost(post.id, trimmed)
+                    if (result.isSuccess) {
+                        Toast.makeText(context, "신고가 접수되었습니다.", Toast.LENGTH_SHORT).show()
+                        reportingPost = null
+                    } else {
+                        Toast.makeText(
+                            context,
+                            result.exceptionOrNull()?.message ?: "신고 처리에 실패했습니다.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            },
+            onDismiss = { reportingPost = null }
+        )
+    }
+
+    reportingComment?.let { comment ->
+        ReportDialog(
+            onConfirm = { reason ->
+                val trimmed = reason.trim()
+                if (trimmed.isEmpty()) {
+                    Toast.makeText(context, "신고 사유를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    return@ReportDialog
+                }
+                if (trimmed.length > 1000) {
+                    Toast.makeText(context, "신고 사유는 1,000자 이하여야 합니다.", Toast.LENGTH_SHORT).show()
+                    return@ReportDialog
+                }
+                coroutineScope.launch {
+                    val result = viewModel.reportComment(postId, comment.id, trimmed)
+                    if (result.isSuccess) {
+                        Toast.makeText(context, "신고가 접수되었습니다.", Toast.LENGTH_SHORT).show()
+                        reportingComment = null
+                    } else {
+                        Toast.makeText(
+                            context,
+                            result.exceptionOrNull()?.message ?: "신고 처리에 실패했습니다.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            },
+            onDismiss = { reportingComment = null }
         )
     }
 }
