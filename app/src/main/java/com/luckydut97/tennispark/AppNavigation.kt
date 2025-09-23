@@ -44,12 +44,14 @@ import com.luckydut97.tennispark.core.ui.components.navigation.BottomNavigationI
 import com.luckydut97.tennispark.feature_auth.navigation.AuthNavigation
 import com.luckydut97.feature_community.ui.CommunityDetailScreen
 import com.luckydut97.feature_community.ui.CommunityHomeScreen
+import com.luckydut97.feature_community.ui.CommunitySearchScreen
 import com.luckydut97.feature_community.ui.CommunityWriteScreen
 import com.luckydut97.feature_community.ui.CommentEditScreen
 import com.luckydut97.feature_community.viewmodel.CommunityCommentEditViewModel
 import com.luckydut97.feature_community.viewmodel.CommunityDetailViewModel
 import com.luckydut97.feature_community.viewmodel.CommunityHomeViewModel
 import com.luckydut97.feature_community.viewmodel.CommunityPostEditViewModel
+import com.luckydut97.feature_community.viewmodel.CommunitySearchViewModel
 
 /**
  * 탭 순서에 따른 슬라이드 방향 결정
@@ -451,6 +453,42 @@ fun AppNavigation(
                     )
                     navController.popBackStack()
                 }
+            )
+        }
+
+        // 커뮤니티 검색 화면
+        composable(
+            "community_search",
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(300)
+                )
+            }
+        ) { backStackEntry ->
+            val searchViewModel: CommunitySearchViewModel = viewModel(backStackEntry)
+
+            CommunitySearchScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onSearch = { keyword ->
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "community_search_keyword",
+                        keyword
+                    )
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "community_refresh",
+                        true
+                    )
+                },
+                viewModel = searchViewModel
             )
         }
 
@@ -954,7 +992,7 @@ fun MainScreenWithBottomNav(
                         mainNavController.navigate("community_detail/$postId")
                     },
                     onSearchClick = {
-                        // TODO: 검색 화면으로 이동
+                        mainNavController.navigate("community_search")
                     },
                     onAlarmClick = {
                         // TODO: 알림 화면으로 이동
