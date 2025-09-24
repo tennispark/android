@@ -194,14 +194,26 @@ fun CommunitySearchScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "검색 결과가 없습니다.",
-                                color = Color(0xFF8B9096),
-                                fontFamily = Pretendard,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 14.sp,
-                                letterSpacing = (-0.5).sp
-                            )
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "검색 결과가 없습니다.",
+                                    fontSize = 20.sp,
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF202020)
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = "다른 검색어를 입력해 주세요.",
+                                    fontSize = 15.sp,
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color(0xFF8B9096),
+                                    letterSpacing = (-0.5).sp
+                                )
+                            }
                         }
                     }
                 }
