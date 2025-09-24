@@ -35,7 +35,6 @@ fun CalendarDateCell(
 ) {
     val isSunday = date.dayOfWeek == DayOfWeek.SUNDAY
     val isHoliday = CalendarUtils.isKoreanHoliday(date)
-    val isInActiveRange = CalendarUtils.isInActiveDateRange(date)
 
     // 모든 현재 달 날짜 선택 가능
     val isSelectable = isCurrentMonth
@@ -43,23 +42,14 @@ fun CalendarDateCell(
     // 선택된 날짜는 원형 배경
     val hasCircleBackground = isSelected
 
-    // 날짜 텍스트 색상 결정
-    val textColor = when {
-        !isCurrentMonth -> Color.Transparent // 다른 달 날짜는 투명
-        hasCircleBackground -> Color.White // 선택된 날짜는 흰색
-
-        // 활성화된 날짜
-        isInActiveRange -> {
-            when {
-                !hasActivity -> Color(0xFFDADADA) // 활성화이지만 활동 없음
-                isSunday || isHoliday -> Color(0xFFEF3629) // 활동 있는 일요일/공휴일
-                else -> Color(0xFF6F6F6F) // 활동 있는 평일/토요일
-            }
-        }
-
-        // 비활성화된 날짜 (과거 또는 미래)
-        else -> Color(0xFFDADADA)
+    val baseTextColor = when {
+        !isCurrentMonth -> Color.Transparent
+        !hasActivity -> Color(0xFFDADADA)
+        isSunday || isHoliday -> Color(0xFFEF3629)
+        else -> Color(0xFF202020)
     }
+
+    val textColor = if (hasCircleBackground) Color.White else baseTextColor
 
     // 글자 굵기
     val fontWeight = if (hasCircleBackground) FontWeight.Bold else FontWeight.Normal

@@ -154,55 +154,7 @@ object CalendarUtils {
         return "${yearMonth.year}년 ${yearMonth.monthValue}월"
     }
 
-    /**
-     * 활동 신청 활성화 날짜 범위 계산
-     * 월~목: 오늘 ~ 이번주 일요일
-     * 금~일: 오늘 ~ 다음주 일요일
-     */
-    fun getActiveDateRange(): Pair<LocalDate, LocalDate> {
-        val today = LocalDate.now()
-        val dayOfWeek = today.dayOfWeek.value // 1(월) ~ 7(일)
 
-        return if (dayOfWeek <= 4) { // 월~목
-            // 오늘부터 이번주 일요일까지
-            val thisWeekSunday = today.with(DayOfWeek.SUNDAY)
-            today to thisWeekSunday
-        } else { // 금~일
-            // 오늘부터 다음주 일요일까지
-            val nextWeekSunday = today.with(DayOfWeek.SUNDAY).plusWeeks(1)
-            today to nextWeekSunday
-        }
-    }
-
-    /**
-     * 특정 날짜가 활동 신청 활성화 범위에 포함되는지 확인
-     */
-    fun isInActiveDateRange(date: LocalDate): Boolean {
-        val (startDate, endDate) = getActiveDateRange()
-        return !date.isBefore(startDate) && !date.isAfter(endDate)
-    }
-
-    /**
-     * 특정 날짜가 비활성화 날짜인지 확인 (과거 또는 미래)
-     */
-    fun isInactiveDate(date: LocalDate): Boolean {
-        return !isInActiveDateRange(date)
-    }
-
-    /**
-     * 특정 날짜가 과거 날짜인지 확인
-     */
-    fun isPastDate(date: LocalDate): Boolean {
-        return date.isBefore(LocalDate.now())
-    }
-
-    /**
-     * 특정 날짜가 미래의 비활성화 날짜인지 확인
-     */
-    fun isFutureInactiveDate(date: LocalDate): Boolean {
-        val (_, endDate) = getActiveDateRange()
-        return date.isAfter(endDate)
-    }
 }
 
 /**
