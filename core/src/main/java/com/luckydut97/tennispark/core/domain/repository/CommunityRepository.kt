@@ -22,6 +22,15 @@ interface CommunityRepository {
     ): Flow<Pair<List<CommunityPost>, Boolean>>
 
     /**
+     * 커뮤니티 게시글 검색
+     */
+    suspend fun searchCommunityPosts(
+        keyword: String,
+        page: Int = 0,
+        size: Int = 20
+    ): Flow<Pair<List<CommunityPost>, Boolean>>
+
+    /**
      * 게시글 좋아요 토글
      */
     suspend fun toggleLike(postId: Int): Result<Unit>

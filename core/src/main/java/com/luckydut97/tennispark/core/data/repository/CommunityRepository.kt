@@ -50,6 +50,28 @@ class CommunityRepositoryImpl(
         }
     }
 
+    override suspend fun searchCommunityPosts(
+        keyword: String,
+        page: Int,
+        size: Int
+    ): Flow<Pair<List<CommunityPost>, Boolean>> = flow {
+        try {
+            val response = apiService.searchCommunityPosts(keyword, page, size)
+
+            if (response.isSuccessful && response.body()?.success == true) {
+                val searchResponse = response.body()?.response
+                val posts = searchResponse?.content ?: emptyList()
+                val hasNext = searchResponse?.hasNext ?: false
+                emit(posts.toDomain() to hasNext)
+            } else {
+                val errorMessage = response.body()?.error?.message ?: "검색 결과를 불러올 수 없습니다."
+                throw Exception(errorMessage)
+            }
+        } catch (e: Exception) {
+            throw Exception("네트워크 오류가 발생했습니다: ${e.message}")
+        }
+    }
+
     override suspend fun getPostDetail(postId: Int): Flow<CommunityPost> = flow {
         try {
             val response = apiService.getCommunityPostDetail(postId)
@@ -84,8 +106,14 @@ class CommunityRepositoryImpl(
         try {
             val response = apiService.getCommunityPostComments(postId)
             if (response.isSuccessful) {
-                val comments = response.body()?.comments ?: emptyList()
-                emit(comments.toCommentDomain())
+                val body = response.body()
+                if (body?.success == true) {
+                    val comments = body.response?.comments ?: emptyList()
+                    emit(comments.toCommentDomain())
+                } else {
+                    val message = body?.error?.message ?: "댓글을 불러올 수 없습니다."
+                    throw Exception(message)
+                }
             } else {
                 throw Exception("댓글을 불러올 수 없습니다. 상태코드: ${response.code()}")
             }

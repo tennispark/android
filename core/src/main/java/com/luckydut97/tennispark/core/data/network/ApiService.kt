@@ -152,11 +152,18 @@ interface ApiService {
         @Query("size") size: Int = 20
     ): Response<ApiResponse<CommunityHomeResponse>>
 
+    @GET("api/members/community/posts/search")
+    suspend fun searchCommunityPosts(
+        @Query("keyword") keyword: String,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 20
+    ): Response<ApiResponse<CommunityHomeResponse>>
+
     @GET("api/members/community/posts/{postId}")
     suspend fun getCommunityPostDetail(@Path("postId") postId: Int): Response<ApiResponse<CommunityPostDetailResponse>>
 
     @GET("api/members/community/posts/{postId}/comments")
-    suspend fun getCommunityPostComments(@Path("postId") postId: Int): Response<CommunityCommentsResponse>
+    suspend fun getCommunityPostComments(@Path("postId") postId: Int): Response<ApiResponse<CommunityCommentsResponse>>
 
     // 커뮤니티 게시글 좋아요 토글 API
     @POST("api/members/community/posts/{postId}/likes")

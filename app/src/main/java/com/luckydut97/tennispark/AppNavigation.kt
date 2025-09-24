@@ -344,6 +344,7 @@ fun AppNavigation(
                 if (editUiState.deleteSuccess) {
                     editViewModel.consumeDeleteState()
                     navController.previousBackStackEntry?.savedStateHandle?.set("community_refresh", true)
+                    navController.previousBackStackEntry?.savedStateHandle?.set("community_search_refresh", true)
                     runCatching {
                         val mainEntry = navController.getBackStackEntry("main")
                         mainEntry.savedStateHandle["community_refresh"] = true
@@ -472,21 +473,109 @@ fun AppNavigation(
                 )
             }
         ) { backStackEntry ->
-            val searchViewModel: CommunitySearchViewModel = viewModel(backStackEntry)
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry("main")
+            }
+            val searchViewModel: CommunitySearchViewModel = viewModel(parentEntry)
+            val postEditViewModel: CommunityPostEditViewModel = viewModel(parentEntry)
+            val editUiState by postEditViewModel.uiState.collectAsState()
+            val context = LocalContext.current
+
+            val handleSearch: (String) -> Unit = { keyword ->
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    "community_search_keyword",
+                    keyword
+                )
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    "community_refresh",
+                    true
+                )
+            }
+
+            val refreshFlow = remember(backStackEntry) {
+                backStackEntry.savedStateHandle.getStateFlow("community_search_refresh", false)
+            }
+            val shouldRefresh by refreshFlow.collectAsState()
+
+            LaunchedEffect(shouldRefresh) {
+                if (shouldRefresh) {
+                    searchViewModel.refreshLastSearch(handleSearch)
+                    backStackEntry.savedStateHandle["community_search_refresh"] = false
+                }
+            }
+
+            LaunchedEffect(editUiState.deleteSuccess) {
+                if (editUiState.deleteSuccess) {
+                    Toast.makeText(context, "게시글이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    postEditViewModel.consumeDeleteState()
+                    backStackEntry.savedStateHandle["community_search_refresh"] = true
+                }
+            }
+
+            LaunchedEffect(editUiState.deleteError) {
+                editUiState.deleteError?.let { message ->
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    postEditViewModel.consumeDeleteState()
+                }
+            }
+
+            LaunchedEffect(editUiState.saveSuccess) {
+                if (editUiState.saveSuccess) {
+                    Toast.makeText(context, "게시글이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                    postEditViewModel.consumeSaveState()
+                    backStackEntry.savedStateHandle["community_search_refresh"] = true
+                }
+            }
+
+            LaunchedEffect(editUiState.saveError) {
+                editUiState.saveError?.let { message ->
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    postEditViewModel.consumeSaveState()
+                }
+            }
 
             CommunitySearchScreen(
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onSearch = { keyword ->
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        "community_search_keyword",
-                        keyword
-                    )
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        "community_refresh",
-                        true
-                    )
+                onSearch = handleSearch,
+                onPostClick = { postId ->
+                    navController.navigate("community_detail/$postId")
+                },
+                onEditPost = { post ->
+                    if (!post.authoredByMe) {
+                        Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
+                        return@CommunitySearchScreen
+                    }
+                    val encodedTitle = Uri.encode(post.title)
+                    val encodedContent = Uri.encode(post.content)
+                    val photoMapPairs = post.photos
+                        .mapNotNull { (indexStr, url) ->
+                            indexStr.toIntOrNull()?.let { it to url }
+                        }
+                        .sortedBy { it.first }
+
+                    val fallbackPairs = if (photoMapPairs.isNotEmpty()) {
+                        photoMapPairs
+                    } else if (post.sortedPhotos.isNotEmpty()) {
+                        post.sortedPhotos.mapIndexed { index, url -> index to url }
+                    } else {
+                        post.mainImage?.let { listOf(0 to it) } ?: emptyList()
+                    }
+
+                    val photosParam = fallbackPairs.joinToString("|") { pair ->
+                        "${pair.first}:${Uri.encode(pair.second)}"
+                    }
+                    navController.navigate("community_edit/${post.id}?title=$encodedTitle&content=$encodedContent&photos=$photosParam")
+                },
+                onDeletePost = { post ->
+                    if (!post.authoredByMe) {
+                        Toast.makeText(context, "작성자가 아닙니다.", Toast.LENGTH_SHORT).show()
+                        return@CommunitySearchScreen
+                    }
+                    if (!editUiState.isDeleting) {
+                        postEditViewModel.deletePost(post.id)
+                    }
                 },
                 viewModel = searchViewModel
             )
@@ -542,6 +631,7 @@ fun AppNavigation(
                 if (editUiState.saveSuccess) {
                     editViewModel.consumeSaveState()
                     navController.previousBackStackEntry?.savedStateHandle?.set("community_refresh", true)
+                    navController.previousBackStackEntry?.savedStateHandle?.set("community_search_refresh", true)
                     runCatching {
                         val mainEntry = navController.getBackStackEntry("main")
                         mainEntry.savedStateHandle["community_refresh"] = true
@@ -625,6 +715,7 @@ fun AppNavigation(
                 if (commentEditUiState.saveSuccess) {
                     commentEditViewModel.consumeSaveState()
                     navController.previousBackStackEntry?.savedStateHandle?.set("community_refresh", true)
+                    navController.previousBackStackEntry?.savedStateHandle?.set("community_search_refresh", true)
                     Toast.makeText(context, "댓글이 수정되었습니다.", Toast.LENGTH_SHORT).show()
                     navController.popBackStack()
                 }
