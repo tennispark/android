@@ -40,7 +40,7 @@ fun CommunityDetailTopBar(
             )
         }
 
-        // 검색 및 알림 아이콘
+        /*// 검색 및 알림 아이콘
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -68,6 +68,6 @@ fun CommunityDetailTopBar(
                     modifier = Modifier.size(27.dp)
                 )
             }
-        }
+        }*/
     }
 }
