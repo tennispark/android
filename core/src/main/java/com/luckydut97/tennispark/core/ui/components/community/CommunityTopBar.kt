@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -162,6 +163,7 @@ fun CommunityTopBar(
                         Box(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
+                                .offset(x = (-1).dp, y = 5.dp)
                                 .size(width = badgeWidth, height = 10.4.dp)
                                 .background(
                                     color = Color(0xFFFA8451),
