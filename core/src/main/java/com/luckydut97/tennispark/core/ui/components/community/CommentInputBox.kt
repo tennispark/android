@@ -12,6 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
@@ -40,7 +42,8 @@ fun CommentInputBox(
     modifier: Modifier = Modifier,
     selectedImage: Uri? = null,
     onImageRemove: (() -> Unit)? = null,
-    isEnabled: Boolean = true
+    isEnabled: Boolean = true,
+    focusRequester: androidx.compose.ui.focus.FocusRequester? = null
 ) {
     var commentText by rememberSaveable { mutableStateOf("") }
     val textScrollState = rememberScrollState()
@@ -152,6 +155,9 @@ fun CommentInputBox(
                         maxLines = maxLines,
                         onTextLayout = { result ->
                             textLayoutResult = result
+                        },
+                        modifier = Modifier.let { base ->
+                            focusRequester?.let { base.focusRequester(it) } ?: base
                         },
                         decorationBox = { innerTextField ->
                             Box(

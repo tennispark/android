@@ -14,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.focus.FocusRequester
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luckydut97.feature_community.viewmodel.CommunityDetailViewModel
 import com.luckydut97.tennispark.core.domain.model.CommunityComment
@@ -50,6 +52,8 @@ fun CommunityDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     var selectedImage by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val commentFocusRequester = remember { FocusRequester() }
     var pendingPostDelete by remember { mutableStateOf<CommunityPost?>(null) }
     var pendingCommentDelete by remember { mutableStateOf<CommunityComment?>(null) }
     var reportingPost by remember { mutableStateOf<CommunityPost?>(null) }
@@ -139,7 +143,8 @@ fun CommunityDetailScreen(
                 onImageRemove = {
                     selectedImage = null
                 },
-                isEnabled = !uiState.isCreatingComment
+                isEnabled = !uiState.isCreatingComment,
+                focusRequester = commentFocusRequester
             )
         }
     ) { paddingValues ->
@@ -203,7 +208,10 @@ fun CommunityDetailScreen(
                                     viewModel.toggleLike()
                                     onToggleLike()
                                 },
-                                onCommentClick = { /* 이미 상세 화면이므로 무시 */ },
+                                onCommentClick = {
+                                    commentFocusRequester.requestFocus()
+                                    keyboardController?.show()
+                                },
                                 onAlarmClick = {
                                     uiState.post?.let { post ->
                                         if (post.notificationEnabled != null) {

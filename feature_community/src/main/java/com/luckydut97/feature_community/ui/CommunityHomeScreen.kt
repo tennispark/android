@@ -104,6 +104,12 @@ fun CommunityHomeScreen(
                 onSearchClick = onSearchClick,
                 onAlarmClick = onAlarmClick
             )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(Color(0xFFF5F5F5))
+            )
 
             // Pull-to-Refresh Box로 메인 콘텐츠 감싸기
             PullToRefreshBox(
