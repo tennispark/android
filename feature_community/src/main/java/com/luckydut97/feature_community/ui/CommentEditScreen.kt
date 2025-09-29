@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,10 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,7 +30,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
@@ -51,6 +46,7 @@ import androidx.compose.ui.focus.focusRequester
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.components.community.CommunityWriteTopBar
 import com.luckydut97.tennispark.core.ui.components.community.PhotoAttachmentBar
+import com.luckydut97.tennispark.core.ui.components.common.RemoveImageButton
 
 @Composable
 fun CommentEditScreen(
@@ -231,25 +227,11 @@ private fun ImagePreview(
             contentScale = ContentScale.FillWidth
         )
 
-        Box(
+        RemoveImageButton(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 18.dp, end = 18.dp)
-                .size(18.dp)
-                .background(
-                    color = Color.Black.copy(alpha = 0.5f),
-                    shape = CircleShape
-                )
-                .clickable { onRemove() },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "×",
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.offset(x = 0.6.dp, y = (-3).dp)
-            )
-        }
+                .padding(top = 24.dp, end = 24.dp),
+            onClick = onRemove
+        )
     }
 }

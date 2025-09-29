@@ -11,16 +11,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.luckydut97.tennispark.core.domain.model.CommunityPost
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
+import com.luckydut97.tennispark.core.ui.components.common.LinkifiedText
 
 /**
  * 커뮤니티 게시글 카드 컴포넌트
@@ -191,19 +193,18 @@ fun CommunityPostCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             // 내용 (5줄 제한)
-            Text(
+            LinkifiedText(
                 text = post.content,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color(0xFF202020),
-                letterSpacing = (-0.5).sp,
-                lineHeight = 24.sp,
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color(0xFF202020),
+                    letterSpacing = (-0.5).sp,
+                    lineHeight = 24.sp
+                ),
                 maxLines = if (isDetailView) Int.MAX_VALUE else 5,
                 overflow = if (isDetailView) TextOverflow.Visible else TextOverflow.Ellipsis,
-                modifier = Modifier.clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) { onPostClick() }
+                onTextClick = onPostClick
             )
 
             // 더보기 버튼 (홈 화면에서 5줄 이상일 때만 표시)

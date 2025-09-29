@@ -6,17 +6,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.luckydut97.tennispark.core.domain.model.CommunityComment
 import com.luckydut97.tennispark.core.R
+import com.luckydut97.tennispark.core.ui.components.common.LinkifiedText
 
 /**
  * 댓글 아이템 컴포넌트
@@ -109,13 +111,15 @@ fun CommentItem(
         Spacer(modifier = Modifier.height(4.dp))
 
         // 댓글 내용
-        Text(
+        LinkifiedText(
             text = comment.content,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Normal,
-            color = Color(0xFF202020),
-            letterSpacing = (-0.5).sp,
-            lineHeight = 20.sp
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF202020),
+                letterSpacing = (-0.5).sp,
+                lineHeight = 20.sp
+            )
         )
 
         if (!comment.photoUrl.isNullOrBlank()) {

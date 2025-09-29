@@ -5,13 +5,19 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -35,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.luckydut97.feature_community.viewmodel.CommunityHomeViewModel
 import com.luckydut97.tennispark.core.ui.components.community.CommunityWriteTopBar
 import com.luckydut97.tennispark.core.ui.components.community.PhotoAttachmentBar
+import com.luckydut97.tennispark.core.ui.components.common.RemoveImageButton
 
 /**
  * 게시글 작성 화면
@@ -244,30 +251,16 @@ fun CommunityWriteScreen(
                                 contentScale = ContentScale.FillWidth
                             )
 
-                            Box(
+                            RemoveImageButton(
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
-                                    .padding(top = 18.dp, end = 18.dp)
-                                    .size(18.dp)
-                                    .background(
-                                        color = Color.Black.copy(alpha = 0.5f),
-                                        shape = CircleShape
-                                    )
-                                    .clickable {
-                                        val mutable = existingImages.toMutableList()
-                                        mutable.removeAt(displayIndex)
-                                        existingImages = mutable
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "×",
-                                    color = Color.White,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.offset(x = 0.6.dp, y = (-3).dp)
-                                )
-                            }
+                                    .padding(top = 24.dp, end = 24.dp),
+                                onClick = {
+                                    val mutable = existingImages.toMutableList()
+                                    mutable.removeAt(displayIndex)
+                                    existingImages = mutable
+                                }
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -292,29 +285,14 @@ fun CommunityWriteScreen(
                             )
 
                             // 삭제 버튼 (우측 상단)
-                            Box(
+                            RemoveImageButton(
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
-                                    .padding(top = 18.dp, end = 18.dp)
-                                    .size(18.dp)
-                                    .background(
-                                        color = Color.Black.copy(alpha = 0.5f),
-                                        shape = CircleShape
-                                    )
-                                    .clickable {
-                                        selectedImages =
-                                            selectedImages.filterIndexed { i, _ -> i != index }
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "×",
-                                    color = Color.White,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.offset(x = 0.6.dp, y = (-3).dp)
-                                )
-                            }
+                                    .padding(top = 24.dp, end = 24.dp),
+                                onClick = {
+                                    selectedImages = selectedImages.filterIndexed { i, _ -> i != index }
+                                }
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
