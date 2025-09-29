@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -33,6 +34,7 @@ fun PressableComponent(
     content: @Composable () -> Unit
 ) {
     var isPressed by remember { mutableStateOf(false) }
+    val currentOnClick by rememberUpdatedState(onClick)
 
     // 애니메이션 효과를 위한 스케일 값
     val scale by animateFloatAsState(
@@ -59,7 +61,7 @@ fun PressableComponent(
                             isPressed = false
                         },
                         onTap = {
-                            onClick()
+                            currentOnClick()
                         }
                     )
                 }
