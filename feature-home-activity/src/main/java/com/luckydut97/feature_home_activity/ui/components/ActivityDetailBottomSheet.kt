@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.feature_home_activity.R
@@ -167,36 +169,32 @@ fun ActivityDetailBottomSheet(
                             fontWeight = FontWeight.Normal,
                             color = Color.Black
                         )
+
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.height(20.dp) // 고정 높이로 정렬 보장
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(12.dp)
-                                    .align(Alignment.CenterVertically),
-                                contentAlignment = Alignment.Center
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(end = 6.dp)
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_location),
                                     contentDescription = "위치",
-                                    modifier = Modifier.size(12.dp),
+                                    modifier = Modifier.size(16.dp),
                                     tint = Color(0xFF8B9096)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Box(
-                                modifier = Modifier.align(Alignment.CenterVertically),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = activity.location,
-                                    fontSize = 16.sp,
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color.Black
-                                )
-                            }
+
+                            Text(
+                                text = activity.location,
+                                fontSize = 16.sp,
+                                fontFamily = Pretendard,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.widthIn(max = 240.dp)
+                            )
                         }
                     }
 
