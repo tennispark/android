@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -245,7 +246,10 @@ private fun RightSection(
                     fontSize = locationFontSize,
                     fontFamily = Pretendard,
                     fontWeight = FontWeight.SemiBold,
-                    color = theme.locationTextColor
+                    color = theme.locationTextColor,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 12.sp
                 )
             }
         }
