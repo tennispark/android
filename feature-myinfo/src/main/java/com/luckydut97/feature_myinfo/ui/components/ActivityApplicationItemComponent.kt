@@ -5,12 +5,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luckydut97.tennispark.core.domain.model.ActivityApplication
@@ -37,14 +39,32 @@ fun ActivityApplicationItemComponent(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.Top
         ) {
-            // 장소 - 코트타입
-            Text(
-                text = "${application.place} - ${application.courtType}",
-                fontSize = 18.sp,
-                fontFamily = Pretendard,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF262626)
-            )
+            // 장소(왼쪽)와 코트 타입(오른쪽)을 분리해 장소만 '...' 처리
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = application.place,
+                    fontSize = 18.sp,
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF262626),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+
+                Text(
+                    text = " - ${application.courtType}",
+                    fontSize = 18.sp,
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF262626),
+                    modifier = Modifier.padding(end = 7.dp)
+                )
+            }
 
             // 날짜 시간
             Text(
