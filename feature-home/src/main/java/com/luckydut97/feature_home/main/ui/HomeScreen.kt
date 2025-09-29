@@ -118,13 +118,16 @@ fun HomeScreen(
             )
 
             EventSection(
-                totalPages = 3,
+                totalPages = 4,
                 onMembershipClick = onMembershipClick,
                 onAcademyClick = {
                     academyApplicationViewModel.showAcademyApplicationSheet()
                 },
                 onCourtIntroClick = {
                     openUrl("https://leeward-verdict-b34.notion.site/238bec73dd0a807eaa2afd798d0ce133?source=copy_link")
+                },
+                onLeagueClick = {
+                    openUrl("https://docs.google.com/forms/d/e/1FAIpQLScTzeoHGTMGcq3Kb_yThcPaTJlYSvj4_FL3l89WKK01ek52rQ/viewform")
                 }
             )
 

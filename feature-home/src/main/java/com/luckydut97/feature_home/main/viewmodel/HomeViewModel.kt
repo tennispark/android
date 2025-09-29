@@ -33,7 +33,7 @@ class HomeViewModel : ViewModel() {
     private val _currentEventPage = MutableStateFlow(0)
     val currentEventPage: StateFlow<Int> = _currentEventPage.asStateFlow()
 
-    private val _totalEventPages = MutableStateFlow(3) // 이벤트는 항상 3개 고정
+    private val _totalEventPages = MutableStateFlow(4) // 이벤트는 4개 고정
     val totalEventPages: StateFlow<Int> = _totalEventPages.asStateFlow()
 
     // 광고 배너 관련

@@ -43,7 +43,8 @@ fun EventSection(
     totalPages: Int,
     onMembershipClick: () -> Unit,
     onAcademyClick: () -> Unit,
-    onCourtIntroClick: () -> Unit
+    onCourtIntroClick: () -> Unit,
+    onLeagueClick: () -> Unit
 ) {
     // 무한 스크롤을 위한 매우 큰 페이지 수 설정
     val infinitePageCount = Int.MAX_VALUE
@@ -111,6 +112,20 @@ fun EventSection(
                     subtitle = "각 코트별 소개",
                     pageIndicator = "${pageIndex + 1} / $totalPages",
                     onClick = onCourtIntroClick
+                )
+                3 -> EventCard(
+                    iconRes = R.drawable.ic_league,
+                    title = "행사 참여",
+                    subtitle = "팀 리그전 참여하기",
+                    pageIndicator = "${pageIndex + 1} / $totalPages",
+                    onClick = onLeagueClick
+                )
+                else -> EventCard(
+                    iconRes = R.drawable.ic_member,
+                    title = "멤버십 등록하기",
+                    subtitle = "${(currentMonth % 12) + 1}월 정기 멤버십 등록",
+                    pageIndicator = "${pageIndex + 1} / $totalPages",
+                    onClick = onMembershipClick
                 )
             }
         }
