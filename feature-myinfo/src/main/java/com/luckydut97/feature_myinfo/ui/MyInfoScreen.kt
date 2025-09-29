@@ -361,18 +361,18 @@ fun MyInfoScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 MyPageDetailButton(
-                    iconRes = R.drawable.ic_coin_black,
+                    iconRes = R.drawable.ic_myinfo_coin,
                     text = "나의 포인트 내역",
-                    iconSize = 14.dp,
+                    iconSize = 26.dp,
                     onClick = onPointHistoryClick
                 )
 
                 MyPageDetailDivider()
 
                 MyPageDetailButton(
-                    iconRes = R.drawable.ic_tennis,
+                    iconRes = R.drawable.ic_myinfo_tennis,
                     text = "나의 활동신청 내역",
-                    iconSize = 20.dp,
+                    iconSize = 26.dp,
                     onClick = onActivityHistoryClick
                 )
 
