@@ -1,5 +1,6 @@
 package com.luckydut97.feature_myinfo.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,6 +63,11 @@ fun PointHistoryScreen(
     // 화면 진입 시 데이터 새로고침
     LaunchedEffect(Unit) {
         viewModel.refreshAllData()
+    }
+
+    // BackHandler를 사용하여 시스템 뒤로 가기 버튼 처리
+    BackHandler {
+        onBackClick()
     }
 
     // 날짜별 그룹핑

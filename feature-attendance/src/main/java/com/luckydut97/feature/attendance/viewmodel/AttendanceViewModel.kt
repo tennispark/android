@@ -57,7 +57,7 @@ class AttendanceViewModel(
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         showSuccessDialog = true,
-                        successMessage = "포인트가 지급되었습니다. (테스트)"
+                        successMessage = "포인트가 지급되지 않았습니다."
                     )
                 }
             } catch (e: Exception) {

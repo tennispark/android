@@ -1,5 +1,6 @@
 package com.luckydut97.feature.push.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +53,10 @@ fun AppPushScreen(
     LaunchedEffect(Unit) {
         viewModel.initializeWithContext(context)
         viewModel.markAllAsRead() // 🔥 모든 알림 읽음 처리 (서버 기반)
+    }
+
+    BackHandler {
+        onBackClick()
     }
 
     // 최상위 레벨 화면이므로 직접 시스템바 처리 필요

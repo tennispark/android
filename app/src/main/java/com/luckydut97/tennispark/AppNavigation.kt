@@ -769,12 +769,13 @@ fun MainScreenWithBottomNav(
         currentRoute == BottomNavigationItem.HOME.route -> BottomNavigationItem.HOME.route
         currentRoute == BottomNavigationItem.SHOP.route || currentRoute.startsWith("shop_detail") -> BottomNavigationItem.SHOP.route
         currentRoute == BottomNavigationItem.COMMUNITY.route -> BottomNavigationItem.COMMUNITY.route
-        // 내정보 하위 screen은 모두 내정보 탭 강조 (except point_history)
+        // 내정보 하위 screen은 모두 내정보 탭 강조 (point_history 포함)
         currentRoute == BottomNavigationItem.PROFILE.route || currentRoute == "myinfo" || currentRoute == "settings" ||
                 currentRoute == "notice" || currentRoute == "app_settings" || currentRoute == "faq" ||
-                currentRoute == "terms" || currentRoute == "version_info" || currentRoute == "withdrawal" -> BottomNavigationItem.PROFILE.route
-        // 탭 외 화면에서 바텀네비 숨김
-        currentRoute == "point_history" || currentRoute == "app_push" -> null
+                currentRoute == "terms" || currentRoute == "version_info" || currentRoute == "withdrawal" ||
+                currentRoute == "point_history" || currentRoute == "activity_history" -> BottomNavigationItem.PROFILE.route
+        // 탭 외 화면에서 바텀네비 숨김 (app_push만)
+        currentRoute == "app_push" -> null
         else -> null
     }
 

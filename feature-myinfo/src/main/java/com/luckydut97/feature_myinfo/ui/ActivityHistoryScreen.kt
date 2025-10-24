@@ -1,5 +1,6 @@
 package com.luckydut97.feature_myinfo.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,10 @@ fun ActivityHistoryScreen(
     val groupedApplications by viewModel.groupedApplications.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+
+    BackHandler {
+        onNavigateBack()
+    }
 
     Scaffold(
         topBar = {
