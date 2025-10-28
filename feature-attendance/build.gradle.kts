@@ -64,13 +64,13 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.2")
 
     // CameraX
-    implementation("androidx.camera:camera-camera2:1.3.0")
-    implementation("androidx.camera:camera-lifecycle:1.3.0")
-    implementation("androidx.camera:camera-view:1.3.0")
+    implementation("androidx.camera:camera-camera2:1.4.2")
+    implementation("androidx.camera:camera-lifecycle:1.4.2")
+    implementation("androidx.camera:camera-view:1.4.2")
 
     // GMS 모듈
-    implementation("com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1")
-    // Accompanist Permissions
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+// Accompanist Permissions
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 
     testImplementation(libs.junit)
