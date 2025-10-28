@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -23,6 +24,9 @@ import com.luckydut97.tennispark.core.domain.model.CommunityPost
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.components.animation.PressableComponent
 import com.luckydut97.tennispark.core.ui.components.common.LinkifiedText
+import com.luckydut97.tennispark.core.utils.ImageDownloadManager
+import android.widget.Toast
+import kotlinx.coroutines.launch
 
 /**
  * 커뮤니티 게시글 카드 컴포넌트
@@ -42,6 +46,15 @@ fun CommunityPostCard(
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
+
+    // 이미지 다운로드 관련 상태
+    var showDownloadDialog by remember { mutableStateOf(false) }
+    var selectedImageUrl by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val imageDownloadManager = remember { ImageDownloadManager(context) }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -224,7 +237,7 @@ fun CommunityPostCard(
                 )
             }
 
-            // photos 표시 (상세 화면용 - 내용 바로 아래)
+            // photos 표시 (상세 화면용 - 내용 바로 아래) - 클릭 기능 추가
             if (isDetailView && post.sortedPhotos.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 post.sortedPhotos.forEachIndexed { index, photoUrl ->
@@ -233,7 +246,11 @@ fun CommunityPostCard(
                         contentDescription = "게시글 이미지 ${index + 1}",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight(),
+                            .wrapContentHeight()
+                            .clickable {
+                                selectedImageUrl = photoUrl
+                                showDownloadDialog = true
+                            },
                         contentScale = ContentScale.FillWidth
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -334,5 +351,26 @@ fun CommunityPostCard(
                 }
             }
         }
+    }
+
+    // 이미지 다운로드 다이얼로그
+    if (showDownloadDialog) {
+        ImageDownloadDialog(
+            onDismiss = { showDownloadDialog = false },
+            onConfirm = {
+                coroutineScope.launch {
+                    val result = imageDownloadManager.downloadImage(selectedImageUrl)
+                    result.fold(
+                        onSuccess = { message ->
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        },
+                        onFailure = { error ->
+                            Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
+                        }
+                    )
+                    showDownloadDialog = false
+                }
+            }
+        )
     }
 }

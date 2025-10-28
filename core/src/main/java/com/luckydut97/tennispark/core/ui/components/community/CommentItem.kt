@@ -1,5 +1,6 @@
 package com.luckydut97.tennispark.core.ui.components.community
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -10,6 +11,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -19,6 +21,9 @@ import coil.compose.AsyncImage
 import com.luckydut97.tennispark.core.domain.model.CommunityComment
 import com.luckydut97.tennispark.core.R
 import com.luckydut97.tennispark.core.ui.components.common.LinkifiedText
+import com.luckydut97.tennispark.core.utils.ImageDownloadManager
+import android.widget.Toast
+import kotlinx.coroutines.launch
 
 /**
  * 댓글 아이템 컴포넌트
@@ -32,6 +37,14 @@ fun CommentItem(
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
+
+    // 이미지 다운로드 관련 상태
+    var showDownloadDialog by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val imageDownloadManager = remember { ImageDownloadManager(context) }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -122,6 +135,7 @@ fun CommentItem(
             )
         )
 
+        // 댓글 이미지 - 클릭 기능 추가
         if (!comment.photoUrl.isNullOrBlank()) {
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -131,9 +145,33 @@ fun CommentItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 120.dp)
-                    .clip(RoundedCornerShape(12.dp)),
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable {
+                        showDownloadDialog = true
+                    },
                 contentScale = ContentScale.Crop
             )
         }
+    }
+
+    // 이미지 다운로드 다이얼로그
+    if (showDownloadDialog && !comment.photoUrl.isNullOrBlank()) {
+        ImageDownloadDialog(
+            onDismiss = { showDownloadDialog = false },
+            onConfirm = {
+                coroutineScope.launch {
+                    val result = imageDownloadManager.downloadImage(comment.photoUrl!!)
+                    result.fold(
+                        onSuccess = { message ->
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        },
+                        onFailure = { error ->
+                            Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
+                        }
+                    )
+                    showDownloadDialog = false
+                }
+            }
+        )
     }
 }
